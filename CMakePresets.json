@@ -1,0 +1,28 @@
+{
+    "version": 8,
+    "cmakeMinimumRequired": {
+        "major": 3,
+        "minor": 23,
+        "patch": 0
+    },
+    "configurePresets": [
+        {
+            "name": "default",
+            "displayName": "Default GCC/Clang (Makefiles)",
+            "description": "Generic preset using system default compiler",
+            "generator": "Unix Makefiles",
+            "binaryDir": "${sourceDir}/build/${presetName}",
+            "cacheVariables": {
+                "CMAKE_INSTALL_PREFIX": "${sourceDir}/install/${presetName}",
+                "CMAKE_BUILD_TYPE": "Debug"
+            }
+        },
+        {
+            "name": "ninja",
+            "displayName": "Default GCC/Clang (Ninja)",
+            "description": "Use Ninja build system with system default compiler",
+            "generator": "Ninja",
+            "inherits": "default"
+        }
+    ]
+}
