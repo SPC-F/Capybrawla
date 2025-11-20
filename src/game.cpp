@@ -66,8 +66,6 @@ void Game::run() {
     Scene& scene = SwampScene::setup();
     // Scene& autum_scene = SwampAutumScene::setup();
 
-    engine.services->get_service<SceneService>().get().load_scene(scene.name());
-
     SDL_Event e;
     bool quit = false;
 
@@ -84,11 +82,7 @@ void Game::run() {
             }
         }
 
-        // SceneService& scene_service = engine.services->get_service<SceneService>().get();
-        // if (auto current_scene = scene_service.current_scene(); current_scene.has_value()) {
-        //     auto& scene = current_scene->get();
-        //     engine.services->get_service<RenderingService>().get().draw(scene.game_objects());
-        // }
+        engine.services->get_service<RenderingService>().get().draw(scene.game_objects());
     }
 }
 
