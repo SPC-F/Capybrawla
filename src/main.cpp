@@ -1,7 +1,9 @@
-#include <iostream>
-
 #include <engine/util/memory.h>
-#include <engine/core/engine.h>
+
+#include "game.h"
+
+#include <exception>
+#include <iostream>
 
 namespace {
     #ifdef TRACY_ENABLE
@@ -13,19 +15,13 @@ namespace {
     #endif
 }
 
-void run() {
-    Engine& engine = Engine::instance();
-
-    std::cout << "Capybrawla!" << std::endl;
-
-    engine.quit();
-}
-
 int main() {
     tracy_init();
     
     try {
-       run(); 
+        Game::initialize();
+        Game::run();
+        Game::shutdown();
     } catch (const std::exception& e) {
         std::cerr << "Unhandled exception: " << e.what() << std::endl;
         return 1;
