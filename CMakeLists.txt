@@ -20,7 +20,7 @@ set(FREETYPE_DLL "${FREETYPE_ROOT}/bin/freetype.dll")
 FetchContent_Declare(
     CapycoreEngine
     GIT_REPOSITORY https://github.com/SPC-F/CapycoreEngine.git
-    GIT_TAG @fix/freetype 
+    GIT_TAG development
 )
 FetchContent_MakeAvailable(CapycoreEngine)
 
