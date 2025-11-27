@@ -16,9 +16,6 @@ void Assets::load_resources(std::vector<LoadResource>& resources) {
             resource.columns
         );
     }
-
-    // asset_service.load_from_resource("swamp_background.png", "swamp_bg", 1, 1);
-    // asset_service.load_from_resource("swamp_compact.png", "swamp_tiles", 9, 12);
 }
 
 void Assets::register_textures(std::vector<LoadTexture>& textures) {
@@ -36,16 +33,4 @@ void Assets::register_textures(std::vector<LoadTexture>& textures) {
             static_cast<size_t>(texture.index)
         );
     }
-
-    // asset_service.register_texture("swamp_tiles", "grass_single", 24);
-
-    // asset_service.register_texture("swamp_tiles", "grass_multi_top_left", 1);
-    // asset_service.register_texture("swamp_tiles", "grass_multi_top", 2);
-    // asset_service.register_texture("swamp_tiles", "grass_multi_top_right", 3);
-    // asset_service.register_texture("swamp_tiles", "grass_multi_middle_left", 13);
-    // asset_service.register_texture("swamp_tiles", "grass_multi_middle", 14);
-    // asset_service.register_texture("swamp_tiles", "grass_multi_middle_right", 15);
-    // asset_service.register_texture("swamp_tiles", "grass_multi_bottom_left", 25);
-    // asset_service.register_texture("swamp_tiles", "grass_multi_bottom", 26);
-    // asset_service.register_texture("swamp_tiles", "grass_multi_bottom_right", 27);
 }

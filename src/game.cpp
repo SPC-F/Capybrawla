@@ -1,5 +1,7 @@
 #include "game.h"
 
+#include <SDL3/SDL.h>
+
 #include "assets.h"
 #include "scenes/swamp.h"
 #include "scenes/swamp_autum.h"
@@ -82,7 +84,8 @@ void Game::run() {
             }
         }
 
-        engine.services->get_service<RenderingService>().get().draw(scene.game_objects());
+        auto game_objects = scene.game_objects();
+        engine.services->get_service<RenderingService>().get().draw(game_objects);
     }
 }
 
