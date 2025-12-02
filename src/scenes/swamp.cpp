@@ -8,8 +8,11 @@
 #include <engine/public/components/sprite.h>
 
 Scene& SwampScene::setup() {
-    Engine& engine = Engine::instance();
-    Scene& scene = engine.services->get_service<SceneService>().get().add_scene("SwampScene");
+    const std::string swamp_scene_tag = "SwampScene";
+
+    const Engine & engine = Engine::instance();
+    Scene& scene = engine.services->get_service<SceneService>().get().add_scene(swamp_scene_tag);
+    scene.add_game_object<Camera>(scene, Color(), 1.0f, true);
     
     GameObject& bg = scene.add_game_object("Background");
     bg.add_component<Sprite>("swamp_bg", Color{255, 255, 255, 255}, 0, 0, 0, 0);

@@ -12,7 +12,8 @@
 #include <engine/public/scene_service.h>
 
 void Game::initialize() {
-    Engine& engine = Engine::instance();
+    const Engine& engine = Engine::instance();
+    Engine::initialize();
 
     std::vector<LoadResource> resources {
         // Swamp resources
@@ -58,35 +59,17 @@ void Game::initialize() {
     };
     Assets::register_textures(textures);
 
-    engine.services->get_service<RenderingService>().get().window().set_window_fullscreen();
+    auto& window_controller = engine.services->get_service<RenderingService>().get().window();
+    //window_controller.set_window_fullscreen();
 }
 
 void Game::run() {
     Engine& engine = Engine::instance();
-
-    // 2 example levels
     Scene& scene = SwampScene::setup();
-    // Scene& autum_scene = SwampAutumScene::setup();
 
-    SDL_Event e;
-    bool quit = false;
-
-    while (!quit) {
-        while (SDL_PollEvent(&e)) {
-            if (e.type == SDL_EVENT_QUIT) {
-                quit = true;
-            }
-
-            if (e.type == SDL_EVENT_KEY_DOWN) {
-                if (e.key.key == SDLK_ESCAPE) {
-                    quit = true;
-                }
-            }
-        }
-
-        auto game_objects = scene.game_objects();
-        engine.services->get_service<RenderingService>().get().draw(game_objects);
-    }
+    engine.services->get_service<SceneService>()
+        .get()
+        .load_scene(scene.name());
 }
 
 void Game::shutdown() {

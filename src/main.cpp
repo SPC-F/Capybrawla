@@ -5,18 +5,18 @@
 #include <exception>
 #include <iostream>
 
-namespace {
-    #ifdef TRACY_ENABLE
-    inline void tracy_init() { tracy_memory_init(); }
-    inline void tracy_shutdown() { tracy_memory_shutdown(); }
-    #else
-    inline void tracy_init() {}
-    inline void tracy_shutdown() {}
-    #endif
-}
+// namespace {
+//     #ifdef TRACY_ENABLE
+//     inline void tracy_init() { tracy_memory_init(); }
+//     inline void tracy_shutdown() { tracy_memory_shutdown(); }
+//     #else
+//     inline void tracy_init() {}
+//     inline void tracy_shutdown() {}
+//     #endif
+// }
 
 int main() {
-    tracy_init();
+    //tracy_init();
     
     try {
         Game::initialize();
@@ -27,7 +27,7 @@ int main() {
         return 1;
     }
 
-    tracy_shutdown();
+    //tracy_shutdown();
 
     return 0;
 }
