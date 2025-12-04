@@ -1,6 +1,6 @@
-#include "swamp.h"
+#include <game/scenes/swamp.h>
 
-#include "level_loader.h"
+#include <game/scenes/level_loader.h>
 
 #include <engine/core/engine.h>
 #include <engine/public/scene_service.h>

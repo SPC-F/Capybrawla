@@ -1,10 +1,8 @@
-#include "game.h"
+#include <game/game.h>
 
-#include <SDL3/SDL.h>
-
-#include "assets.h"
-#include "scenes/swamp.h"
-#include "scenes/swamp_autum.h"
+#include <game/assets.h>
+#include <game/scenes/swamp.h>
+#include <game/scenes/swamp_autum.h>
 
 #include <engine/core/engine.h>
 #include <engine/core/rendering/assetService.h>
@@ -60,16 +58,16 @@ void Game::initialize() {
     Assets::register_textures(textures);
 
     auto& window_controller = engine.services->get_service<RenderingService>().get().window();
-    //window_controller.set_window_fullscreen();
+    window_controller.set_window_fullscreen();
 }
 
 void Game::run() {
     Engine& engine = Engine::instance();
+    auto& scene_service = engine.services->get_service<SceneService>().get();
+    
     Scene& scene = SwampScene::setup();
 
-    engine.services->get_service<SceneService>()
-        .get()
-        .load_scene(scene.name());
+    scene_service.load_scene(scene.name());
 }
 
 void Game::shutdown() {

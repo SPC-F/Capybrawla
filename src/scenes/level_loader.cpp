@@ -1,4 +1,4 @@
-#include "level_loader.h"
+#include <game/scenes/level_loader.h>
 
 #include <fstream>
 #include <stdexcept>
@@ -8,6 +8,10 @@
 #include <engine/public/gameObject.h>
 #include <engine/public/components/sprite.h>
 #include <engine/public/util/color.h>
+
+constexpr int DEFAULT_TILE_SIZE = 16;
+constexpr int DEFAULT_WIDTH_PIXELS = 0;
+constexpr int DEFAULT_HEIGHT_PIXELS = 0;
 
 void LevelLoader::load_game_objects_from_file(
     const std::string& file_path, 
@@ -19,9 +23,9 @@ void LevelLoader::load_game_objects_from_file(
         throw std::runtime_error("Failed to open map file: " + file_path);
     }
 
-    int tile_size = 16;
-    int width_pixels = 0;
-    int height_pixels = 0;
+    int tile_size = DEFAULT_TILE_SIZE;
+    int width_pixels = DEFAULT_WIDTH_PIXELS;
+    int height_pixels = DEFAULT_HEIGHT_PIXELS;
 
     std::string line;
 

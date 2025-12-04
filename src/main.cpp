@@ -1,6 +1,6 @@
 #include <engine/util/memory.h>
 
-#include "game.h"
+#include <game/game.h>
 
 #include <exception>
 #include <iostream>
