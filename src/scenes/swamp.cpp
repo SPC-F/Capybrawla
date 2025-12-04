@@ -10,7 +10,7 @@
 Scene& SwampScene::setup() {
     const std::string swamp_scene_tag = "SwampScene";
 
-    const Engine & engine = Engine::instance();
+    const Engine& engine = Engine::instance();
     Scene& scene = engine.services->get_service<SceneService>().get().add_scene(swamp_scene_tag);
     scene.add_game_object<Camera>(scene, Color(), 1.0f, true);
     
