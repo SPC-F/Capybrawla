@@ -273,11 +273,6 @@ void MainMenuScene::setup_credits(Scene& scene, GameObject& parent) {
         text.parent(parent);
     };
 
-    // This game was created for the minor System Programming in C++ at
-    // Avans University of Applied Sciences.
-    // Our vision was to create a fun multiplayer brawling game
-    // featuring adorable capybaras as the main characters.
-    
     create_credits_text_shortcut("This game was created for the minor System Programming in C++ at Avans University of Applied Sciences.", -140.0f);
     create_credits_text_shortcut("Our vision was to create a fun multiplayer brawling game", -100.0f);
     create_credits_text_shortcut("featuring adorable capybaras as the main characters.", -60.0f);
