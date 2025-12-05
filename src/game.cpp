@@ -29,7 +29,14 @@ void Game::initialize() {
 
         // Swamp autum resources
         {"swamp_autum_background.png", "swamp_autum_bg", 1, 1},
-        {"swamp_autum_compact.png", "swamp_autum_tiles", 9, 12}
+        {"swamp_autum_compact.png", "swamp_autum_tiles", 9, 12},
+
+        // Characters
+        {"character/capybara.png", "capybara_default", 1, 1},
+        {"character/capybara_bart.png", "capybara_bart", 1, 1},
+        {"character/capybara_bob.png", "capybara_bob", 1, 1},
+        {"character/capybara_herobrine.png", "capybara_herobrine", 1, 1},
+        {"character/capybara_pink.png", "capybara_pink", 1, 1}
     };
     Assets::load_resources(resources);
 

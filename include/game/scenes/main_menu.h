@@ -43,6 +43,7 @@ public:
 
     void setup_settings(Scene& scene, GameObject& parent);
     void setup_credits(Scene& scene, GameObject& parent);
+    void falling_capybaras(Scene& scene, int count);
 
 private:
     std::map<std::string, GameObject&> parents_;
