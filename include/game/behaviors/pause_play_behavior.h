@@ -1,8 +1,8 @@
 #pragma once
 
-#include "engine/core/engine.h"
-#include "engine/input/input_manager.h"
-#include "engine/public/behavior.h"
+#include <engine/core/engine.h>
+#include <engine/input/input_manager.h>
+#include <engine/public/behavior.h>
 
 class PausePlayBehavior final : public Behavior
 {
