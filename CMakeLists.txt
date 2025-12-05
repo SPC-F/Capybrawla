@@ -12,10 +12,18 @@ include(FetchContent)
 # Capycore Engine
 # =========================================================
 # Freetype configuration (override defaults)
-set(FREETYPE_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/../freetype-win-build")
-set(FREETYPE_INCLUDE_DIR "${FREETYPE_ROOT}/include/freetype2")
-set(FREETYPE_LIBRARY "${FREETYPE_ROOT}/lib/freetype.lib")
-set(FREETYPE_DLL "${FREETYPE_ROOT}/bin/freetype.dll")
+if(WIN32)
+    # Windows-specific paths for FreeType
+    set(FREETYPE_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/../freetype-win-build")
+    set(FREETYPE_INCLUDE_DIR "${FREETYPE_ROOT}/include/freetype2")
+    set(FREETYPE_LIBRARY "${FREETYPE_ROOT}/lib/freetype.lib")
+    set(FREETYPE_DLL "${FREETYPE_ROOT}/bin/freetype.dll")
+elseif(UNIX)
+    # Linux-specific setup for FreeType
+    find_package(Freetype REQUIRED)
+    set(FREETYPE_INCLUDE_DIR ${FREETYPE_INCLUDE_DIR_FT2})
+    set(FREETYPE_LIBRARY ${FREETYPE_LIBRARY_FT2})
+endif()
 
 FetchContent_Declare(
     CapycoreEngine
@@ -23,7 +31,6 @@ FetchContent_Declare(
     GIT_TAG development
 )
 FetchContent_MakeAvailable(CapycoreEngine)
-
 
 # =========================================================
 # Game Library
@@ -48,6 +55,7 @@ target_link_libraries(game
         SDL3_ttf::SDL3_ttf
         enet
         box2d
+        ${FREETYPE_LIBRARY}
 )
 
 # =========================================================
@@ -70,7 +78,7 @@ target_include_directories(${PROJECT_NAME}
 )
 
 # =========================================================
-# Copy .dll
+# Copy .dll (Windows-specific only)
 # =========================================================
 if(WIN32)
     foreach(lib SDL3::SDL3 SDL3_image::SDL3_image SDL3_ttf::SDL3_ttf)
