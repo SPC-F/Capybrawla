@@ -1,11 +1,8 @@
-#include "game.h"
+#include <game/game.h>
 
-#include <SDL3/SDL.h>
-
-#include "assets.h"
-#include "scenes/main_menu.h"
-#include "scenes/swamp.h"
-#include "scenes/swamp_autum.h"
+#include <game/assets.h>
+#include <game/scenes/swamp.h>
+#include <game/scenes/swamp_autum.h>
 
 #include <engine/core/engine.h>
 #include <engine/core/rendering/assetService.h>

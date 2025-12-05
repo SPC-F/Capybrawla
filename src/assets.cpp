@@ -1,4 +1,4 @@
-#include "assets.h"
+#include <game/assets.h>
 
 #include <engine/core/engine.h>
 #include <engine/core/rendering/assetService.h>

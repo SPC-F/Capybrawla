@@ -24,14 +24,24 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(CapycoreEngine)
 
-# =========================================================
-# Game Target
-# =========================================================
-file(GLOB_RECURSE GAME_SOURCES src/*.cpp)
-add_executable(${PROJECT_NAME} ${GAME_SOURCES})
 
-target_link_libraries(${PROJECT_NAME}
-        PRIVATE
+# =========================================================
+# Game Library
+# =========================================================
+file(GLOB_RECURSE GAME_SOURCES CONFIGURE_DEPENDS src/*.cpp)
+
+# Remove main.cpp from library
+list(FILTER GAME_SOURCES EXCLUDE REGEX "main.cpp$")
+
+add_library(game ${GAME_SOURCES})
+
+target_include_directories(game
+    PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}/include
+)
+
+target_link_libraries(game
+    PUBLIC
         engine
         SDL3::SDL3
         SDL3_image::SDL3_image
@@ -40,7 +50,20 @@ target_link_libraries(${PROJECT_NAME}
         box2d
 )
 
-target_include_directories(${PROJECT_NAME} PRIVATE
+# =========================================================
+# Game Executable
+# =========================================================
+add_executable(${PROJECT_NAME}
+    src/main.cpp
+)
+
+target_link_libraries(${PROJECT_NAME}
+    PRIVATE
+        game
+)
+
+target_include_directories(${PROJECT_NAME}
+    PRIVATE
         ${enet_SOURCE_DIR}/include
         ${imgui_SOURCE_DIR}
         ${imgui_SOURCE_DIR}/backends
@@ -50,14 +73,40 @@ target_include_directories(${PROJECT_NAME} PRIVATE
 # Copy .dll
 # =========================================================
 if(WIN32)
-    set(CAPYENGINE_BUILD_DIR "${CMAKE_BINARY_DIR}/_deps/capycoreengine-build")
-    
-    file(GLOB CAPY_DLLS "${CAPYENGINE_BUILD_DIR}/*.dll")
-    foreach(dll IN LISTS CAPY_DLLS)
+    foreach(lib SDL3::SDL3 SDL3_image::SDL3_image SDL3_ttf::SDL3_ttf)
         add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different
-                "${dll}"
+                COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                $<TARGET_FILE:${lib}>
                 $<TARGET_FILE_DIR:${PROJECT_NAME}>
         )
     endforeach()
+
+    # copy box2d dll if built (located at box2d-build/bin)
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "${box2d_BINARY_DIR}/bin/libbox2dd.dll"
+            $<TARGET_FILE_DIR:${PROJECT_NAME}>
+    )
+
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "${FREETYPE_DLL}"
+            $<TARGET_FILE_DIR:${PROJECT_NAME}>
+    )
+
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_directory
+            ${CMAKE_CURRENT_SOURCE_DIR}/resources
+            $<TARGET_FILE_DIR:${PROJECT_NAME}>/resources
+    )
+
+    set(CAPYENGINE_BUILD_DIR "${CMAKE_BINARY_DIR}/_deps/capycoreengine-build")
+    file(GLOB CAPY_DLLS "${CAPYENGINE_BUILD_DIR}/*.dll")
+
+    # copy engine dll
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "${CAPYENGINE_BUILD_DIR}/libengine.dll"
+            $<TARGET_FILE_DIR:${PROJECT_NAME}>
+    )
 endif()
