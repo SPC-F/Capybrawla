@@ -1,7 +1,7 @@
-#include "main_menu.h"
+#include <game/scenes/main_menu.h>
 
-#include "../game.h"
-#include "level_loader.h"
+#include <game/game.h>
+#include <game/assets.h>
 
 #include <engine/core/engine.h>
 #include <engine/core/rendering/renderingService.h>

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../assets.h"
+#include <game/assets.h>
 
 #include <map>
 #include <functional>
