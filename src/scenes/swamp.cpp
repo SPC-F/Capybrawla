@@ -8,7 +8,7 @@
 #include <engine/public/components/sprite.h>
 
 Scene& SwampScene::setup() {
-    const std::string swamp_scene_tag = "SwampScene";
+    const std::string swamp_scene_tag = "Level_SwampScene";
 
     const Engine& engine = Engine::instance();
     Scene& scene = engine.services->get_service<SceneService>().get().add_scene(swamp_scene_tag);

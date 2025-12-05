@@ -10,6 +10,30 @@
 #include <engine/core/rendering/renderingService.h>
 #include <engine/public/scene_service.h>
 
+#include "engine/public/components/behaviorscript.h"
+#include "game/pause_menu_ui.h"
+#include "game/behaviors/pause_play_behavior.h"
+
+namespace
+{
+    void strap_pause_menu(Scene& main_menu_scene)
+    {
+        auto ppmenu = std::make_unique<PauseMenuUI>(main_menu_scene);
+        ppmenu->mark_dont_destroy_on_load(true);
+
+        // Get the ID for the pause menu
+        const auto ppmId = ppmenu->id();
+
+        // Create and configure the Pause/Play controller
+        auto& ppc = main_menu_scene.add_game_object("Pause/Play controller");
+        ppc.add_component<BehaviorScript>(std::make_unique<PausePlayBehavior>(*ppmenu));
+        ppc.mark_dont_destroy_on_load(true);
+
+        // Add the PauseMenuUI object to the scene
+        main_menu_scene.add_game_object(std::move(ppmenu));
+    }
+}
+
 void Game::initialize() {
     const Engine& engine = Engine::instance();
     Engine::initialize();
@@ -128,6 +152,8 @@ void Game::run() {
             Engine::instance().services->get_service<SceneService>().get().load_scene(swamp_scene.name());
         }
     );
+
+    strap_pause_menu(main_menu_scene);
 
     scene_service.load_scene(main_menu_scene.name());
 }

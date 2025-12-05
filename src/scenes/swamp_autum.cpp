@@ -9,7 +9,7 @@
 
 Scene& SwampAutumScene::setup() {
     Engine& engine = Engine::instance();
-    Scene& scene = engine.services->get_service<SceneService>().get().add_scene("SwampAutumScene");
+    Scene& scene = engine.services->get_service<SceneService>().get().add_scene("Level_SwampAutumScene");
     
     GameObject& bg = scene.add_game_object("Background");
     bg.add_component<Sprite>("swamp_autum_bg", Color{255, 255, 255, 255}, 0, 0, 0, 0);
