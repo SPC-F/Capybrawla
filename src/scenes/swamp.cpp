@@ -7,6 +7,9 @@
 #include <engine/public/gameObject.h>
 #include <engine/public/components/sprite.h>
 
+#include "engine/public/components/behaviorscript.h"
+#include "game/scripts/timer/RoundTimer.h"
+
 Scene& SwampScene::setup() {
     const std::string swamp_scene_tag = "Level_SwampScene";
 
@@ -18,6 +21,11 @@ Scene& SwampScene::setup() {
     bg.add_component<Sprite>("swamp_bg", Color{255, 255, 255, 255}, 0, 0, 0, 0);
     bg.transform().position({0, 0, 0});
     bg.transform().scale({1, 1, 1});
+
+    GameObject& round_timer_obj = scene.add_game_object("Round Timer");
+    auto round_timer = std::make_unique<RoundTimer>();
+    round_timer->start_timer([] {});
+    round_timer_obj.add_component<BehaviorScript>(std::move(round_timer));
 
     std::unordered_map<char, std::string> texture_map {
         {'+', "grass_single"},
