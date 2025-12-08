@@ -56,7 +56,7 @@ void Game::initialize() {
         {"swamp_autum_compact.png", "swamp_autum_tiles", 9, 12},
 
         // Characters
-        {"character/capybara.png", "capybara_default", 1, 1},
+        {"character/capybara_default.png", "capybara_default", 1, 1},
         {"character/capybara_bart.png", "capybara_bart", 1, 1},
         {"character/capybara_bob.png", "capybara_bob", 1, 1},
         {"character/capybara_herobrine.png", "capybara_herobrine", 1, 1},
