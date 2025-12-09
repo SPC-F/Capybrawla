@@ -1,3 +1,6 @@
+#include "engine/public/components/colliders/box_collider_2d.h"
+#include "engine/public/components/rigidbody_2d.h"
+
 #include <game/scenes/level_loader.h>
 
 #include <fstream>
@@ -68,6 +71,9 @@ void LevelLoader::load_game_objects_from_file(
             tile_obj.add_component<Sprite>(texture_name, Color{255, 255, 255, 255}, 0, 0, 0, 0);
             tile_obj.transform().position({static_cast<float>(tile.x), static_cast<float>(tile.y), 0.0f});
             tile_obj.transform().scale({2, 2, 2});
+
+            tile_obj.add_component<Rigidbody2D>(BodyType2D::Type::Static);
+            tile_obj.add_component<BoxCollider2D>(0.1f, 0.2f, 32, 32, Point{0, 0});
         }
     }
 }

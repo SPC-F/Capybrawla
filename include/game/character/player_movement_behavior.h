@@ -1,21 +1,28 @@
 #pragma once
 #include "engine/public/behavior.h"
 #include "engine/public/components/animator.h"
+#include "engine/public/components/colliders/box_collider_2d.h"
 #include "engine/public/components/rigidbody_2d.h"
 #include "engine/public/components/sprite.h"
 #include "engine/public/scene.h"
 
 class PlayerMovementBehavior final : public Behavior {
 private:
-  std::optional<std::reference_wrapper<Rigidbody2D>> rigidbody_;
-  std::optional<std::reference_wrapper<Animator>> animator_;
-  std::optional<std::reference_wrapper<Sprite>> sprite_;
+  std::optional<std::reference_wrapper<Rigidbody2D>> rigidbody_opt_;
+  std::optional<std::reference_wrapper<Animator>> animator_opt_;
+  std::optional<std::reference_wrapper<Sprite>> sprite_opt_;
+  std::optional<std::reference_wrapper<BoxCollider2D>> box_collider_opt_;
 
   float horizontal_speed_;
   float jumping_speed_;
   float dropping_speed_;
-  bool is_dropping_;
+
+  bool is_crouching_;
   bool is_jumping_;
+  bool is_double_jumping_;
+  bool is_walking_;
+
+  [[nodiscard]] bool player_has_required_components() const;
 
 public:
 
@@ -40,8 +47,8 @@ public:
     dropping_speed_ = speed;
   }
 
-  [[nodiscard]] bool is_dropping() const {
-    return is_dropping_;
+  [[nodiscard]] bool is_crouching() const {
+    return is_crouching_;
   }
   [[nodiscard]] bool is_jumping() const {
     return is_jumping_;

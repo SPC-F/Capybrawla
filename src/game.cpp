@@ -38,7 +38,7 @@ void Game::initialize() {
     const Engine& engine = Engine::instance();
     Engine::initialize();
 
-    std::vector<LoadResource> resources {
+    const std::vector<LoadResource> resources {
         // UI
         // Main menu
         {"ui/main_menu.png", "main_menu_bg", 1, 1},
@@ -60,11 +60,13 @@ void Game::initialize() {
         {"character/capybara_bart.png", "capybara_bart", 1, 1},
         {"character/capybara_bob.png", "capybara_bob", 1, 1},
         {"character/capybara_herobrine.png", "capybara_herobrine", 1, 1},
-        {"character/capybara_pink.png", "capybara_pink", 1, 1}
+        {"character/capybara_pink.png", "capybara_pink", 1, 1},
+        {"character/capybara_duck.png", "capybara_duck", 1, 1},
+        {"character/WALKcapybara.png", "WALKcapybara", 1, 4}
     };
     Assets::load_resources(resources);
 
-    std::vector<LoadTexture> textures {
+    const std::vector<LoadTexture> textures {
         // UI textures
         {"buttons_large", "button_large_blue", 0},
         {"buttons_large", "button_large_red", 1},
@@ -130,12 +132,17 @@ void Game::initialize() {
     };
     Assets::register_textures(textures);
 
+    const std::vector<LoadAnimation> sprite_sheets {
+        {"WALKcapybara", "WALKcapybara", 0, 4}
+    };
+    Assets::register_sprite_sheets(sprite_sheets);
+
     auto& window_controller = engine.services->get_service<RenderingService>().get().window();
     window_controller.set_window_fullscreen();
 }
 
 void Game::run() {
-    Engine& engine = Engine::instance();
+    const Engine & engine = Engine::instance();
     auto& scene_service = engine.services->get_service<SceneService>().get();
 
     MainMenuScene main_menu;
@@ -154,7 +161,6 @@ void Game::run() {
     );
 
     strap_pause_menu(main_menu_scene);
-
     scene_service.load_scene(main_menu_scene.name());
 }
 
