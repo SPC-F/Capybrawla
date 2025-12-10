@@ -7,8 +7,8 @@
 #include <engine/public/gameObject.h>
 #include <engine/public/components/sprite.h>
 
-#include "engine/public/components/behaviorscript.h"
-#include "game/scripts/timer/RoundTimer.h"
+#include <engine/public/components/behaviorscript.h>
+#include <game/scripts/timer/RoundTimer.h>
 
 Scene& SwampScene::setup() {
     const std::string swamp_scene_tag = "Level_SwampScene";
