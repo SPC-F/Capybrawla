@@ -49,7 +49,6 @@ Scene& SwampScene::setup() {
     const Engine& engine = Engine::instance();
     Scene& scene = engine.services->get_service<SceneService>().get().add_scene(swamp_scene_tag);
     PhysicsService& physics_service = engine.services->get_service<PhysicsService>().get();
-    physics_service.debug_mode(true);
     scene.add_game_object<Camera>(scene, Color(), 1.0f, true);
     
     load_level_background(scene);
