@@ -8,7 +8,7 @@
 PlayerMovementBehavior::PlayerMovementBehavior()
     : Behavior(), rigidbody_opt_(std::nullopt), animator_opt_(std::nullopt),
       sprite_opt_(std::nullopt), box_collider_opt_(std::nullopt),
-      horizontal_speed_(12.0f), jumping_speed_(6.0f), dropping_speed_(0.15f),
+      horizontal_speed_(18.0f), jumping_speed_(6.0f), dropping_speed_(1.5f), double_jump_speed_(jumping_speed_ / 1.5f),
       is_crouching_(false), is_jumping_(false), is_double_jumping_(false),
       is_walking_(false) {}
 
@@ -34,11 +34,14 @@ void PlayerMovementBehavior::on_start() {
         const Transform &self_transform = parent_opt->get().transform();
         const Transform &other_transform = other_parent_opt->get().transform();
 
-        if (self_transform.position().x > other_transform.position().x) {
+        if (self_transform.position().y > other_transform.position().y) {
           return;
         }
 
-        is_crouching_ = false;
+        if (is_walking_ && is_jumping_) {
+          animator_opt_->get().play("WALKcapybara_anim", true);
+        }
+
         is_jumping_ = false;
         is_double_jumping_ = false;
 
@@ -61,6 +64,7 @@ void PlayerMovementBehavior::on_update(float dt) {
     return;
 
   auto &rigidbody = rigidbody_opt_->get();
+  auto &box_collider = this->box_collider_opt_->get();
   auto &animator = animator_opt_->get();
   auto &sprite = sprite_opt_->get();
 
@@ -78,14 +82,20 @@ void PlayerMovementBehavior::on_update(float dt) {
   }
 
   if (crouch_input && !is_crouching_) {
+    box_collider.offset({box_collider.offset().x, box_collider.offset().y + box_collider.height() / 2.0f});
+    box_collider.height(box_collider.height() / 2.0f);
+
     sprite.texture("capybara_duck");
     animator.pause();
-    is_crouching_ = true;
-  }
 
-  if (!crouch_input && is_crouching_) {
+    is_crouching_ = true;
+    is_walking_ = false;
+
+  } else if (!crouch_input && is_crouching_) {
+    box_collider.offset({box_collider.offset().x, box_collider.offset().y - box_collider.height()});
+    box_collider.height(box_collider.height() * 2.0f);
+
     sprite.texture("capybara_default");
-    // restore idle or walking depending on current state
     if (is_walking_)
       animator.play("WALKcapybara_anim", true);
     else
@@ -94,8 +104,11 @@ void PlayerMovementBehavior::on_update(float dt) {
     is_crouching_ = false;
   }
 
-  if (walking && !is_walking_) {
-    animator.play("WALKcapybara_anim", true);
+  if (walking && !is_walking_ && !is_crouching_) {
+    if (!is_jumping()) {
+      animator.play("WALKcapybara_anim", true);
+    }
+
     is_walking_ = true;
   } else if (!walking && is_walking_) {
     animator.pause();
@@ -107,21 +120,15 @@ void PlayerMovementBehavior::on_update(float dt) {
 
   if (crouch_input) {
     applied_force_y += dropping_speed_;
-
-    if (!is_crouching_) {
-      sprite.texture("capybara_duck");
-      animator.pause();
-      is_crouching_ = true;
-    }
   }
 
-  if (walk_left_input) {
+  if (walk_left_input && !is_crouching_) {
     velocity_x -= horizontal_speed_;
     if (!sprite.flip_x())
       sprite.flip_x(true);
   }
 
-  if (walk_right_input) {
+  if (walk_right_input && !is_crouching_) {
     velocity_x += horizontal_speed_;
     if (sprite.flip_x())
       sprite.flip_x(false);
@@ -134,7 +141,7 @@ void PlayerMovementBehavior::on_update(float dt) {
     sprite.texture("capybara_default");
     animator.pause();
   } else if (jump_input && !is_double_jumping_) {
-    applied_force_y -= (jumping_speed_ / 1.5f);
+    applied_force_y -= (double_jump_speed_);
     is_double_jumping_ = true;
 
     sprite.texture("capybara_default");
