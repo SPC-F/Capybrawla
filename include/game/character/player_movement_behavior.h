@@ -13,51 +13,52 @@ private:
   std::optional<std::reference_wrapper<Sprite>> sprite_opt_;
   std::optional<std::reference_wrapper<BoxCollider2D>> box_collider_opt_;
 
-  float horizontal_speed_;
-  float jumping_speed_;
+  float horizontal_velocity_;
+  float jumping_force_;
   float dropping_speed_;
-  float double_jump_speed_;
-  float velocity_y_threshold;
+  float double_jump_force_;
+  float velocity_y_threshold_;
 
   bool is_crouching_;
   bool is_jumping_;
   bool is_double_jumping_;
   bool is_walking_;
 
+  float default_standing_height_;
+  float default_crouching_height_;
+
   [[nodiscard]] bool player_has_required_components() const;
 
 public:
 
-  [[nodiscard]] float horizontal_speed() const {
-    return horizontal_speed_;
-  }
-  void horizontal_speed(const float speed) {
-    horizontal_speed_ = speed;
-  }
+  PlayerMovementBehavior();
+  PlayerMovementBehavior(float horizontal_velocity, float jumping_force,
+                         float dropping_speed, float double_jump_force,
+                         float velocity_y_threshold, const float default_standing_height,
+                         const float default_crouching_height);
 
-  [[nodiscard]] float jumping_speed() const {
-    return jumping_speed_;
-  }
-  void jumping_speed(const float speed) {
-    jumping_speed_ = speed;
-  }
-
-  [[nodiscard]] float dropping_speed() const {
-    return dropping_speed_;
-  }
-  void dropping_speed(const float speed) {
-    dropping_speed_ = speed;
-  }
-
-  [[nodiscard]] bool is_crouching() const {
-    return is_crouching_;
-  }
-  [[nodiscard]] bool is_jumping() const {
-    return is_jumping_;
-  }
-
-  explicit PlayerMovementBehavior();
   ~PlayerMovementBehavior() override = default;
+
+  [[nodiscard]] float horizontal_velocity() const;
+  void horizontal_velocity(const float speed);
+
+  [[nodiscard]] float jumping_force() const;
+  void jumping_force(const float speed);
+
+  [[nodiscard]] float dropping_speed() const;
+  void dropping_speed(const float speed);
+
+  [[nodiscard]] float double_jump_force() const;
+  void double_jump_force(const float speed);
+
+  [[nodiscard]] float velocity_y_threshold() const;
+  void velocity_y_threshold(const float threshold);
+
+  [[nodiscard]] bool is_crouching() const;
+  [[nodiscard]] bool is_jumping() const;
+  [[nodiscard]] bool is_double_jumping() const;
+  [[nodiscard]] bool is_walking() const;
+
   void on_start() override;
-  void on_update(float dt) override;;
+  void on_update(float dt) override;
 };

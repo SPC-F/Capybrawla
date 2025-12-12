@@ -53,7 +53,6 @@ Scene& SwampScene::setup() {
     
     load_level_background(scene);
     load_players(scene);
-    physics_service.debug_mode(true);
 
     return scene;
 }
