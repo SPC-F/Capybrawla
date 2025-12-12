@@ -59,6 +59,9 @@ void Game::initialize() {
         {"character/capybara_default_idle.png", "capybara_default_idle", 1, 1},
         {"character/capybara_default_duck.png", "capybara_default_duck", 1, 1},
         {"character/capybara_default_walk_anim.png", "capybara_default_walk_anim_sheet", 1, 8},
+        {"character/capybara_default_idle_anim.png", "capybara_default_idle_anim_sheet", 1, 7},
+        {"character/capybara_default_jump_anim.png", "capybara_default_jump_anim_sheet", 1, 7},
+        {"character/capybara_default_duck_anim.png", "capybara_default_duck_anim_sheet", 1, 7},
 
         {"character/capybara_red_idle.png", "capybara_red_idle", 1, 1},
         {"character/capybara_blue_idle.png", "capybara_blue_idle", 1, 1},
@@ -137,7 +140,10 @@ void Game::initialize() {
     Assets::register_textures(textures);
 
     const std::vector<LoadAnimation> sprite_sheets {
-        {"capybara_default_walk_anim_sheet", "capybara_default_walk_anim", 0, 8}
+        {"capybara_default_walk_anim_sheet", "capybara_default_walk_anim", 0, 8},
+        {"capybara_default_idle_anim_sheet", "capybara_default_idle_anim", 0, 7},
+        {"capybara_default_jump_anim_sheet", "capybara_default_jump_anim", 0, 7},
+        {"capybara_default_duck_anim_sheet", "capybara_default_duck_anim", 0, 7}
     };
     Assets::register_sprite_sheets(sprite_sheets);
 

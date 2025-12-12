@@ -3,6 +3,7 @@
 #include "engine/input/i_input_provider.h"
 #include "engine/input/input_manager.h"
 
+#include <game/character/playerConstants.h>
 #include <game/character/player_movement_behavior.h>
 
 PlayerMovementBehavior::PlayerMovementBehavior()
@@ -65,10 +66,12 @@ void PlayerMovementBehavior::on_start() {
         const Transform &self_transform = parent_opt->get().transform();
         const Transform &other_transform = other_parent_opt->get().transform();
 
+        // Are we grounded?
         if (self_transform.position().y > other_transform.position().y) {
           return;
         }
 
+        // If we are both walking and jumping at the same time, resume walking
         if (is_walking_ && is_jumping_) {
           animator_opt_->get().play("capybara_default_walk_anim", true);
         }
@@ -136,7 +139,7 @@ void PlayerMovementBehavior::on_update(float dt) {
 
   if (walking && !is_walking_ && !is_crouching_) {
     if (!is_jumping()) {
-      animator.play("capybara_default_walk_anim", true);
+      animator.play(PlayerConstants::WALKING_ANIMATION, true);
     }
 
     is_walking_ = true;
