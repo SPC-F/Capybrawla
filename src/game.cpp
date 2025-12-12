@@ -133,7 +133,7 @@ void Game::initialize() {
     Assets::register_textures(textures);
 
     const std::vector<LoadAnimation> sprite_sheets {
-        {"WALKcapybara", "WALKcapybara", 0, 4}
+        {"WALKcapybara", "WALKcapybara_anim", 0, 4}
     };
     Assets::register_sprite_sheets(sprite_sheets);
 

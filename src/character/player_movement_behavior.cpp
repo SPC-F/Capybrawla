@@ -87,7 +87,7 @@ void PlayerMovementBehavior::on_update(float dt) {
     sprite.texture("capybara_default");
     // restore idle or walking depending on current state
     if (is_walking_)
-      animator.play("WALKcapybara", true);
+      animator.play("WALKcapybara_anim", true);
     else
       animator.pause();
 
@@ -95,7 +95,7 @@ void PlayerMovementBehavior::on_update(float dt) {
   }
 
   if (walking && !is_walking_) {
-    animator.play("WALKcapybara", true);
+    animator.play("WALKcapybara_anim", true);
     is_walking_ = true;
   } else if (!walking && is_walking_) {
     animator.pause();

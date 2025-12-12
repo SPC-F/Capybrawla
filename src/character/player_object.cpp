@@ -17,7 +17,7 @@ PlayerObject::PlayerObject(Scene& scene, const Vector3 initial_pos) : GameObject
 
   // how we look
   this->add_component<Sprite>("capybara_default", Color(), 0, 0, 0, 0);
-  this->add_component<Animator>("capybara_default", 125);
+  this->add_component<Animator>("WALKcapybara_anim", 125);
 
   // how we physics
   this->add_component<Rigidbody2D>(BodyType2D::Type::Dynamic, 35.0f);
