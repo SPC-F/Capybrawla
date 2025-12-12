@@ -8,7 +8,7 @@
 PlayerMovementBehavior::PlayerMovementBehavior()
     : Behavior(), rigidbody_opt_(std::nullopt), animator_opt_(std::nullopt),
       sprite_opt_(std::nullopt), box_collider_opt_(std::nullopt),
-      horizontal_speed_(18.0f), jumping_speed_(6.0f), dropping_speed_(1.5f), double_jump_speed_(jumping_speed_ / 1.5f),
+      horizontal_speed_(18.0f), jumping_speed_(6.0f), dropping_speed_(1.5f), double_jump_speed_(jumping_speed_), velocity_y_threshold(18.0f),
       is_crouching_(false), is_jumping_(false), is_double_jumping_(false),
       is_walking_(false) {}
 
@@ -134,14 +134,27 @@ void PlayerMovementBehavior::on_update(float dt) {
       sprite.flip_x(false);
   }
 
+  const float current_velocity_y = rigidbody.velocity().y;
   if (jump_input && !is_jumping_) {
+    if (std::abs(current_velocity_y) < velocity_y_threshold) {
+      rigidbody.velocity({rigidbody.velocity().x, 0.0f, rigidbody.velocity().z});
+    }
+
     applied_force_y -= jumping_speed_;
     is_jumping_ = true;
 
     sprite.texture("capybara_default");
     animator.pause();
   } else if (jump_input && !is_double_jumping_) {
-    applied_force_y -= (double_jump_speed_);
+    const float abs_velocity_y = std::abs(current_velocity_y);
+    if (abs_velocity_y < velocity_y_threshold) {
+      rigidbody.velocity({rigidbody.velocity().x, 0.0f, rigidbody.velocity().z});
+    }
+
+    applied_force_y -= double_jump_speed_;
+    // To make double jump feel smoother, we apply less force if the player is already moving upwards
+    applied_force_y += std::clamp(current_velocity_y, 0.0f, velocity_y_threshold);
+
     is_double_jumping_ = true;
 
     sprite.texture("capybara_default");

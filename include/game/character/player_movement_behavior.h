@@ -17,6 +17,7 @@ private:
   float jumping_speed_;
   float dropping_speed_;
   float double_jump_speed_;
+  float velocity_y_threshold;
 
   bool is_crouching_;
   bool is_jumping_;
