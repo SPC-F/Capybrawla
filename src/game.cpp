@@ -44,23 +44,23 @@ void Game::initialize() {
         {"ui/main_menu.png", "main_menu_bg", 1, 1},
         {"ui/buttons_large.png", "buttons_large", 2, 2},
         {"ui/buttons_big.png", "buttons_big", 4, 2},
-        {"ui/buttons_small.png", "buttons_small", 3, 7},
+        {"ui/buttons_small.png", "buttons_small", 4, 5},
 
         // Levels
         // Swamp resources
-        {"swamp_background.png", "swamp_bg", 1, 1},
-        {"swamp_compact.png", "swamp_tiles", 9, 12},
+        {"background/swamp/swamp_background.png", "swamp_bg", 1, 1},
+        {"tilemaps/swamp_compact.png", "swamp_tiles", 9, 12},
 
         // Swamp autum resources
-        {"swamp_autum_background.png", "swamp_autum_bg", 1, 1},
-        {"swamp_autum_compact.png", "swamp_autum_tiles", 9, 12},
+        {"background/swamp_autum/swamp_autum_background.png", "swamp_autum_bg", 1, 1},
+        {"tilemaps/swamp_autum_compact.png", "swamp_autum_tiles", 9, 12},
 
         // Characters
-        {"character/capybara.png", "capybara_default", 1, 1},
-        {"character/capybara_bart.png", "capybara_bart", 1, 1},
-        {"character/capybara_bob.png", "capybara_bob", 1, 1},
-        {"character/capybara_herobrine.png", "capybara_herobrine", 1, 1},
-        {"character/capybara_pink.png", "capybara_pink", 1, 1}
+        {"character/capybara_default_idle.png", "capybara_default_idle", 1, 1},
+        {"character/capybara_red_idle.png", "capybara_red_idle", 1, 1},
+        {"character/capybara_blue_idle.png", "capybara_blue_idle", 1, 1},
+        {"character/capybara_green_idle.png", "capybara_green_idle", 1, 1}
+
     };
     Assets::load_resources(resources);
 
@@ -75,24 +75,26 @@ void Game::initialize() {
         {"buttons_big", "button_big_red", 1},
         {"buttons_big", "button_big_yellow", 2},
         {"buttons_big", "button_big_green", 3},
-        {"buttons_big", "button_big_black", 4},
-        {"buttons_big", "button_big_transparent", 5},
-        {"buttons_big", "button_big_hollow", 6},
+        {"buttons_big", "button_big_transparent", 4},
+        {"buttons_big", "button_big_hollow", 5},
+        {"buttons_big", "button_big_black", 6},
 
         {"buttons_small", "button_small_blue", 0},
         {"buttons_small", "button_small_red", 1},
-        {"buttons_small", "button_small_black_round", 2},
-        {"buttons_small", "button_small_red_round", 3},
-        {"buttons_small", "button_small_green_round", 4},
-        {"buttons_small", "button_small_arrow", 5},
-        {"buttons_small", "button_small_arrow_double", 6},
-        {"buttons_small", "button_small_yellow", 7},
-        {"buttons_small", "button_small_green", 8},
-        {"buttons_small", "button_small_black_deny", 9},
-        {"buttons_small", "button_small_black_allow", 10},
-        {"buttons_small", "button_small_deny", 11},
-        {"buttons_small", "button_small_allow", 12},
-        {"buttons_small", "button_small_transparent", 14},
+        {"buttons_small", "button_small_yellow", 2},
+        {"buttons_small", "button_small_green", 3},
+        {"buttons_small", "button_small_black", 4},
+        {"buttons_small", "button_small_blue_round", 5},
+        {"buttons_small", "button_small_red_round", 6},
+        {"buttons_small", "button_small_yellow_round", 7},
+        {"buttons_small", "button_small_green_round", 8},
+        {"buttons_small", "button_small_black_round", 9},
+        {"buttons_small", "button_small_hollow", 10},
+        {"buttons_small", "button_small_black_deny", 11},
+        {"buttons_small", "button_small_transparent", 12},
+        {"buttons_small", "button_small_deny", 13},
+        {"buttons_small", "button_small_allow", 14},
+        {"buttons_small", "button_small_black_empty", 15},
         {"buttons_small", "button_small_black_arrow_left", 16},
         {"buttons_small", "button_small_black_arrow_right", 17},
         {"buttons_small", "button_small_black_deny", 18},
