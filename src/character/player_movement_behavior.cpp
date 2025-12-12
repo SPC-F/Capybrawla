@@ -6,20 +6,42 @@
 #include <game/character/player_movement_behavior.h>
 
 PlayerMovementBehavior::PlayerMovementBehavior()
-    : PlayerMovementBehavior(18.0f, 6.0f, 1.5f, 6.0f, 18.0f, 28.0f, 14.0f) {}
+    : PlayerMovementBehavior(32.0f, 18.0f, {}, {}) {}
+
+PlayerMovementBehavior::PlayerMovementBehavior(
+    const float default_standing_height, const float default_crouching_height,
+    const Point default_standing_offset, const Point default_crouching_offset)
+    : PlayerMovementBehavior(18.0f, 6.0f, 1.5f, 6.0f, 18.0f,
+                             default_standing_height, default_crouching_height,
+                             default_standing_offset,
+                             default_crouching_offset) {}
+
 PlayerMovementBehavior::PlayerMovementBehavior(
     const float horizontal_velocity, const float jumping_force,
     const float dropping_speed, const float double_jump_force,
     const float velocity_y_threshold, const float default_standing_height,
-    const float default_crouching_height)
-    : Behavior(), rigidbody_opt_(std::nullopt), animator_opt_(std::nullopt),
+    const float default_crouching_height, const Point default_standing_offset, const Point default_crouching_offset)
+    : Behavior(),
+      // Required components
+      rigidbody_opt_(std::nullopt), animator_opt_(std::nullopt),
       sprite_opt_(std::nullopt), box_collider_opt_(std::nullopt),
+
+      // Configurable params for movement physics
       horizontal_velocity_(horizontal_velocity), jumping_force_(jumping_force),
       dropping_speed_(dropping_speed), double_jump_force_(double_jump_force),
-      velocity_y_threshold_(velocity_y_threshold), is_crouching_(false),
-      is_jumping_(false), is_double_jumping_(false), is_walking_(false),
+      velocity_y_threshold_(velocity_y_threshold),
+
+      // State flags
+      is_crouching_(false), is_jumping_(false), is_double_jumping_(false),
+      is_walking_(false),
+
+      // Default collider heights
       default_standing_height_(default_standing_height),
-      default_crouching_height_(default_crouching_height) {}
+      default_crouching_height_(default_crouching_height),
+
+      // Default collider offsets
+      default_standing_offset_(default_standing_offset),
+      default_crouching_offset_(default_crouching_offset) {}
 
 void PlayerMovementBehavior::on_start() {
   rigidbody_opt_ = this->get_component<Rigidbody2D>();
@@ -48,7 +70,7 @@ void PlayerMovementBehavior::on_start() {
         }
 
         if (is_walking_ && is_jumping_) {
-          animator_opt_->get().play("WALKcapybara_anim", true);
+          animator_opt_->get().play("capybara_default_walk_anim", true);
         }
 
         is_jumping_ = false;
@@ -65,7 +87,6 @@ bool PlayerMovementBehavior::player_has_required_components() const {
 }
 
 void PlayerMovementBehavior::on_update(float dt) {
-
   const IInputProvider &provider =
       Engine::instance().services->get_service<InputManager>().get().provider();
 
@@ -87,29 +108,26 @@ void PlayerMovementBehavior::on_update(float dt) {
   const bool is_moving = crouch_input || jump_input || walking;
 
   if (!is_moving) {
-    sprite.texture("capybara_default");
+    sprite.texture("capybara_default_idle");
   }
 
   if (crouch_input && !is_crouching_) {
-    box_collider.offset(
-        {box_collider.offset().x,
-         box_collider.offset().y + box_collider.height() / 2.0f});
-    box_collider.height(box_collider.height() / 2.0f);
+    box_collider.offset(default_crouching_offset_);
+    box_collider.height(default_crouching_height_);
 
-    sprite.texture("capybara_duck");
+    sprite.texture("capybara_default_duck");
     animator.pause();
 
     is_crouching_ = true;
     is_walking_ = false;
 
   } else if (!crouch_input && is_crouching_) {
-    box_collider.offset({box_collider.offset().x,
-                         box_collider.offset().y - box_collider.height()});
-    box_collider.height(box_collider.height() * 2.0f);
+    box_collider.offset(default_standing_offset_);
+    box_collider.height(default_standing_height_);
 
-    sprite.texture("capybara_default");
+    sprite.texture("capybara_default_idle");
     if (is_walking_)
-      animator.play("WALKcapybara_anim", true);
+      animator.play("capybara_default_walk_anim", true);
     else
       animator.pause();
 
@@ -118,7 +136,7 @@ void PlayerMovementBehavior::on_update(float dt) {
 
   if (walking && !is_walking_ && !is_crouching_) {
     if (!is_jumping()) {
-      animator.play("WALKcapybara_anim", true);
+      animator.play("capybara_default_walk_anim", true);
     }
 
     is_walking_ = true;
@@ -156,7 +174,7 @@ void PlayerMovementBehavior::on_update(float dt) {
     applied_force_y -= jumping_force_;
     is_jumping_ = true;
 
-    sprite.texture("capybara_default");
+    sprite.texture("capybara_default_idle");
     animator.pause();
   } else if (jump_input && !is_double_jumping_) {
     const float abs_velocity_y = std::abs(current_velocity_y);
@@ -173,7 +191,7 @@ void PlayerMovementBehavior::on_update(float dt) {
 
     is_double_jumping_ = true;
 
-    sprite.texture("capybara_default");
+    sprite.texture("capybara_default_idle");
     animator.pause();
   }
 
@@ -190,11 +208,13 @@ float PlayerMovementBehavior::horizontal_velocity() const {
 void PlayerMovementBehavior::horizontal_velocity(const float speed) {
   horizontal_velocity_ = speed;
 }
-float PlayerMovementBehavior::jumping_force() const { return jumping_force_; }
+float PlayerMovementBehavior::jumping_force() const {
+  return jumping_force_; }
 void PlayerMovementBehavior::jumping_force(const float speed) {
   jumping_force_ = speed;
 }
-float PlayerMovementBehavior::dropping_speed() const { return dropping_speed_; }
+float PlayerMovementBehavior::dropping_speed() const {
+  return dropping_speed_; }
 void PlayerMovementBehavior::dropping_speed(const float speed) {
   dropping_speed_ = speed;
 }
@@ -210,9 +230,12 @@ float PlayerMovementBehavior::velocity_y_threshold() const {
 void PlayerMovementBehavior::velocity_y_threshold(const float threshold) {
   velocity_y_threshold_ = threshold;
 }
-bool PlayerMovementBehavior::is_crouching() const { return is_crouching_; }
-bool PlayerMovementBehavior::is_jumping() const { return is_jumping_; }
+bool PlayerMovementBehavior::is_crouching() const {
+  return is_crouching_; }
+bool PlayerMovementBehavior::is_jumping() const {
+  return is_jumping_; }
 bool PlayerMovementBehavior::is_double_jumping() const {
   return is_double_jumping_;
 }
-bool PlayerMovementBehavior::is_walking() const { return is_walking_; }
+bool PlayerMovementBehavior::is_walking() const {
+  return is_walking_; }

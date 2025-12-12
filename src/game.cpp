@@ -57,12 +57,12 @@ void Game::initialize() {
 
         // Characters
         {"character/capybara_default_idle.png", "capybara_default_idle", 1, 1},
+        {"character/capybara_default_duck.png", "capybara_default_duck", 1, 1},
+        {"character/capybara_default_walk_anim.png", "capybara_default_walk_anim_sheet", 1, 8},
+
         {"character/capybara_red_idle.png", "capybara_red_idle", 1, 1},
         {"character/capybara_blue_idle.png", "capybara_blue_idle", 1, 1},
         {"character/capybara_green_idle.png", "capybara_green_idle", 1, 1},
-        {"character/capybara_duck.png", "capybara_duck", 1, 1},
-        {"character/WALKcapybara.png", "WALKcapybara", 1, 4}
-
     };
     Assets::load_resources(resources);
 
@@ -102,6 +102,7 @@ void Game::initialize() {
         {"buttons_small", "button_small_black_deny", 18},
         {"buttons_small", "button_small_black_accept", 19},
 
+
         // Swamp textures
         {"swamp_tiles", "grass_single", 24},
 
@@ -132,10 +133,11 @@ void Game::initialize() {
         {"swamp_autum_tiles", "grass_autum_multi_bottom", 26},
         {"swamp_autum_tiles", "grass_autum_multi_bottom_right", 27}
     };
+
     Assets::register_textures(textures);
 
     const std::vector<LoadAnimation> sprite_sheets {
-        {"WALKcapybara", "WALKcapybara_anim", 0, 4}
+        {"capybara_default_walk_anim_sheet", "capybara_default_walk_anim", 0, 8}
     };
     Assets::register_sprite_sheets(sprite_sheets);
 

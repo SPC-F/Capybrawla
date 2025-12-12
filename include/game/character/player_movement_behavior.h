@@ -27,15 +27,24 @@ private:
   float default_standing_height_;
   float default_crouching_height_;
 
+  Point default_standing_offset_;
+  Point default_crouching_offset_;
+
   [[nodiscard]] bool player_has_required_components() const;
 
 public:
-
   PlayerMovementBehavior();
+  PlayerMovementBehavior(const float default_standing_height,
+                         const float default_crouching_height,
+                         Point default_standing_offset,
+                         Point default_crouching_offset);
   PlayerMovementBehavior(float horizontal_velocity, float jumping_force,
                          float dropping_speed, float double_jump_force,
-                         float velocity_y_threshold, const float default_standing_height,
-                         const float default_crouching_height);
+                         float velocity_y_threshold,
+                         const float default_standing_height,
+                         const float default_crouching_height,
+                         Point default_standing_offset,
+                         Point default_crouching_offset);
 
   ~PlayerMovementBehavior() override = default;
 
