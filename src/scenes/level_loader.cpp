@@ -1,3 +1,6 @@
+#include "engine/public/components/colliders/box_collider_2d.h"
+#include "engine/public/components/rigidbody_2d.h"
+
 #include <game/scenes/level_loader.h>
 
 #include <fstream>
