@@ -6,5 +6,6 @@
 
 class SwampAutumScene {
 public:
+    static constexpr const char* SCENE_NAME = "Level_SwampAutumScene";
     static Scene& setup();
 };

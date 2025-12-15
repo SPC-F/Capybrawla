@@ -8,11 +8,11 @@
 #include <engine/core/engine.h>
 #include <engine/core/rendering/assetService.h>
 #include <engine/core/rendering/renderingService.h>
+#include <engine/public/components/behaviorscript.h>
 #include <engine/public/scene_service.h>
 
-#include "engine/public/components/behaviorscript.h"
-#include "game/pause_menu_ui.h"
-#include "game/behaviors/pause_play_behavior.h"
+#include <game/pause_menu_ui.h>
+#include <game/behaviors/pause_play_behavior.h>
 
 namespace
 {
@@ -21,15 +21,10 @@ namespace
         auto ppmenu = std::make_unique<PauseMenuUI>(main_menu_scene);
         ppmenu->mark_dont_destroy_on_load(true);
 
-        // Get the ID for the pause menu
-        const auto ppmId = ppmenu->id();
-
-        // Create and configure the Pause/Play controller
         auto& ppc = main_menu_scene.add_game_object("Pause/Play controller");
         ppc.add_component<BehaviorScript>(std::make_unique<PausePlayBehavior>(*ppmenu));
         ppc.mark_dont_destroy_on_load(true);
 
-        // Add the PauseMenuUI object to the scene
         main_menu_scene.add_game_object(std::move(ppmenu));
     }
 }
@@ -230,19 +225,23 @@ void Game::run() {
     const Engine & engine = Engine::instance();
     auto& scene_service = engine.services->get_service<SceneService>().get();
 
+    // setup levels
+    SwampScene::setup();
+    SwampAutumScene::setup();
+
+    auto load_create_game_scene = [](){};
+
+    auto load_join_game_scene = [](const std::string& address){};
+
+    auto load_training_scene = [&scene_service]() {
+        scene_service.load_scene(SwampScene::SCENE_NAME);
+    };
+
     MainMenuScene main_menu;
     Scene& main_menu_scene = main_menu.setup(
-        []() {},
-        [](const std::string& address) {
-            SwampAutumScene swamp_autum;
-            auto& swamp_autum_scene = swamp_autum.setup();
-            Engine::instance().services->get_service<SceneService>().get().load_scene(swamp_autum_scene.name());
-        },
-        []() {
-            SwampScene swamp;
-            auto& swamp_scene = swamp.setup();
-            Engine::instance().services->get_service<SceneService>().get().load_scene(swamp_scene.name());
-        }
+        load_create_game_scene,
+        load_join_game_scene,
+        load_training_scene
     );
 
     strap_pause_menu(main_menu_scene);

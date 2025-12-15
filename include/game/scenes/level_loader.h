@@ -9,6 +9,7 @@
 
 using json = nlohmann::json;
 
+/// Data structure to hold tile collider properties
 struct TileColliderData {
     std::string type;
     int grid_x;

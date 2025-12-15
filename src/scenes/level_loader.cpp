@@ -1,5 +1,3 @@
-#include "engine/public/components/colliders/box_collider_2d.h"
-#include "engine/public/components/rigidbody_2d.h"
 
 #include <game/scenes/level_loader.h>
 
@@ -7,12 +5,12 @@
 #include <stdexcept>
 
 #include <engine/core/engine.h>
-#include <engine/public/scene_service.h>
-#include <engine/public/gameObject.h>
 #include <engine/public/components/sprite.h>
-#include <engine/public/util/color.h>
 #include <engine/public/components/rigidbody_2d.h>
 #include <engine/public/components/colliders/box_collider_2d.h>
+#include <engine/public/gameObject.h>
+#include <engine/public/scene_service.h>
+#include <engine/public/util/color.h>
 
 constexpr int DEFAULT_TILE_SIZE = 16;
 

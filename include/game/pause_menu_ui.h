@@ -22,6 +22,9 @@ constexpr float BUTTON_START_X = CENTER_X - (BUTTON_WIDTH / 2);
 
 constexpr float TITLE_FONT_SIZE = 180.0f;
 
+constexpr int DEFAULT_LAYER = Layers::UI + 10;
+constexpr int BUTTON_LAYER = Layers::UI + 15;
+
 class PauseMenuUI final : public UIObject
 {
 public:
@@ -32,6 +35,7 @@ public:
         : UIObject(scene, 1920, 1080, {0.0f, 0.0f}, {0.0f, 0.0f})
     {
         add_component<Image>("", false, false, 1920, 1080, Color{0, 0, 0, 128});
+        layer(DEFAULT_LAYER);
 
         add_title();
         add_resume_button(scene);
@@ -117,7 +121,7 @@ private:
         button.transform().position({position_x, position_y, 0.0f});
         button.label_color(Color{255, 255, 255, 255});
         button.font_size(BUTTON_FONT_SIZE);
-        button.layer(Layers::UI);
+        button.layer(BUTTON_LAYER);
 
         return button;
     }

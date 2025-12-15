@@ -9,7 +9,7 @@
 
 Scene& SwampAutumScene::setup() {
     Engine& engine = Engine::instance();
-    Scene& scene = engine.services->get_service<SceneService>().get().add_scene("Level_SwampAutumScene");
+    Scene& scene = engine.services->get_service<SceneService>().get().add_scene(SCENE_NAME);
     
     LevelLoader loader;
     loader.load_game_objects_from_json(
