@@ -38,7 +38,7 @@ void Game::initialize() {
     const Engine& engine = Engine::instance();
     Engine::initialize();
 
-    std::vector<LoadResource> resources {
+    const std::vector<LoadResource> resources {
         // UI
         // Main menu
         {"ui/main_menu.png", "main_menu_bg", 1, 1},
@@ -57,14 +57,19 @@ void Game::initialize() {
 
         // Characters
         {"character/capybara_default_idle.png", "capybara_default_idle", 1, 1},
+        {"character/capybara_default_duck.png", "capybara_default_duck", 1, 1},
+        {"character/capybara_default_walk_anim.png", "capybara_default_walk_anim_sheet", 1, 8},
+        {"character/capybara_default_idle_anim.png", "capybara_default_idle_anim_sheet", 1, 7},
+        {"character/capybara_default_jump_anim.png", "capybara_default_jump_anim_sheet", 1, 7},
+        {"character/capybara_default_duck_anim.png", "capybara_default_duck_anim_sheet", 1, 7},
+
         {"character/capybara_red_idle.png", "capybara_red_idle", 1, 1},
         {"character/capybara_blue_idle.png", "capybara_blue_idle", 1, 1},
-        {"character/capybara_green_idle.png", "capybara_green_idle", 1, 1}
-
+        {"character/capybara_green_idle.png", "capybara_green_idle", 1, 1},
     };
     Assets::load_resources(resources);
 
-    std::vector<LoadTexture> textures {
+    const std::vector<LoadTexture> textures {
         // UI textures
         {"buttons_large", "button_large_blue", 0},
         {"buttons_large", "button_large_red", 1},
@@ -100,6 +105,7 @@ void Game::initialize() {
         {"buttons_small", "button_small_black_deny", 18},
         {"buttons_small", "button_small_black_accept", 19},
 
+
         // Swamp textures
         {"swamp_tiles", "grass_single", 24},
 
@@ -130,14 +136,23 @@ void Game::initialize() {
         {"swamp_autum_tiles", "grass_autum_multi_bottom", 26},
         {"swamp_autum_tiles", "grass_autum_multi_bottom_right", 27}
     };
+
     Assets::register_textures(textures);
+
+    const std::vector<LoadAnimation> sprite_sheets {
+        {"capybara_default_walk_anim_sheet", "capybara_default_walk_anim", 0, 8},
+        {"capybara_default_idle_anim_sheet", "capybara_default_idle_anim", 0, 7},
+        {"capybara_default_jump_anim_sheet", "capybara_default_jump_anim", 0, 7},
+        {"capybara_default_duck_anim_sheet", "capybara_default_duck_anim", 0, 7}
+    };
+    Assets::register_sprite_sheets(sprite_sheets);
 
     auto& window_controller = engine.services->get_service<RenderingService>().get().window();
     window_controller.set_window_fullscreen();
 }
 
 void Game::run() {
-    Engine& engine = Engine::instance();
+    const Engine & engine = Engine::instance();
     auto& scene_service = engine.services->get_service<SceneService>().get();
 
     MainMenuScene main_menu;
@@ -156,7 +171,6 @@ void Game::run() {
     );
 
     strap_pause_menu(main_menu_scene);
-
     scene_service.load_scene(main_menu_scene.name());
 }
 
