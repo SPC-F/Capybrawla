@@ -11,32 +11,11 @@ Scene& SwampAutumScene::setup() {
     Engine& engine = Engine::instance();
     Scene& scene = engine.services->get_service<SceneService>().get().add_scene("Level_SwampAutumScene");
     
-    GameObject& bg = scene.add_game_object("Background");
-    bg.add_component<Sprite>("swamp_autum_bg", Color{255, 255, 255, 255}, 0, 0, 0, 0);
-    bg.transform().position({0, 0, 0});
-    bg.transform().scale({1, 1, 1});
-
-    // std::unordered_map<char, std::string> texture_map {
-    //     {'+', "grass_autum_single"},
-
-    //     {'<', "grass_autum_multi_top_left"},
-    //     {'#', "grass_autum_multi_top"},
-    //     {'>', "grass_autum_multi_top_right"},
-
-    //     {'[', "grass_autum_multi_middle_left"},
-    //     {'0', "grass_autum_multi_middle"},
-    //     {']', "grass_autum_multi_middle_right"},
-
-    //     {'\\', "grass_autum_multi_bottom_left"},
-    //     {'/', "grass_autum_multi_bottom_right"},
-    //     {'-', "grass_autum_multi_bottom"}
-    // };
-
-    // LevelLoader::load_game_objects_from_file(
-    //     std::string(Assets::MAP_SWAMP_AUTUM),
-    //     scene,
-    //     texture_map
-    // );
+    LevelLoader loader;
+    loader.load_game_objects_from_json(
+        std::string(Assets::MAP_SWAMP_AUTUM),
+        scene
+    );
 
     return scene;
 }

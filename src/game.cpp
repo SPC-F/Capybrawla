@@ -128,7 +128,6 @@ void Game::initialize() {
         {"swamp_tiles", "rock_single_top", 43},
         {"swamp_tiles", "rock_single_bottom", 55},
 
-
         {"swamp_tiles", "rock_multi_top_left", 37},
         {"swamp_tiles", "rock_multi_top", 38},
         {"swamp_tiles", "rock_multi_top_right", 39},
@@ -143,9 +142,24 @@ void Game::initialize() {
 
         {"swamp_tiles", "wood_walk_piece", 86},
 
-        // Swamp autum textures
-        {"swamp_autum_tiles", "grass_autum_single", 24},
+        {"swamp_tiles", "grass", 9},
+        {"swamp_tiles", "bush_small", 8},
+        {"swamp_tiles", "bush_large", 33},
+        {"swamp_tiles", "lilypad_large", 32},
 
+        {"swamp_tiles", "fence_left", 56},
+        {"swamp_tiles", "fence_right", 57},
+        {"swamp_tiles", "fence", 58},
+        
+        {"swamp_tiles", "rock_small", 77},
+        {"swamp_tiles", "rock_large", 76},
+
+        // Swamp autum textures
+        {"swamp_autum_tiles", "grass_autum_single_top", 0},
+        {"swamp_autum_tiles", "grass_autum_single_bottom", 12},
+
+        {"swamp_autum_tiles", "grass_autum_single", 24},
+        
         {"swamp_autum_tiles", "grass_autum_multi_top_left", 1},
         {"swamp_autum_tiles", "grass_autum_multi_top", 2},
         {"swamp_autum_tiles", "grass_autum_multi_top_right", 3},
@@ -153,10 +167,43 @@ void Game::initialize() {
         {"swamp_autum_tiles", "grass_autum_multi_middle_left", 13},
         {"swamp_autum_tiles", "grass_autum_multi_middle", 14},
         {"swamp_autum_tiles", "grass_autum_multi_middle_right", 15},
-
         {"swamp_autum_tiles", "grass_autum_multi_bottom_left", 25},
         {"swamp_autum_tiles", "grass_autum_multi_bottom", 26},
-        {"swamp_autum_tiles", "grass_autum_multi_bottom_right", 27}
+        {"swamp_autum_tiles", "grass_autum_multi_bottom_right", 27},
+
+        {"swamp_autum_tiles", "grass_autum_slope_top_left", 37},
+        {"swamp_autum_tiles", "grass_autum_slope_top_right", 39},
+        {"swamp_autum_tiles", "grass_autum_slope_bottom_left", 49},
+        {"swamp_autum_tiles", "grass_autum_slope_bottom_right", 51},
+
+        {"swamp_autum_tiles", "rock_single", 19},
+
+        {"swamp_autum_tiles", "rock_single_top", 43},
+        {"swamp_autum_tiles", "rock_single_bottom", 55},
+
+        {"swamp_autum_tiles", "rock_multi_top_left", 37},
+        {"swamp_autum_tiles", "rock_multi_top", 38},
+        {"swamp_autum_tiles", "rock_multi_top_right", 39},
+        {"swamp_autum_tiles", "rock_multi_middle_left", 50},
+        {"swamp_autum_tiles", "rock_multi_middle", 51},
+        {"swamp_autum_tiles", "rock_multi_middle_right", 52},
+
+        {"swamp_autum_tiles", "rock_multi_bottom_left", 62},
+        {"swamp_autum_tiles", "rock_multi_bottom", 63},
+        {"swamp_autum_tiles", "rock_multi_bottom_right", 64},
+        {"swamp_autum_tiles", "wood_walk_piece", 86},
+
+        {"swamp_autum_tiles", "grass_autum", 9},
+        {"swamp_autum_tiles", "bush_autum_small", 8},
+        {"swamp_autum_tiles", "bush_autum_large", 33},
+        {"swamp_autum_tiles", "lilypad_autum_large", 32},
+
+        {"swamp_autum_tiles", "fence_left", 56},
+        {"swamp_autum_tiles", "fence_right", 57},
+        {"swamp_autum_tiles", "fence", 58},
+        
+        {"swamp_autum_tiles", "rock_small", 77},
+        {"swamp_autum_tiles", "rock_large", 76},
     };
     Assets::register_textures(textures);
 
