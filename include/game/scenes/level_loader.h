@@ -13,9 +13,8 @@ struct LevelTile {
 
 class LevelLoader {
 public:
-    static void load_game_objects_from_file(
+    static void load_game_objects_from_json(
         const std::string& file_path, 
-        Scene& scene,
-        std::unordered_map<char, std::string> texture_map
+        Scene& scene
     );
 };

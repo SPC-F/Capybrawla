@@ -9,65 +9,91 @@
 #include <engine/public/components/sprite.h>
 #include <engine/public/util/color.h>
 
-constexpr int DEFAULT_TILE_SIZE = 16;
-constexpr int DEFAULT_WIDTH_PIXELS = 0;
-constexpr int DEFAULT_HEIGHT_PIXELS = 0;
+#include <game/util/json.hpp>
 
-void LevelLoader::load_game_objects_from_file(
+constexpr int DEFAULT_TILE_SIZE = 16;
+
+using json = nlohmann::json;
+
+void LevelLoader::load_game_objects_from_json(
     const std::string& file_path, 
-    Scene& scene,
-    std::unordered_map<char, std::string> texture_map
+    Scene& scene
 ) {
     std::ifstream map_file(file_path);
     if (!map_file.is_open()) {
         throw std::runtime_error("Failed to open map file: " + file_path);
     }
 
-    int tile_size = DEFAULT_TILE_SIZE;
-    int width_pixels = DEFAULT_WIDTH_PIXELS;
-    int height_pixels = DEFAULT_HEIGHT_PIXELS;
+    json map_json;
+    map_file >> map_json;
 
-    std::string line;
+    int tile_size = map_json.value("cell_size", DEFAULT_TILE_SIZE);
+    int tile_x_center_offset = tile_size * 18;
+    int tile_y_center_offset = tile_size * 8;
 
-    std::getline(map_file, line);
-    tile_size = std::stoi(line);
+    if (map_json.contains("backgrounds")) {
+        for (const auto& background_json : map_json["backgrounds"]) {
+            GameObject& bg = scene.add_game_object("background_" + background_json.value("name", "default"));
+            std::string bg_texture = background_json.value("texture", "");
 
-    std::getline(map_file, line);
-    width_pixels = std::stoi(line);
+            auto pos = background_json["position"];
+            int x = pos.value("x", 0);
+            int y = pos.value("y", 0);
+            
+            auto scale = background_json["scale"];
+            float scale_x = scale.value("x", 1.0f);
+            float scale_y = scale.value("y", 1.0f);
+            
+            int layer = background_json.value("layer", 0);
 
-    std::getline(map_file, line);
-    height_pixels = std::stoi(line);
-
-    std::getline(map_file, line); // skip empty line
-
-    std::vector<LevelTile> tiles;
-
-    int y = 0;
-    while (std::getline(map_file, line)) {
-        for (int x = 0; x < static_cast<int>(line.length()); ++x) {
-            char c = line[x];
-
-            if (c == 'O') continue; // empty tile
-
-            LevelTile t;
-            t.symbol = c;
-            t.x = x * tile_size;
-            t.y = y * tile_size;
-            tiles.push_back(t);
+            bg.add_component<Sprite>(
+                bg_texture, 
+                Color{255,255,255,255}, 
+                0,0,0,0
+            );
+            bg.transform().position({static_cast<float>(x), static_cast<float>(y), 0.0f});
+            bg.transform().scale({scale_x, scale_y, 1.0f});
+            bg.layer(layer);
         }
-        ++y;
     }
 
-    for (const auto& tile : tiles) {
-        for (const auto& [symbol, texture_name] : texture_map) {
-            if (tile.symbol != symbol) {
-                continue;    
-            }
+    if (map_json.contains("tiles")) {
+        for (const auto& tile_json : map_json["tiles"]) {
 
-            GameObject& tile_obj = scene.add_game_object("Tile_" + std::to_string(tile.x) + "_" + std::to_string(tile.y));
-            tile_obj.add_component<Sprite>(texture_name, Color{255, 255, 255, 255}, 0, 0, 0, 0);
-            tile_obj.transform().position({static_cast<float>(tile.x), static_cast<float>(tile.y), 0.0f});
-            tile_obj.transform().scale({2, 2, 2});
+            std::string texture_name =
+                tile_json.value("texture", tile_json.value("tile", ""));
+
+            auto pos = tile_json.value("position", json::object());
+            int grid_x = pos.value("x", 0);
+            int grid_y = pos.value("y", 0);
+
+            auto props = tile_json["properties"];
+            auto size = props["size"];
+            int local_tile_h = size.value("h", tile_size);
+            int local_tile_w = size.value("w", tile_size);
+
+            auto scale = tile_json.value("scale", json::object());
+            float scale_x = scale.value("x", 1.0f);
+            float scale_y = scale.value("y", 1.0f);
+
+            int layer = tile_json.value("layer", 1);
+
+            float world_x = grid_x * local_tile_w * scale_x;
+            float world_y = grid_y * local_tile_h * scale_y;
+
+            GameObject& tile_obj = scene.add_game_object(
+                "Tile_" + std::to_string(grid_x) + "_" + std::to_string(grid_y)
+            );
+
+            tile_obj.add_component<Sprite>(
+                texture_name,
+                Color{255,255,255,255},
+                0,0,0,0
+            );
+
+            tile_obj.transform().position({ world_x + tile_x_center_offset, world_y + tile_y_center_offset, 0.0f });
+            tile_obj.transform().scale({ scale_x, scale_y, 1.0f });
+            tile_obj.layer(layer);
         }
     }
 }

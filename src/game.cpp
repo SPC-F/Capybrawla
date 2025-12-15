@@ -101,8 +101,11 @@ void Game::initialize() {
         {"buttons_small", "button_small_black_accept", 19},
 
         // Swamp textures
-        {"swamp_tiles", "grass_single", 24},
+        {"swamp_tiles", "grass_single_top", 0},
+        {"swamp_tiles", "grass_single_bottom", 12},
 
+        {"swamp_tiles", "grass_single", 24},
+        
         {"swamp_tiles", "grass_multi_top_left", 1},
         {"swamp_tiles", "grass_multi_top", 2},
         {"swamp_tiles", "grass_multi_top_right", 3},
@@ -114,6 +117,31 @@ void Game::initialize() {
         {"swamp_tiles", "grass_multi_bottom_left", 25},
         {"swamp_tiles", "grass_multi_bottom", 26},
         {"swamp_tiles", "grass_multi_bottom_right", 27},
+
+        {"swamp_tiles", "grass_slope_top_left", 37},
+        {"swamp_tiles", "grass_slope_top_right", 39},
+        {"swamp_tiles", "grass_slope_bottom_left", 49},
+        {"swamp_tiles", "grass_slope_bottom_right", 51},
+
+        {"swamp_tiles", "rock_single", 19},
+
+        {"swamp_tiles", "rock_single_top", 43},
+        {"swamp_tiles", "rock_single_bottom", 55},
+
+
+        {"swamp_tiles", "rock_multi_top_left", 37},
+        {"swamp_tiles", "rock_multi_top", 38},
+        {"swamp_tiles", "rock_multi_top_right", 39},
+
+        {"swamp_tiles", "rock_multi_middle_left", 50},
+        {"swamp_tiles", "rock_multi_middle", 51},
+        {"swamp_tiles", "rock_multi_middle_right", 52},
+
+        {"swamp_tiles", "rock_multi_bottom_left", 62},
+        {"swamp_tiles", "rock_multi_bottom", 63},
+        {"swamp_tiles", "rock_multi_bottom_right", 64},
+
+        {"swamp_tiles", "wood_walk_piece", 86},
 
         // Swamp autum textures
         {"swamp_autum_tiles", "grass_autum_single", 24},

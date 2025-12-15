@@ -16,27 +16,27 @@ Scene& SwampAutumScene::setup() {
     bg.transform().position({0, 0, 0});
     bg.transform().scale({1, 1, 1});
 
-    std::unordered_map<char, std::string> texture_map {
-        {'+', "grass_autum_single"},
+    // std::unordered_map<char, std::string> texture_map {
+    //     {'+', "grass_autum_single"},
 
-        {'<', "grass_autum_multi_top_left"},
-        {'#', "grass_autum_multi_top"},
-        {'>', "grass_autum_multi_top_right"},
+    //     {'<', "grass_autum_multi_top_left"},
+    //     {'#', "grass_autum_multi_top"},
+    //     {'>', "grass_autum_multi_top_right"},
 
-        {'[', "grass_autum_multi_middle_left"},
-        {'0', "grass_autum_multi_middle"},
-        {']', "grass_autum_multi_middle_right"},
+    //     {'[', "grass_autum_multi_middle_left"},
+    //     {'0', "grass_autum_multi_middle"},
+    //     {']', "grass_autum_multi_middle_right"},
 
-        {'\\', "grass_autum_multi_bottom_left"},
-        {'/', "grass_autum_multi_bottom_right"},
-        {'-', "grass_autum_multi_bottom"}
-    };
+    //     {'\\', "grass_autum_multi_bottom_left"},
+    //     {'/', "grass_autum_multi_bottom_right"},
+    //     {'-', "grass_autum_multi_bottom"}
+    // };
 
-    LevelLoader::load_game_objects_from_file(
-        std::string(Assets::MAP_SWAMP_AUTUM),
-        scene,
-        texture_map
-    );
+    // LevelLoader::load_game_objects_from_file(
+    //     std::string(Assets::MAP_SWAMP_AUTUM),
+    //     scene,
+    //     texture_map
+    // );
 
     return scene;
 }
