@@ -1,6 +1,6 @@
 #include <game/scenes/main_menu.h>
 
-#include <game/game.h>
+#include <../../include/game/game/game.h>
 #include <game/assets.h>
 #include <game/behaviors/ui_fall_behavior.h>
 

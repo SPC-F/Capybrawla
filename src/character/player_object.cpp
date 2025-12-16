@@ -11,6 +11,7 @@
 #include "engine/public/components/colliders/box_collider_2d.h"
 #include "engine/public/components/rigidbody_2d.h"
 #include "engine/public/components/sprite.h"
+#include "game/character/player_outofbounds_behavior.h"
 
 PlayerObject::PlayerObject(Scene &scene, const Vector3 initial_pos)
     : GameObject(scene) {
@@ -38,5 +39,17 @@ PlayerObject::PlayerObject(Scene &scene, const Vector3 initial_pos)
   this->add_component<BehaviorScript>(std::make_unique<PlayerMovementBehavior>(
       default_height, default_height / 2.0f, default_offset,
       Point{default_x_offset, default_height / 2.4 * scale_factor}));
+
   this->add_component<BehaviorScript>(std::make_unique<PlayerControllerBehavior>(100));
+
+  constexpr float out_of_bounds_margin_x = 480.0f;
+  constexpr float out_of_bounds_margin_y = 270.0f;
+  constexpr float map_width = 1920.0f;
+  constexpr float map_height = 1080.0f;
+
+  this->add_component<BehaviorScript>(std::make_unique<PlayerOutOfBoundsBehavior>(
+    -out_of_bounds_margin_x,
+    map_width + out_of_bounds_margin_x,
+    -out_of_bounds_margin_y,
+    map_height + out_of_bounds_margin_y));
 }
