@@ -8,7 +8,7 @@
 #include <engine/public/gameObject.h>
 #include <engine/public/util/layers.h>
 #include <game/character/player_object.h>
-#include <game/prefabs/ai_agent_object.h>
+#include <game/prefabs/ai_drone_agent_object.h>
 #include <game/scenes/level_loader.h>
 
 void load_players(Scene& scene, float start_x = 1000.0f, float start_y = 500.0f) {
@@ -22,7 +22,7 @@ void load_ai_agent(Scene& scene) {
         Vector3{380.0f, 400.0f, 0.0f},
     };
 
-    scene.add_game_object<AIAgentObject>(scene, Vector3{1000.0f, 600.0f, 0.0f}, patrol_points);
+    scene.add_game_object<AIDroneAgentObject>(scene, Vector3{1000.0f, 600.0f, 0.0f}, patrol_points);
 }
 
 Scene& SwampScene::setup() {

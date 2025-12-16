@@ -1,4 +1,4 @@
-#include <game/prefabs/ai_agent_object.h>
+#include <game/prefabs/ai_drone_agent_object.h>
 
 #include <game/behaviors/ai_drone_movement_behavior.h>
 #include <game/behaviors/ai_rendering_behavior.h>
@@ -25,9 +25,9 @@ GameObject& get_tilemap_parent(Scene& scene) {
   return scene.get_game_object(id).get();
 }
 
-AIAgentObject::AIAgentObject(Scene &scene, const Vector3 initial_pos, std::vector<Vector3> target_positions)
+AIDroneAgentObject::AIDroneAgentObject(Scene &scene, const Vector3 initial_pos, std::vector<Vector3> target_positions)
     : GameObject(scene) {
-  this->name("AIAgentObject");
+  this->name("AIDroneAgentObject");
   this->transform().position(initial_pos);
 
   auto& tile_parent = get_tilemap_parent(scene);

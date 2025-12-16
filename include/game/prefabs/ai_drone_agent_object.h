@@ -3,10 +3,10 @@
 #include <engine/public/gameObject.h>
 #include <engine/public/util/vector3.h>
 
-class AIAgentObject final : public GameObject {
+class AIDroneAgentObject final : public GameObject {
 public:
-  explicit AIAgentObject(Scene& scene, const Vector3 initial_pos, std::vector<Vector3> target_positions);
-  ~AIAgentObject() override = default;
+  explicit AIDroneAgentObject(Scene& scene, const Vector3 initial_pos, std::vector<Vector3> target_positions);
+  ~AIDroneAgentObject() override = default;
 
 private:
  std::vector<Vector3> patrol_points_;
