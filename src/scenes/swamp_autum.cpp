@@ -3,39 +3,26 @@
 #include <game/scenes/level_loader.h>
 
 #include <engine/core/engine.h>
+#include <engine/core/rendering/renderingService.h>
 #include <engine/public/scene_service.h>
 #include <engine/public/gameObject.h>
 #include <engine/public/components/sprite.h>
 
 Scene& SwampAutumScene::setup() {
     Engine& engine = Engine::instance();
-    Scene& scene = engine.services->get_service<SceneService>().get().add_scene("Level_SwampAutumScene");
+
+    RenderingService& rendering_service = Engine::instance().services->get_service<RenderingService>().get();
+    int window_width = rendering_service.window().get_window_width();
+    int window_height = rendering_service.window().get_window_height();
+
+    Scene& scene = engine.services->get_service<SceneService>().get().add_scene(SCENE_NAME);
+    auto& camera = scene.add_game_object<Camera>(scene, Color(), 1.0f, true);
+    camera.transform().position({window_width / 2.0f, window_height / 2.0f, 0.0f});
     
-    GameObject& bg = scene.add_game_object("Background");
-    bg.add_component<Sprite>("swamp_autum_bg", Color{255, 255, 255, 255}, 0, 0, 0, 0);
-    bg.transform().position({0, 0, 0});
-    bg.transform().scale({1, 1, 1});
-
-    std::unordered_map<char, std::string> texture_map {
-        {'+', "grass_autum_single"},
-
-        {'<', "grass_autum_multi_top_left"},
-        {'#', "grass_autum_multi_top"},
-        {'>', "grass_autum_multi_top_right"},
-
-        {'[', "grass_autum_multi_middle_left"},
-        {'0', "grass_autum_multi_middle"},
-        {']', "grass_autum_multi_middle_right"},
-
-        {'\\', "grass_autum_multi_bottom_left"},
-        {'/', "grass_autum_multi_bottom_right"},
-        {'-', "grass_autum_multi_bottom"}
-    };
-
-    LevelLoader::load_game_objects_from_file(
+    LevelLoader loader;
+    loader.load_game_objects_from_json(
         std::string(Assets::MAP_SWAMP_AUTUM),
-        scene,
-        texture_map
+        scene
     );
 
     return scene;

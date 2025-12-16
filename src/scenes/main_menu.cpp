@@ -38,11 +38,15 @@ Scene& MainMenuScene::setup(
     join_callback_t join_callback,
     training_callback_t training_callback
 ) {
-    const std::string main_menu_scene_tag = "MainMenuScene";
+    RenderingService& rendering_service = Engine::instance().services->get_service<RenderingService>().get();
+    int window_width = rendering_service.window().get_window_width();
+    int window_height = rendering_service.window().get_window_height();
 
     SceneService& scene_service = Engine::instance().services->get_service<SceneService>().get();
-    Scene& scene = scene_service.add_scene(main_menu_scene_tag);
-    scene.add_game_object<Camera>(scene, Color(), 1.0f, true);
+    Scene& scene = scene_service.add_scene(SCENE_NAME);
+    
+    auto& camera = scene.add_game_object<Camera>(scene, Color(), 1.0f, true);
+    camera.transform().position({window_width / 2.0f, window_height / 2.0f, 0.0f});
 
     GameObject& bg = scene.add_game_object("Background");
     bg.add_component<Sprite>("main_menu_bg", Color{255, 255, 255, 255}, 0, 0, 0, 0);
@@ -299,22 +303,21 @@ void MainMenuScene::setup_credits(Scene& scene, GameObject& parent) {
 
 void MainMenuScene::falling_capybaras(Scene& scene, int count) {
     std::string capybaras[] = {
-        "capybara_default",
-        "capybara_bart",
-        "capybara_bob",
-        "capybara_herobrine",
-        "capybara_pink"
+        "capybara_default_idle",
+        "capybara_red_idle",
+        "capybara_blue_idle",
+        "capybara_green_idle",
     };
 
     for (int i = 0; i < count; ++i) {
-        float size_modifier     = 0.4f + static_cast<float>(rand()) / (static_cast<float>(RAND_MAX / 0.8f));
+        float size_modifier     = 2.0f + static_cast<float>(rand()) / (static_cast<float>(RAND_MAX / 3.8f));
         float rotation_speed    = 20.0f + static_cast<float>(rand()) / (static_cast<float>(RAND_MAX / 80.0f));
         float fall_speed        = 50.0f + static_cast<float>(rand()) / (static_cast<float>(RAND_MAX / 150.0f));
         float position_x        = static_cast<float>(rand()) / (static_cast<float>(RAND_MAX / SCREEN_WIDTH));
         float position_y        = -100.0f - static_cast<float>(rand()) / (static_cast<float>(RAND_MAX / 500.0f));
         float capybara_choice   = static_cast<float>(rand()) / (static_cast<float>(RAND_MAX / 5.0f));
 
-        std::string chosen_capybara = capybaras[static_cast<int>(capybara_choice) % 5];
+        std::string chosen_capybara = capybaras[static_cast<int>(capybara_choice) % (sizeof(capybaras) / sizeof(capybaras[0]))];
 
         GameObject& falling_object = scene.add_game_object("Falling_Capybara_" + std::to_string(i));
         falling_object.transform().position({position_x, position_y, 0.0f});
