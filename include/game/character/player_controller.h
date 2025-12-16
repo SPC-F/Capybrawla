@@ -7,6 +7,7 @@ using lives_changed_callback_t = std::function<void(const int old_lives, const i
 
 class PlayerControllerBehavior final : public Behavior {
 private:
+  int max_health_;
   int health_;
   std::vector<health_changed_callback_t> health_changed_callbacks_;
   void notify_health_changed(int old_health) const;
@@ -17,7 +18,7 @@ private:
 
 public:
   explicit PlayerControllerBehavior();
-  explicit PlayerControllerBehavior(int health);
+  explicit PlayerControllerBehavior(int max_health, int start_health_);
   ~PlayerControllerBehavior() override = default;
 
   void on_awake() override;
@@ -30,6 +31,9 @@ public:
   void heal(int hp);
   [[nodiscard]] bool is_alive() const;
   void on_health_changed(const health_changed_callback_t &callback);
+
+  [[nodiscard]] int max_health() const;
+  void max_health(int max_health);
 
   [[nodiscard]] int lives() const;
   void lives(int lives);

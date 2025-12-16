@@ -37,5 +37,5 @@ PlayerObject::PlayerObject(Scene &scene, const Vector3 initial_pos)
       default_height, default_height / 2.0f, default_offset,
       Point{default_x_offset, default_height / 2.4 * scale_factor}));
 
-  this->add_component<BehaviorScript>(std::make_unique<PlayerControllerBehavior>(100));
+  this->add_component<BehaviorScript>(std::make_unique<PlayerControllerBehavior>(100, 100));
 }

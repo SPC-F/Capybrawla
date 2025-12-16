@@ -1,8 +1,8 @@
 
 #include <game/character/player_controller.h>
 
-PlayerControllerBehavior::PlayerControllerBehavior(): PlayerControllerBehavior(100) {}
-PlayerControllerBehavior::PlayerControllerBehavior(const int health): health_ { health }, lives_(3) {}
+PlayerControllerBehavior::PlayerControllerBehavior(): PlayerControllerBehavior(100, 100) {}
+PlayerControllerBehavior::PlayerControllerBehavior(const int max_health, const int start_health_): max_health_(max_health), health_ { start_health_ }, lives_(3) {}
 
 void PlayerControllerBehavior::on_awake() {}
 void PlayerControllerBehavior::on_start() {}
@@ -27,10 +27,15 @@ void PlayerControllerBehavior::heal(const int hp) {
   health_ += hp;
   notify_health_changed(old_health);
 }
+int PlayerControllerBehavior::max_health() const { return max_health_; }
+void PlayerControllerBehavior::max_health(const int max_health) {
+  max_health_ = max_health;
+}
 void PlayerControllerBehavior::on_health_changed(
     const health_changed_callback_t &callback) {
   health_changed_callbacks_.push_back(callback);
 }
+
 void PlayerControllerBehavior::notify_health_changed(const int old_health) const {
   for (const auto& callback : health_changed_callbacks_) {
     callback(old_health, health_);

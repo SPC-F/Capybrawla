@@ -60,6 +60,9 @@ void Game::initialize() {
         {"character/capybara_red_idle.png", "capybara_red_idle", 1, 1},
         {"character/capybara_blue_idle.png", "capybara_blue_idle", 1, 1},
         {"character/capybara_green_idle.png", "capybara_green_idle", 1, 1},
+
+        // Player status bar
+        {"character/heart.png", "heart_icon", 1, 1},
     };
     Assets::load_resources(resources);
 
@@ -99,6 +102,7 @@ void Game::initialize() {
         {"buttons_small", "button_small_black_deny", 18},
         {"buttons_small", "button_small_black_accept", 19},
 
+        {"heart_icon", "heart", 0},
 
         // Swamp textures
         {"swamp_tiles", "grass_single_top", 0},

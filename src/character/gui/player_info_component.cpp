@@ -27,7 +27,7 @@ namespace PlayerInfoComponent {
   constexpr float lives_bar_internal_offset = live_width / 3;
 
   constexpr float health_bar_width = right_col_width - (right_col_internal_offset * 2);
-  constexpr float health_bar_height = right_col_height - (right_col_internal_offset * 4) - live_height - player_name_height;
+  constexpr float health_bar_height = right_col_height - (right_col_internal_offset * 6) - live_height - player_name_height;
 
   GameObject& left_col(Scene &scene, PlayerObject &player) {
     GameObject &left_col = scene.add_game_object("");
@@ -54,25 +54,93 @@ namespace PlayerInfoComponent {
     return player_name;
   }
 
-  UIImage& health_bar(Scene &scene, PlayerControllerBehavior& controller) {
+  GameObject& health_bar(Scene &scene, PlayerControllerBehavior& controller) {
+    GameObject& container = scene.add_game_object("");
     UIImage &health_bar = scene.add_game_object<UIImage>(scene, "", health_bar_width, health_bar_height, Point{}, Point{});
     health_bar.color(Color(255, 0, 0, 100));
     health_bar.transform().local_position({right_col_internal_offset, right_col_internal_offset + player_name_height, 0});
-    return health_bar;
+    container.add_child(health_bar);
+
+    controller.on_health_changed([&](const int old_health, const int new_health) {
+      if (old_health > 0 && new_health <= 0 && controller.lives() < 1) {
+        scene.remove_game_object(health_bar);
+
+        UIText& skill_issue = scene.add_game_object<UIText>(
+          scene,
+          "Skill issue",
+          "ByteBounce",
+          "resources/fonts/bytebounce/ByteBounce.ttf",
+          right_col_width,
+          player_name_height,
+          Point{},
+          Point{});
+
+        skill_issue.transform().local_position({right_col_internal_offset, right_col_internal_offset + player_name_height, 0});
+        container.add_child(skill_issue);
+        return;
+      }
+
+      if (new_health == old_health || new_health < 0) {
+        return;
+      }
+
+      if (new_health == controller.max_health()) {
+        scene.remove_game_object(health_bar);
+
+        UIImage &new_health_bar = scene.add_game_object<UIImage>(scene, "", health_bar_width, health_bar_height, Point{}, Point{});
+        new_health_bar.color(Color(255, 0, 0, 100));
+        new_health_bar.transform().local_position({right_col_internal_offset, right_col_internal_offset + player_name_height, 0});
+        container.add_child(new_health_bar);
+
+        return;
+      }
+
+      const float health_percentage = static_cast<float>(new_health) / static_cast<float>(controller.max_health());
+
+      scene.remove_game_object(health_bar);
+
+      UIImage &new_health_bar = scene.add_game_object<UIImage>(scene, "", health_bar_width * health_percentage, health_bar_height, Point{}, Point{});
+      new_health_bar.color(Color(255, 0, 0, 100));
+      new_health_bar.transform().local_position({right_col_internal_offset, right_col_internal_offset + player_name_height, 0});
+      container.add_child(new_health_bar);
+    });
+
+    return container;
   }
 
-  GameObject& lives_container(Scene& scene, PlayerControllerBehavior& controller) {
-    GameObject& health_bar_container = scene.add_game_object("");
-    health_bar_container.transform().local_position({health_bar_height + player_name_height + right_col_internal_offset, 0, 0});
+  GameObject& lives_container(Scene& scene,
+                              PlayerControllerBehavior & controller,
+                              const PlayerObject& player) {
+    GameObject& lives_bar = scene.add_game_object("");
+    lives_bar.transform().local_position({right_col_internal_offset, health_bar_height + player_name_height + right_col_internal_offset*2, 0});
 
-    for (int i = 0; i < 3; i++) {
-      //
+    for (int i = 0; i < controller.lives(); i++) {
+      UIImage& life_image = scene.add_game_object<UIImage>(scene, "heart", live_width, live_height, Point{}, Point{});
+      life_image.transform().local_position({i * (live_width + lives_bar_internal_offset), 0, 0});
+      lives_bar.add_child(life_image);
     }
 
-    return health_bar_container;
+    controller.on_lives_changed([&](const int old_lives_count, const int new_lives_count) {
+      if (!controller.is_alive() && old_lives_count < 1 && new_lives_count < 1) {
+        return;
+      }
+
+      const auto children_copy = lives_bar.children();
+      for (auto& child : children_copy) {
+          scene.remove_game_object(child);
+      }
+
+      for (int i = 0; i < controller.lives(); i++) {
+        UIImage& life_image = scene.add_game_object<UIImage>(scene, "heart", live_width, live_height, Point{}, Point{});
+        life_image.transform().local_position({i * (live_width + lives_bar_internal_offset), 0, 0});
+        lives_bar.add_child(life_image);
+      }
+    });
+
+    return lives_bar;
   }
 
-  GameObject& right_col(Scene &scene, PlayerObject &player) {
+  GameObject& right_col(Scene &scene, const PlayerObject &player) {
     GameObject &right_col = scene.add_game_object("");
     right_col.transform().local_position({left_col_width, 0, 0});
 
@@ -89,16 +157,16 @@ namespace PlayerInfoComponent {
 
     right_col.add_child(player_name(scene, player));
     right_col.add_child(health_bar(scene, controller));
-    right_col.add_child(lives_container(scene, controller));
+    right_col.add_child(lives_container(scene, controller, player));
 
     return right_col;
   }
   GameObject& create_and_add(Scene &scene, PlayerObject &player) {
+    GameObject& gui_component = scene.add_game_object(std::format("{}-info", player.name()));
 
     UIImage& background = scene.add_game_object<UIImage>(scene, "", component_width, component_height, Point{}, Point{});
     background.color({100, 100, 100, 100});
 
-    GameObject& gui_component = scene.add_game_object(std::format("{}-info", player.name()));
     gui_component.add_child(background);
 
     gui_component.add_child(left_col(scene, player));

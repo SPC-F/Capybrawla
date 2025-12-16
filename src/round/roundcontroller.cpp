@@ -27,15 +27,15 @@ void RoundController::add_player(PlayerObject &player) {
 
 void RoundController::on_player_death(const PlayerObject &player) {
   for (auto behavior : player.get_components<BehaviorScript>()) {
-    const auto pc = dynamic_cast<PlayerControllerBehavior *>(&behavior.get().behavior());
-    if (!pc) {
+    const auto controller = dynamic_cast<PlayerControllerBehavior *>(&behavior.get().behavior());
+    if (!controller) {
       continue;
     }
 
-    pc->lives(pc->lives() - 1);
+    controller->lives(controller->lives() - 1);
 
-    if (pc->lives() < 1) {
-      pc->disable();
+    if (controller->lives() < 1) {
+      controller->disable();
       return;
     }
 
@@ -43,6 +43,7 @@ void RoundController::on_player_death(const PlayerObject &player) {
       auto& rigid_body = rigid_body_opt->get();
       rigid_body.teleport({650, 0, 0});
       rigid_body.velocity({0, 0, 0});
+      controller->health(controller->max_health());
     }
   }
 }
