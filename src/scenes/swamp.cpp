@@ -28,6 +28,13 @@ void load_ai_agent(Scene& scene) {
     scene.add_game_object<AIDroneAgentObject>(scene, initial_position, patrol_points);
 }
 
+void load_timer(Scene& scene) {
+    GameObject& round_timer_obj = scene.add_game_object("Round Timer");
+    auto round_timer = std::make_unique<RoundTimer>();
+    round_timer->start_timer([] {});
+    round_timer_obj.add_component<BehaviorScript>(std::move(round_timer));
+}
+
 Scene& SwampScene::setup() {
     const Engine& engine = Engine::instance();
 
@@ -39,11 +46,8 @@ Scene& SwampScene::setup() {
     auto& camera = scene.add_game_object<Camera>(scene, Color(), 1.0f, true);
     camera.transform().position({window_width / 2.0f, window_height / 2.0f, 0.0f});
 
-    GameObject& round_timer_obj = scene.add_game_object("Round Timer");
-    auto round_timer = std::make_unique<RoundTimer>();
-    round_timer->start_timer([] {});
-    round_timer_obj.add_component<BehaviorScript>(std::move(round_timer));
-    
+    load_timer(scene);
+
     LevelLoader loader;
     loader.load_game_objects_from_json(
         std::string(Assets::MAP_SWAMP),
