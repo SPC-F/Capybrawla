@@ -1,10 +1,9 @@
-#include <engine/util/memory.h>
-
-#include <../include/game/game.h>
-
 #include <exception>
 #include <iostream>
 
+#include <game/game.h>
+
+// #include <engine/util/memory.h>
 // namespace {
 //     #ifdef TRACY_ENABLE
 //     inline void tracy_init() { tracy_memory_init(); }

@@ -10,7 +10,22 @@ RoundController::RoundController(const Vector3 respawn_position): Behavior(), re
 void RoundController::on_awake() {}
 void RoundController::on_update(float dt) {}
 
-void on_player_death(const PlayerObject &player) {
+void RoundController::add_player(PlayerObject &player) {
+  for (auto behavior : player.get_components<BehaviorScript>()) {
+    if (auto pc = dynamic_cast<PlayerControllerBehavior *>(&behavior.get().behavior())) {
+      pc->on_health_changed([&](int old_health, int new_health) {
+        if (pc->is_alive()) {
+          return;
+        }
+        on_player_death(player);
+      });
+    }
+  }
+
+  players.push_back(player);
+}
+
+void RoundController::on_player_death(const PlayerObject &player) {
   for (auto behavior : player.get_components<BehaviorScript>()) {
     const auto pc = dynamic_cast<PlayerControllerBehavior *>(&behavior.get().behavior());
     if (!pc) {
@@ -32,20 +47,6 @@ void on_player_death(const PlayerObject &player) {
   }
 }
 
-void RoundController::add_player(PlayerObject &player) {
-  for (auto behavior : player.get_components<BehaviorScript>()) {
-    if (auto pc = dynamic_cast<PlayerControllerBehavior *>(&behavior.get().behavior())) {
-      pc->on_health_changed([&player, &pc](int old_lives, int new_lives) {
-        if (pc->is_alive()) {
-          return;
-        }
-        on_player_death(player);
-      });
-    }
-  }
-
-  players.push_back(player);
-}
 void RoundController::remove_player(PlayerObject &player) {
   std::erase_if(players,
                 [&player](const std::reference_wrapper<PlayerObject> &p) {

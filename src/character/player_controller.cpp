@@ -38,7 +38,11 @@ void PlayerControllerBehavior::notify_health_changed(const int old_health) const
 }
 
 int PlayerControllerBehavior::lives() const { return lives_; }
-void PlayerControllerBehavior::lives(const int lives) { lives_ = lives; }
+void PlayerControllerBehavior::lives(const int lives) {
+  const int old_lives = lives_;
+  lives_ = lives;
+  notify_lives_changed(old_lives);
+}
 void PlayerControllerBehavior::on_lives_changed(
     const lives_changed_callback_t &callback) {
   lives_changed_callbacks_.push_back(callback);
