@@ -8,11 +8,20 @@ RoundController::RoundController() : Behavior() {}
 void RoundController::on_awake() {}
 void RoundController::on_update(float dt) {}
 
-void on_player_death(PlayerObject &player) {
-  // Handle player death logic here
+void on_player_death(const PlayerObject &player) {
+  for (auto behavior : player.get_components<BehaviorScript>()) {
+    if (const auto pc = dynamic_cast<PlayerControllerBehavior *>(&behavior.get())) {
+      pc->lives(pc->lives() - 1);
+      if (pc->lives() < 1) {
+        pc->disable();
+      } else {
+        // TODO:: Move player to respawn point via rigid body move that does not exist yet.
+      }
+    }
+  }
 }
 
-void RoundController::add_player(PlayerObject& player) {
+void RoundController::add_player(PlayerObject &player) {
   for (auto behavior : player.get_components<BehaviorScript>()) {
     if (auto pc = dynamic_cast<PlayerControllerBehavior *>(&behavior.get())) {
       pc->on_lives_changed([&player, &pc](int old_lives, int new_lives) {
