@@ -13,7 +13,7 @@ void RoundController::on_update(float dt) {}
 void RoundController::add_player(PlayerObject &player) {
   for (auto behavior : player.get_components<BehaviorScript>()) {
     if (auto pc = dynamic_cast<PlayerControllerBehavior *>(&behavior.get().behavior())) {
-      pc->on_health_changed([&](int old_health, int new_health) {
+      pc->on_health_changed([&, pc](int old_health, int new_health) {
         if (pc->is_alive()) {
           return;
         }
