@@ -42,7 +42,8 @@ Scene& MainMenuScene::setup(
 
     SceneService& scene_service = Engine::instance().services->get_service<SceneService>().get();
     Scene& scene = scene_service.add_scene(main_menu_scene_tag);
-    scene.add_game_object<Camera>(scene, Color(), 1.0f, true);
+    auto& camera = scene.add_game_object<Camera>(scene, Color(), 1.0f, true);
+    camera.transform().position({SCREEN_WIDTH / 2.0f, SCREEN_HEIGHT / 2.0f, 0.0f});
 
     GameObject& bg = scene.add_game_object("Background");
     bg.add_component<Sprite>("main_menu_bg", Color{255, 255, 255, 255}, 0, 0, 0, 0);
