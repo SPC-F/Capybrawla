@@ -17,6 +17,8 @@ using training_callback_t = std::function<void()>;
 
 class MainMenuScene {
 public:
+    static constexpr const char* SCENE_NAME = "MainMenuScene";
+    
     Scene& setup(
         create_callback_t create_callback,
         join_callback_t join_callback,
