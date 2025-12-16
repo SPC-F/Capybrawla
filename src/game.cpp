@@ -61,6 +61,9 @@ void Game::initialize() {
         {"character/capybara_red_idle.png", "capybara_red_idle", 1, 1},
         {"character/capybara_blue_idle.png", "capybara_blue_idle", 1, 1},
         {"character/capybara_green_idle.png", "capybara_green_idle", 1, 1},
+
+        {"character/drone_idle.png", "drone_idle", 1, 1},
+        {"character/drone_idle_anim.png", "drone_idle_anim_sheet", 1, 7},
     };
     Assets::load_resources(resources);
 
@@ -213,7 +216,9 @@ void Game::initialize() {
         {"capybara_default_walk_anim_sheet", "capybara_default_walk_anim", 0, 8},
         {"capybara_default_idle_anim_sheet", "capybara_default_idle_anim", 0, 7},
         {"capybara_default_jump_anim_sheet", "capybara_default_jump_anim", 0, 7},
-        {"capybara_default_duck_anim_sheet", "capybara_default_duck_anim", 0, 7}
+        {"capybara_default_duck_anim_sheet", "capybara_default_duck_anim", 0, 7},
+        
+        {"drone_idle_anim_sheet", "drone_idle_anim", 0, 7},
     };
     Assets::register_sprite_sheets(sprite_sheets);
 
