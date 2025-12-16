@@ -38,12 +38,15 @@ Scene& MainMenuScene::setup(
     join_callback_t join_callback,
     training_callback_t training_callback
 ) {
-    const std::string main_menu_scene_tag = "MainMenuScene";
+    RenderingService& rendering_service = Engine::instance().services->get_service<RenderingService>().get();
+    int window_width = rendering_service.window().get_window_width();
+    int window_height = rendering_service.window().get_window_height();
 
     SceneService& scene_service = Engine::instance().services->get_service<SceneService>().get();
-    Scene& scene = scene_service.add_scene(main_menu_scene_tag);
+    Scene& scene = scene_service.add_scene(SCENE_NAME);
+    
     auto& camera = scene.add_game_object<Camera>(scene, Color(), 1.0f, true);
-    camera.transform().position({SCREEN_WIDTH / 2.0f, SCREEN_HEIGHT / 2.0f, 0.0f});
+    camera.transform().position({window_width / 2.0f, window_height / 2.0f, 0.0f});
 
     GameObject& bg = scene.add_game_object("Background");
     bg.add_component<Sprite>("main_menu_bg", Color{255, 255, 255, 255}, 0, 0, 0, 0);
