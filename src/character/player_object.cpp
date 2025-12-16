@@ -1,6 +1,3 @@
-//
-// Created by thoma on 05/12/2025.
-//
 
 #include <game/character/player_movement_behavior.h>
 #include <game/character/player_object.h>
@@ -11,6 +8,7 @@
 #include "engine/public/components/colliders/box_collider_2d.h"
 #include "engine/public/components/rigidbody_2d.h"
 #include "engine/public/components/sprite.h"
+#include "game/character/player_outofbounds_behavior.h"
 
 PlayerObject::PlayerObject(Scene &scene, const Vector3 initial_pos)
     : GameObject(scene) {
@@ -38,5 +36,6 @@ PlayerObject::PlayerObject(Scene &scene, const Vector3 initial_pos)
   this->add_component<BehaviorScript>(std::make_unique<PlayerMovementBehavior>(
       default_height, default_height / 2.0f, default_offset,
       Point{default_x_offset, default_height / 2.4 * scale_factor}));
+
   this->add_component<BehaviorScript>(std::make_unique<PlayerControllerBehavior>(100));
 }
