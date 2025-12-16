@@ -24,7 +24,8 @@ void load_ai_agent(Scene& scene) {
         Vector3{380.0f, 400.0f, 0.0f},
     };
 
-    scene.add_game_object<AIDroneAgentObject>(scene, Vector3{1000.0f, 600.0f, 0.0f}, patrol_points);
+    Vector3 initial_position = Vector3{1000.0f, 600.0f, 0.0f};
+    scene.add_game_object<AIDroneAgentObject>(scene, initial_position, patrol_points);
 }
 
 Scene& SwampScene::setup() {
