@@ -12,11 +12,12 @@ class RoundController final : public Behavior {
 private:
   std::vector<round_end_callback_t> round_end_callbacks;
   std::vector<std::reference_wrapper<PlayerObject>> players;
+  Vector3 respawn_position_;
 
   void round_end() const;
 
 public:
-  explicit RoundController();
+  explicit RoundController(Vector3 respawn_position);
   void on_awake() override;
   void on_update(float dt) override;
 
@@ -24,4 +25,7 @@ public:
   void remove_player(PlayerObject &player);
 
   void on_round_end(const round_end_callback_t &callback);
+
+  Vector3 respawn_position() const;
+  void respawn_position(Vector3 position);
 };

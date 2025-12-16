@@ -2,7 +2,7 @@
 #include <game/character/player_controller.h>
 
 PlayerControllerBehavior::PlayerControllerBehavior(): PlayerControllerBehavior(100) {}
-PlayerControllerBehavior::PlayerControllerBehavior(const int health): health_ { health } {}
+PlayerControllerBehavior::PlayerControllerBehavior(const int health): health_ { health }, lives_(3) {}
 
 void PlayerControllerBehavior::on_awake() {}
 void PlayerControllerBehavior::on_start() {}
