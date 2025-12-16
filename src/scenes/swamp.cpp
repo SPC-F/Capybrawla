@@ -11,6 +11,7 @@
 #include <game/round/roundcontroller.h>
 #include <game/character/player_object.h>
 #include <game/scenes/level_loader.h>
+#include <game/scripts/timer/RoundTimer.h>
 
 const Vector3 DEFAULT_RESPAWN_POSITION = {600, 0, 0};
 
@@ -45,6 +46,11 @@ Scene& SwampScene::setup() {
     camera.transform().position({
         static_cast<float>(window_width) / 2.0f,
         static_cast<float>(window_height) / 2.0f, 0.0f});
+
+    GameObject& round_timer_obj = scene.add_game_object("Round Timer");
+    auto round_timer = std::make_unique<RoundTimer>();
+    round_timer->start_timer([] {});
+    round_timer_obj.add_component<BehaviorScript>(std::move(round_timer));
     
     LevelLoader loader;
     loader.load_game_objects_from_json(
