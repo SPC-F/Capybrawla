@@ -1,0 +1,3080 @@
+{
+    "map": "swamp_autum",
+    "tileset": "swamp_autum_tileset",
+    "cell_size": 32,
+    "center_x_offset": 10,
+    "center_y_offset": 8,
+    "width": 100,
+    "height": 50,
+    "backgrounds": [
+        {
+            "name": "swamp_autum",
+            "texture": "swamp_autum_bg",
+            "position": {
+                "x": 0, 
+                "y": 0
+            },
+            "scale": {
+                "x": 1, 
+                "y": 1
+            },
+            "layer": 0
+        }
+    ],
+    "tiles": [
+        {
+            "tile": "grass",
+            "texture": "grass_autum_single_top",
+            "group": 1,
+            "properties": {
+                "weight": 10,
+                "size": {
+                    "w": 16, 
+                    "h": 16
+                },
+                "walkable": true,
+                "rigidbody": true,
+                "collider": {
+                    "type": "box",
+                    "offset": {
+                        "x": 0,
+                        "y": 0
+                    },
+                    "size": {
+                        "w": 16,
+                        "h": 16
+                    }
+                }
+            },
+            "position": {
+                "x": 2, 
+                "y": 0
+            },
+            "scale": {
+                "x": 3, 
+                "y": 3
+            },
+            "layer": 1
+        },
+        {
+            "tile": "grass",
+            "texture": "grass_autum_single_bottom",
+            "group": 1,
+            "properties": {
+                "weight": 10,
+                "size": {
+                    "w": 16, 
+                    "h": 16
+                },
+                "walkable": true,
+                "rigidbody": true,
+                "collider": {
+                    "type": "box",
+                    "offset": {
+                        "x": 0,
+                        "y": 0
+                    },
+                    "size": {
+                        "w": 16,
+                        "h": 16
+                    }
+                }
+            },
+            "position": {
+                "x": 2, 
+                "y": 1
+            },
+            "scale": {
+                "x": 3, 
+                "y": 3
+            },
+            "layer": 1
+        },
+        {
+            "tile": "grass",
+            "texture": "grass_autum_single",
+            "group": 1,
+            "properties": {
+                "weight": 10,
+                "size": {
+                    "w": 16, 
+                    "h": 16
+                },
+                "walkable": true,
+                "rigidbody": true,
+                "collider": {
+                    "type": "box",
+                    "offset": {
+                        "x": 0,
+                        "y": 0
+                    },
+                    "size": {
+                        "w": 16,
+                        "h": 16
+                    }
+                }
+            },
+            "position": {
+                "x": 3, 
+                "y": 0
+            },
+            "scale": {
+                "x": 3, 
+                "y": 3
+            },
+            "layer": 1
+        },
+        {
+            "tile": "grass",
+            "texture": "wood_walk_piece",
+            "group": 1,
+            "properties": {
+                "weight": 10,
+                "size": {
+                    "w": 16, 
+                    "h": 16
+                },
+                "walkable": true,
+                "rigidbody": true,
+                "collider": {
+                    "type": "box",
+                    "offset": {
+                        "x": 0,
+                        "y": 0
+                    },
+                    "size": {
+                        "w": 16,
+                        "h": 16
+                    }
+                }
+            },
+            "position": {
+                "x": 4, 
+                "y": 0
+            },
+            "scale": {
+                "x": 3, 
+                "y": 3
+            },
+            "layer": 1
+        },
+        {
+            "tile": "grass",
+            "texture": "wood_walk_piece",
+            "group": 1,
+            "properties": {
+                "weight": 10,
+                "size": {
+                    "w": 16, 
+                    "h": 16
+                },
+                "walkable": true,
+                "rigidbody": true,
+                "collider": {
+                    "type": "box",
+                    "offset": {
+                        "x": 0,
+                        "y": 0
+                    },
+                    "size": {
+                        "w": 16,
+                        "h": 16
+                    }
+                }
+            },
+            "position": {
+                "x": 5, 
+                "y": 0
+            },
+            "scale": {
+                "x": 3, 
+                "y": 3
+            },
+            "layer": 1
+        },
+        {
+            "tile": "grass",
+            "texture": "grass_autum_single",
+            "group": 1,
+            "properties": {
+                "weight": 10,
+                "size": {
+                    "w": 16, 
+                    "h": 16
+                },
+                "walkable": true,
+                "rigidbody": true,
+                "collider": {
+                    "type": "box",
+                    "offset": {
+                        "x": 0,
+                        "y": 0
+                    },
+                    "size": {
+                        "w": 16,
+                        "h": 16
+                    }
+                }
+            },
+            "position": {
+                "x": 6, 
+                "y": 0
+            },
+            "scale": {
+                "x": 3, 
+                "y": 3
+            },
+            "layer": 1
+        },
+        
+
+        {
+            "tile": "grass",
+            "texture": "grass_autum_multi_top_left",
+            "group": 2,
+            "properties": {
+                "weight": 10,
+                "size": {
+                    "w": 16, 
+                    "h": 16
+                },
+                "walkable": true,
+                "rigidbody": true,
+                "collider": {
+                    "type": "box",
+                    "offset": {
+                        "x": 0,
+                        "y": 0
+                    },
+                    "size": {
+                        "w": 16,
+                        "h": 16
+                    }
+                }
+            },
+            "position": {
+                "x": 0, 
+                "y": 5
+            },
+            "scale": {
+                "x": 3, 
+                "y": 3
+            },
+            "layer": 1
+        },
+        {
+            "tile": "grass",
+            "texture": "grass_autum_multi_top",
+            "group": 2,
+            "properties": {
+                "weight": 10,
+                "size": {
+                    "w": 16, 
+                    "h": 16
+                },
+                "walkable": true,
+                "rigidbody": true,
+                "collider": {
+                    "type": "box",
+                    "offset": {
+                        "x": 0,
+                        "y": 0
+                    },
+                    "size": {
+                        "w": 16,
+                        "h": 16
+                    }
+                }
+            },
+            "position": {
+                "x": 1, 
+                "y": 5
+            },
+            "scale": {
+                "x": 3, 
+                "y": 3
+            },
+            "layer": 1
+        },
+        {
+            "tile": "grass",
+            "texture": "grass_autum_multi_top",
+            "group": 2,
+            "properties": {
+                "weight": 10,
+                "size": {
+                    "w": 16, 
+                    "h": 16
+                },
+                "walkable": true,
+                "rigidbody": true,
+                "collider": {
+                    "type": "box",
+                    "offset": {
+                        "x": 0,
+                        "y": 0
+                    },
+                    "size": {
+                        "w": 16,
+                        "h": 16
+                    }
+                }
+            },
+            "position": {
+                "x": 2, 
+                "y": 5
+            },
+            "scale": {
+                "x": 3, 
+                "y": 3
+            },
+            "layer": 1
+        },
+        {
+            "tile": "fence_post_left",
+            "texture": "fence_left",
+            "group": 2,
+            "properties": {
+                "weight": 10,
+                "size": {
+                    "w": 16, 
+                    "h": 16
+                },
+                "walkable": false,
+                "rigidbody": false
+            },
+            "position": {
+                "x": 2, 
+                "y": 4
+            },
+            "scale": {
+                "x": 3, 
+                "y": 3
+            },
+            "layer": 1
+        },
+        {
+            "tile": "fence_post_right",
+            "texture": "fence_right",
+            "group": 2,
+            "properties": {
+                "weight": 10,
+                "size": {
+                    "w": 16, 
+                    "h": 16
+                },
+                "walkable": false,
+                "rigidbody": false
+            },
+            "position": {
+                "x": 3, 
+                "y": 4
+            },
+            "scale": {
+                "x": 3, 
+                "y": 3
+            },
+            "layer": 1
+        },
+        {
+            "tile": "grass",
+            "texture": "grass_autum_multi_top",
+            "group": 2,
+            "properties": {
+                "weight": 10,
+                "size": {
+                    "w": 16, 
+                    "h": 16
+                },
+                "walkable": true,
+                "rigidbody": true,
+                "collider": {
+                    "type": "box",
+                    "offset": {
+                        "x": 0,
+                        "y": 0
+                    },
+                    "size": {
+                        "w": 16,
+                        "h": 16
+                    }
+                }
+            },
+            "position": {
+                "x": 3, 
+                "y": 5
+            },
+            "scale": {
+                "x": 3, 
+                "y": 3
+            },
+            "layer": 1
+        },
+        {
+            "tile": "grass",
+            "texture": "grass_autum_slope_top_left",
+            "group": 2,
+            "properties": {
+                "weight": 10,
+                "size": {
+                    "w": 16, 
+                    "h": 16
+                },
+                "walkable": true,
+                "rigidbody": true,
+                "collider": {
+                    "type": "box",
+                    "offset": {
+                        "x": 0,
+                        "y": 0
+                    },
+                    "size": {
+                        "w": 16,
+                        "h": 16
+                    }
+                }
+            },
+            "position": {
+                "x": 4, 
+                "y": 5
+            },
+            "scale": {
+                "x": 3, 
+                "y": 3
+            },
+            "layer": 1
+        },
+        {
+            "tile": "grass",
+            "texture": "grass_autum_multi_bottom_left",
+            "group": 2,
+            "properties": {
+                "weight": 10,
+                "size": {
+                    "w": 16, 
+                    "h": 16
+                },
+                "walkable": true,
+                "rigidbody": true,
+                "collider": {
+                    "type": "box",
+                    "offset": {
+                        "x": 0,
+                        "y": 0
+                    },
+                    "size": {
+                        "w": 16,
+                        "h": 16
+                    }
+                }
+            },
+            "position": {
+                "x": 0, 
+                "y": 6
+            },
+            "scale": {
+                "x": 3, 
+                "y": 3
+            },
+            "layer": 1
+        },
+        {
+            "tile": "grass",
+            "texture": "grass_autum_multi_bottom",
+            "group": 2,
+            "properties": {
+                "weight": 10,
+                "size": {
+                    "w": 16, 
+                    "h": 16
+                },
+                "walkable": true,
+                "rigidbody": true,
+                "collider": {
+                    "type": "box",
+                    "offset": {
+                        "x": 0,
+                        "y": 0
+                    },
+                    "size": {
+                        "w": 16,
+                        "h": 16
+                    }
+                }
+            },
+            "position": {
+                "x": 1, 
+                "y": 6
+            },
+            "scale": {
+                "x": 3, 
+                "y": 3
+            },
+            "layer": 1
+        },
+        {
+            "tile": "grass",
+            "texture": "grass_autum_multi_bottom",
+            "group": 2,
+            "properties": {
+                "weight": 10,
+                "size": {
+                    "w": 16, 
+                    "h": 16
+                },
+                "walkable": true,
+                "rigidbody": true,
+                "collider": {
+                    "type": "box",
+                    "offset": {
+                        "x": 0,
+                        "y": 0
+                    },
+                    "size": {
+                        "w": 16,
+                        "h": 16
+                    }
+                }
+            },
+            "position": {
+                "x": 2, 
+                "y": 6
+            },
+            "scale": {
+                "x": 3, 
+                "y": 3
+            },
+            "layer": 1
+        },
+        {
+            "tile": "grass",
+            "texture": "grass_autum_multi_middle",
+            "group": 2,
+            "properties": {
+                "weight": 10,
+                "size": {
+                    "w": 16, 
+                    "h": 16
+                },
+                "walkable": true,
+                "rigidbody": true,
+                "collider": {
+                    "type": "box",
+                    "offset": {
+                        "x": 0,
+                        "y": 0
+                    },
+                    "size": {
+                        "w": 16,
+                        "h": 16
+                    }
+                }
+            },
+            "position": {
+                "x": 3, 
+                "y": 6
+            },
+            "scale": {
+                "x": 3, 
+                "y": 3
+            },
+            "layer": 1
+        },
+        {
+            "tile": "grass",
+            "texture": "grass_autum_slope_bottom_left",
+            "group": 2,
+            "properties": {
+                "weight": 10,
+                "size": {
+                    "w": 16, 
+                    "h": 16
+                },
+                "walkable": true,
+                "rigidbody": true,
+                "collider": {
+                    "type": "box",
+                    "offset": {
+                        "x": 0,
+                        "y": 0
+                    },
+                    "size": {
+                        "w": 16,
+                        "h": 16
+                    }
+                }
+            },
+            "position": {
+                "x": 4, 
+                "y": 6
+            },
+            "scale": {
+                "x": 3, 
+                "y": 3
+            },
+            "layer": 1
+        },
+        {
+            "tile": "grass",
+            "texture": "grass_autum_multi_top_right",
+            "group": 2,
+            "properties": {
+                "weight": 10,
+                "size": {
+                    "w": 16, 
+                    "h": 16
+                },
+                "walkable": true,
+                "rigidbody": true,
+                "collider": {
+                    "type": "box",
+                    "offset": {
+                        "x": 0,
+                        "y": 0
+                    },
+                    "size": {
+                        "w": 16,
+                        "h": 16
+                    }
+                }
+            },
+            "position": {
+                "x": 5, 
+                "y": 6
+            },
+            "scale": {
+                "x": 3, 
+                "y": 3
+            },
+            "layer": 1
+        },
+        {
+            "tile": "grass",
+            "texture": "grass_autum_multi_bottom_left",
+            "group": 2,
+            "properties": {
+                "weight": 10,
+                "size": {
+                    "w": 16, 
+                    "h": 16
+                },
+                "walkable": true,
+                "rigidbody": true,
+                "collider": {
+                    "type": "box",
+                    "offset": {
+                        "x": 0,
+                        "y": 0
+                    },
+                    "size": {
+                        "w": 16,
+                        "h": 16
+                    }
+                }
+            },
+            "position": {
+                "x": 3, 
+                "y": 7
+            },
+            "scale": {
+                "x": 3, 
+                "y": 3
+            },
+            "layer": 1
+        },
+        {
+            "tile": "grass",
+            "texture": "grass_autum_multi_bottom",
+            "group": 2,
+            "properties": {
+                "weight": 10,
+                "size": {
+                    "w": 16, 
+                    "h": 16
+                },
+                "walkable": true,
+                "rigidbody": true,
+                "collider": {
+                    "type": "box",
+                    "offset": {
+                        "x": 0,
+                        "y": 0
+                    },
+                    "size": {
+                        "w": 16,
+                        "h": 16
+                    }
+                }
+            },
+            "position": {
+                "x": 4, 
+                "y": 7
+            },
+            "scale": {
+                "x": 3, 
+                "y": 3
+            },
+            "layer": 1
+        },
+        {
+            "tile": "grass",
+            "texture": "grass_autum_multi_bottom_right",
+            "group": 2,
+            "properties": {
+                "weight": 10,
+                "size": {
+                    "w": 16, 
+                    "h": 16
+                },
+                "walkable": true,
+                "rigidbody": true,
+                "collider": {
+                    "type": "box",
+                    "offset": {
+                        "x": 0,
+                        "y": 0
+                    },
+                    "size": {
+                        "w": 16,
+                        "h": 16
+                    }
+                }
+            },
+            "position": {
+                "x": 5, 
+                "y": 7
+            },
+            "scale": {
+                "x": 3, 
+                "y": 3
+            },
+            "layer": 1
+        },
+        {
+            "tile": "grass",
+            "texture": "wood_walk_piece",
+            "group": 2,
+            "properties": {
+                "weight": 10,
+                "size": {
+                    "w": 16, 
+                    "h": 16
+                },
+                "walkable": true,
+                "rigidbody": true,
+                "collider": {
+                    "type": "box",
+                    "offset": {
+                        "x": 0,
+                        "y": 0
+                    },
+                    "size": {
+                        "w": 16,
+                        "h": 16
+                    }
+                }
+            },
+            "position": {
+                "x": 6, 
+                "y": 6
+            },
+            "scale": {
+                "x": 3, 
+                "y": 3
+            },
+            "layer": 1
+        },
+
+
+
+        {
+            "tile": "grass",
+            "texture": "grass_autum_slope_top_right",
+            "group": 3,
+            "properties": {
+                "weight": 10,
+                "size": {
+                    "w": 16, 
+                    "h": 16
+                },
+                "walkable": true,
+                "rigidbody": true,
+                "collider": {
+                    "type": "box",
+                    "offset": {
+                        "x": 0,
+                        "y": 0
+                    },
+                    "size": {
+                        "w": 16,
+                        "h": 16
+                    }
+                }
+            },
+            "position": {
+                "x": 10, 
+                "y": 2
+            },
+            "scale": {
+                "x": 3, 
+                "y": 3
+            },
+            "layer": 1
+        },
+        {
+            "tile": "lilypads",
+            "texture": "lilypad_autum_large",
+            "group": 3,
+            "properties": {
+                "weight": 10,
+                "size": {
+                    "w": 16, 
+                    "h": 16
+                },
+                "walkable": false,
+                "rigidbody": false
+            },
+            "position": {
+                "x": 10, 
+                "y": 1
+            },
+            "scale": {
+                "x": 3, 
+                "y": 3
+            },
+            "layer": 1
+        },
+        {
+            "tile": "bush_autum_large",
+            "texture": "bush_autum_large",
+            "group": 3,
+            "properties": {
+                "weight": 10,
+                "size": {
+                    "w": 16, 
+                    "h": 16
+                },
+                "walkable": false,
+                "rigidbody": false
+            },
+            "position": {
+                "x": 11, 
+                "y": 1
+            },
+            "scale": {
+                "x": 3, 
+                "y": 3
+            },
+            "layer": 1
+        },
+        {
+            "tile": "grass",
+            "texture": "grass_autum_multi_top",
+            "group": 3,
+            "properties": {
+                "weight": 10,
+                "size": {
+                    "w": 16, 
+                    "h": 16
+                },
+                "walkable": true,
+                "rigidbody": true,
+                "collider": {
+                    "type": "box",
+                    "offset": {
+                        "x": 0,
+                        "y": 0
+                    },
+                    "size": {
+                        "w": 16,
+                        "h": 16
+                    }
+                }
+            },
+            "position": {
+                "x": 11, 
+                "y": 2
+            },
+            "scale": {
+                "x": 3, 
+                "y": 3
+            },
+            "layer": 1
+        },
+        {
+            "tile": "grass",
+            "texture": "grass_autum_multi_top",
+            "group": 3,
+            "properties": {
+                "weight": 10,
+                "size": {
+                    "w": 16, 
+                    "h": 16
+                },
+                "walkable": true,
+                "rigidbody": true,
+                "collider": {
+                    "type": "box",
+                    "offset": {
+                        "x": 0,
+                        "y": 0
+                    },
+                    "size": {
+                        "w": 16,
+                        "h": 16
+                    }
+                }
+            },
+            "position": {
+                "x": 12, 
+                "y": 2
+            },
+            "scale": {
+                "x": 3, 
+                "y": 3
+            },
+            "layer": 1
+        },
+        {
+            "tile": "grass",
+            "texture": "grass_autum_multi_top",
+            "group": 3,
+            "properties": {
+                "weight": 10,
+                "size": {
+                    "w": 16, 
+                    "h": 16
+                },
+                "walkable": true,
+                "rigidbody": true,
+                "collider": {
+                    "type": "box",
+                    "offset": {
+                        "x": 0,
+                        "y": 0
+                    },
+                    "size": {
+                        "w": 16,
+                        "h": 16
+                    }
+                }
+            },
+            "position": {
+                "x": 13, 
+                "y": 2
+            },
+            "scale": {
+                "x": 3, 
+                "y": 3
+            },
+            "layer": 1
+        },
+        {
+            "tile": "grass",
+            "texture": "grass_autum_multi_top",
+            "group": 3,
+            "properties": {
+                "weight": 10,
+                "size": {
+                    "w": 16, 
+                    "h": 16
+                },
+                "walkable": true,
+                "rigidbody": true,
+                "collider": {
+                    "type": "box",
+                    "offset": {
+                        "x": 0,
+                        "y": 0
+                    },
+                    "size": {
+                        "w": 16,
+                        "h": 16
+                    }
+                }
+            },
+            "position": {
+                "x": 14, 
+                "y": 2
+            },
+            "scale": {
+                "x": 3, 
+                "y": 3
+            },
+            "layer": 1
+        },
+        {
+            "tile": "grass",
+            "texture": "grass_autum_multi_top_right",
+            "group": 3,
+            "properties": {
+                "weight": 10,
+                "size": {
+                    "w": 16, 
+                    "h": 16
+                },
+                "walkable": true,
+                "rigidbody": true,
+                "collider": {
+                    "type": "box",
+                    "offset": {
+                        "x": 0,
+                        "y": 0
+                    },
+                    "size": {
+                        "w": 16,
+                        "h": 16
+                    }
+                }
+            },
+            "position": {
+                "x": 15, 
+                "y": 2
+            },
+            "scale": {
+                "x": 3, 
+                "y": 3
+            },
+            "layer": 1
+        },
+        {
+            "tile": "grass",
+            "texture": "wood_walk_piece",
+            "group": 3,
+            "properties": {
+                "weight": 10,
+                "size": {
+                    "w": 16, 
+                    "h": 16
+                },
+                "walkable": true,
+                "rigidbody": true,
+                "collider": {
+                    "type": "box",
+                    "offset": {
+                        "x": 0,
+                        "y": 0
+                    },
+                    "size": {
+                        "w": 16,
+                        "h": 16
+                    }
+                }
+            },
+            "position": {
+                "x": 8, 
+                "y": 3
+            },
+            "scale": {
+                "x": 3, 
+                "y": 3
+            },
+            "layer": 1
+        },
+        {
+            "tile": "grass",
+            "texture": "grass_autum_multi_top_left",
+            "group": 3,
+            "properties": {
+                "weight": 10,
+                "size": {
+                    "w": 16, 
+                    "h": 16
+                },
+                "walkable": true,
+                "rigidbody": true,
+                "collider": {
+                    "type": "box",
+                    "offset": {
+                        "x": 0,
+                        "y": 0
+                    },
+                    "size": {
+                        "w": 16,
+                        "h": 16
+                    }
+                }
+            },
+            "position": {
+                "x": 9, 
+                "y": 3
+            },
+            "scale": {
+                "x": 3, 
+                "y": 3
+            },
+            "layer": 1
+        },
+        {
+            "tile": "grass",
+            "texture": "grass_autum_slope_bottom_right",
+            "group": 3,
+            "properties": {
+                "weight": 10,
+                "size": {
+                    "w": 16, 
+                    "h": 16
+                },
+                "walkable": true,
+                "rigidbody": true,
+                "collider": {
+                    "type": "box",
+                    "offset": {
+                        "x": 0,
+                        "y": 0
+                    },
+                    "size": {
+                        "w": 16,
+                        "h": 16
+                    }
+                }
+            },
+            "position": {
+                "x": 10, 
+                "y": 3
+            },
+            "scale": {
+                "x": 3, 
+                "y": 3
+            },
+            "layer": 1
+        },
+        {
+            "tile": "grass",
+            "texture": "grass_autum_multi_middle",
+            "group": 3,
+            "properties": {
+                "weight": 10,
+                "size": {
+                    "w": 16, 
+                    "h": 16
+                },
+                "walkable": true,
+                "rigidbody": true,
+                "collider": {
+                    "type": "box",
+                    "offset": {
+                        "x": 0,
+                        "y": 0
+                    },
+                    "size": {
+                        "w": 16,
+                        "h": 16
+                    }
+                }
+            },
+            "position": {
+                "x": 11, 
+                "y": 3
+            },
+            "scale": {
+                "x": 3, 
+                "y": 3
+            },
+            "layer": 1
+        },
+        {
+            "tile": "grass",
+            "texture": "grass_autum_multi_bottom",
+            "group": 3,
+            "properties": {
+                "weight": 10,
+                "size": {
+                    "w": 16, 
+                    "h": 16
+                },
+                "walkable": true,
+                "rigidbody": true,
+                "collider": {
+                    "type": "box",
+                    "offset": {
+                        "x": 0,
+                        "y": 0
+                    },
+                    "size": {
+                        "w": 16,
+                        "h": 16
+                    }
+                }
+            },
+            "position": {
+                "x": 12, 
+                "y": 3
+            },
+            "scale": {
+                "x": 3, 
+                "y": 3
+            },
+            "layer": 1
+        },
+        {
+            "tile": "grass",
+            "texture": "grass_autum_multi_bottom",
+            "group": 3,
+            "properties": {
+                "weight": 10,
+                "size": {
+                    "w": 16, 
+                    "h": 16
+                },
+                "walkable": true,
+                "rigidbody": true,
+                "collider": {
+                    "type": "box",
+                    "offset": {
+                        "x": 0,
+                        "y": 0
+                    },
+                    "size": {
+                        "w": 16,
+                        "h": 16
+                    }
+                }
+            },
+            "position": {
+                "x": 13, 
+                "y": 3
+            },
+            "scale": {
+                "x": 3, 
+                "y": 3
+            },
+            "layer": 1
+        },
+        {
+            "tile": "grass",
+            "texture": "grass_autum_multi_bottom",
+            "group": 3,
+            "properties": {
+                "weight": 10,
+                "size": {
+                    "w": 16, 
+                    "h": 16
+                },
+                "walkable": true,
+                "rigidbody": true,
+                "collider": {
+                    "type": "box",
+                    "offset": {
+                        "x": 0,
+                        "y": 0
+                    },
+                    "size": {
+                        "w": 16,
+                        "h": 16
+                    }
+                }
+            },
+            "position": {
+                "x": 14, 
+                "y": 3
+            },
+            "scale": {
+                "x": 3, 
+                "y": 3
+            },
+            "layer": 1
+        },
+        {
+            "tile": "grass",
+            "texture": "grass_autum_multi_bottom_right",
+            "group": 3,
+            "properties": {
+                "weight": 10,
+                "size": {
+                    "w": 16, 
+                    "h": 16
+                },
+                "walkable": true,
+                "rigidbody": true,
+                "collider": {
+                    "type": "box",
+                    "offset": {
+                        "x": 0,
+                        "y": 0
+                    },
+                    "size": {
+                        "w": 16,
+                        "h": 16
+                    }
+                }
+            },
+            "position": {
+                "x": 15, 
+                "y": 3
+            },
+            "scale": {
+                "x": 3, 
+                "y": 3
+            },
+            "layer": 1
+        },
+        {
+            "tile": "grass",
+            "texture": "grass_autum_multi_bottom_left",
+            "group": 3,
+            "properties": {
+                "weight": 10,
+                "size": {
+                    "w": 16, 
+                    "h": 16
+                },
+                "walkable": true,
+                "rigidbody": true,
+                "collider": {
+                    "type": "box",
+                    "offset": {
+                        "x": 0,
+                        "y": 0
+                    },
+                    "size": {
+                        "w": 16,
+                        "h": 16
+                    }
+                }
+            },
+            "position": {
+                "x": 9, 
+                "y": 4
+            },
+            "scale": {
+                "x": 3, 
+                "y": 3
+            },
+            "layer": 1
+        },
+        {
+            "tile": "grass",
+            "texture": "grass_autum_multi_bottom",
+            "group": 3,
+            "properties": {
+                "weight": 10,
+                "size": {
+                    "w": 16, 
+                    "h": 16
+                },
+                "walkable": true,
+                "rigidbody": true,
+                "collider": {
+                    "type": "box",
+                    "offset": {
+                        "x": 0,
+                        "y": 0
+                    },
+                    "size": {
+                        "w": 16,
+                        "h": 16
+                    }
+                }
+            },
+            "position": {
+                "x": 10, 
+                "y": 4
+            },
+            "scale": {
+                "x": 3, 
+                "y": 3
+            },
+            "layer": 1
+        },
+        {
+            "tile": "grass",
+            "texture": "grass_autum_multi_bottom_right",
+            "group": 3,
+            "properties": {
+                "weight": 10,
+                "size": {
+                    "w": 16, 
+                    "h": 16
+                },
+                "walkable": true,
+                "rigidbody": true,
+                "collider": {
+                    "type": "box",
+                    "offset": {
+                        "x": 0,
+                        "y": 0
+                    },
+                    "size": {
+                        "w": 16,
+                        "h": 16
+                    }
+                }
+            },
+            "position": {
+                "x": 11, 
+                "y": 4
+            },
+            "scale": {
+                "x": 3, 
+                "y": 3
+            },
+            "layer": 1
+        },
+
+
+        {
+            "tile": "grass",
+            "texture": "grass_autum_multi_top_left",
+            "group": 4,
+            "properties": {
+                "weight": 10,
+                "size": {
+                    "w": 16, 
+                    "h": 16
+                },
+                "walkable": true,
+                "rigidbody": true,
+                "collider": {
+                    "type": "box",
+                    "offset": {
+                        "x": 0,
+                        "y": 0
+                    },
+                    "size": {
+                        "w": 16,
+                        "h": 16
+                    }
+                }
+            },
+            "position": {
+                "x": 7, 
+                "y": 9
+            },
+            "scale": {
+                "x": 3, 
+                "y": 3
+            },
+            "layer": 1
+        },
+        {
+            "tile": "grass",
+            "texture": "grass_autum_multi_top",
+            "group": 4,
+            "properties": {
+                "weight": 10,
+                "size": {
+                    "w": 16, 
+                    "h": 16
+                },
+                "walkable": true,
+                "rigidbody": true,
+                "collider": {
+                    "type": "box",
+                    "offset": {
+                        "x": 0,
+                        "y": 0
+                    },
+                    "size": {
+                        "w": 16,
+                        "h": 16
+                    }
+                }
+            },
+            "position": {
+                "x": 8, 
+                "y": 9
+            },
+            "scale": {
+                "x": 3, 
+                "y": 3
+            },
+            "layer": 1
+        },
+        {
+            "tile": "grass",
+            "texture": "grass_autum_multi_top",
+            "group": 4,
+            "properties": {
+                "weight": 10,
+                "size": {
+                    "w": 16, 
+                    "h": 16
+                },
+                "walkable": true,
+                "rigidbody": true,
+                "collider": {
+                    "type": "box",
+                    "offset": {
+                        "x": 0,
+                        "y": 0
+                    },
+                    "size": {
+                        "w": 16,
+                        "h": 16
+                    }
+                }
+            },
+            "position": {
+                "x": 9, 
+                "y": 9
+            },
+            "scale": {
+                "x": 3, 
+                "y": 3
+            },
+            "layer": 1
+        },
+        {
+            "tile": "grass",
+            "texture": "grass_autum_multi_top",
+            "group": 4,
+            "properties": {
+                "weight": 10,
+                "size": {
+                    "w": 16, 
+                    "h": 16
+                },
+                "walkable": true,
+                "rigidbody": true,
+                "collider": {
+                    "type": "box",
+                    "offset": {
+                        "x": 0,
+                        "y": 0
+                    },
+                    "size": {
+                        "w": 16,
+                        "h": 16
+                    }
+                }
+            },
+            "position": {
+                "x": 10, 
+                "y": 9
+            },
+            "scale": {
+                "x": 3, 
+                "y": 3
+            },
+            "layer": 1
+        },
+        {
+            "tile": "grass",
+            "texture": "grass_autum_multi_top",
+            "group": 4,
+            "properties": {
+                "weight": 10,
+                "size": {
+                    "w": 16, 
+                    "h": 16
+                },
+                "walkable": true,
+                "rigidbody": true,
+                "collider": {
+                    "type": "box",
+                    "offset": {
+                        "x": 0,
+                        "y": 0
+                    },
+                    "size": {
+                        "w": 16,
+                        "h": 16
+                    }
+                }
+            },
+            "position": {
+                "x": 11, 
+                "y": 9
+            },
+            "scale": {
+                "x": 3, 
+                "y": 3
+            },
+            "layer": 1
+        },
+        {
+            "tile": "grass",
+            "texture": "grass_autum_multi_top",
+            "group": 4,
+            "properties": {
+                "weight": 10,
+                "size": {
+                    "w": 16, 
+                    "h": 16
+                },
+                "walkable": true,
+                "rigidbody": true,
+                "collider": {
+                    "type": "box",
+                    "offset": {
+                        "x": 0,
+                        "y": 0
+                    },
+                    "size": {
+                        "w": 16,
+                        "h": 16
+                    }
+                }
+            },
+            "position": {
+                "x": 12, 
+                "y": 9
+            },
+            "scale": {
+                "x": 3, 
+                "y": 3
+            },
+            "layer": 1
+        },
+        {
+            "tile": "grass",
+            "texture": "grass_autum_multi_top",
+            "group": 4,
+            "properties": {
+                "weight": 10,
+                "size": {
+                    "w": 16, 
+                    "h": 16
+                },
+                "walkable": true,
+                "rigidbody": true,
+                "collider": {
+                    "type": "box",
+                    "offset": {
+                        "x": 0,
+                        "y": 0
+                    },
+                    "size": {
+                        "w": 16,
+                        "h": 16
+                    }
+                }
+            },
+            "position": {
+                "x": 13, 
+                "y": 9
+            },
+            "scale": {
+                "x": 3, 
+                "y": 3
+            },
+            "layer": 1
+        },
+        {
+            "tile": "grass",
+            "texture": "grass_autum_multi_top",
+            "group": 4,
+            "properties": {
+                "weight": 10,
+                "size": {
+                    "w": 16, 
+                    "h": 16
+                },
+                "walkable": true,
+                "rigidbody": true,
+                "collider": {
+                    "type": "box",
+                    "offset": {
+                        "x": 0,
+                        "y": 0
+                    },
+                    "size": {
+                        "w": 16,
+                        "h": 16
+                    }
+                }
+            },
+            "position": {
+                "x": 14, 
+                "y": 9
+            },
+            "scale": {
+                "x": 3, 
+                "y": 3
+            },
+            "layer": 1
+        },
+        {
+            "tile": "grass",
+            "texture": "grass_autum_multi_top",
+            "group": 4,
+            "properties": {
+                "weight": 10,
+                "size": {
+                    "w": 16, 
+                    "h": 16
+                },
+                "walkable": true,
+                "rigidbody": true,
+                "collider": {
+                    "type": "box",
+                    "offset": {
+                        "x": 0,
+                        "y": 0
+                    },
+                    "size": {
+                        "w": 16,
+                        "h": 16
+                    }
+                }
+            },
+            "position": {
+                "x": 15, 
+                "y": 9
+            },
+            "scale": {
+                "x": 3, 
+                "y": 3
+            },
+            "layer": 1
+        },
+        {
+            "tile": "grass",
+            "texture": "grass_autum_multi_top_right",
+            "group": 4,
+            "properties": {
+                "weight": 10,
+                "size": {
+                    "w": 16, 
+                    "h": 16
+                },
+                "walkable": true,
+                "rigidbody": true,
+                "collider": {
+                    "type": "box",
+                    "offset": {
+                        "x": 0,
+                        "y": 0
+                    },
+                    "size": {
+                        "w": 16,
+                        "h": 16
+                    }
+                }
+            },
+            "position": {
+                "x": 16, 
+                "y": 9
+            },
+            "scale": {
+                "x": 3, 
+                "y": 3
+            },
+            "layer": 1
+        },
+        {
+            "tile": "grass",
+            "texture": "wood_walk_piece",
+            "group": 4,
+            "properties": {
+                "weight": 10,
+                "size": {
+                    "w": 16, 
+                    "h": 16
+                },
+                "walkable": true,
+                "rigidbody": true,
+                "collider": {
+                    "type": "box",
+                    "offset": {
+                        "x": 0,
+                        "y": 0
+                    },
+                    "size": {
+                        "w": 16,
+                        "h": 16
+                    }
+                }
+            },
+            "position": {
+                "x": 17, 
+                "y": 9
+            },
+            "scale": {
+                "x": 3, 
+                "y": 3
+            },
+            "layer": 1
+        },
+        {
+            "tile": "grass",
+            "texture": "grass_autum_multi_bottom_left",
+            "group": 4,
+            "properties": {
+                "weight": 10,
+                "size": {
+                    "w": 16, 
+                    "h": 16
+                },
+                "walkable": true,
+                "rigidbody": true,
+                "collider": {
+                    "type": "box",
+                    "offset": {
+                        "x": 0,
+                        "y": 0
+                    },
+                    "size": {
+                        "w": 16,
+                        "h": 16
+                    }
+                }
+            },
+            "position": {
+                "x": 7, 
+                "y": 10
+            },
+            "scale": {
+                "x": 3, 
+                "y": 3
+            },
+            "layer": 1
+        },
+        {
+            "tile": "grass",
+            "texture": "grass_autum_multi_bottom",
+            "group": 4,
+            "properties": {
+                "weight": 10,
+                "size": {
+                    "w": 16, 
+                    "h": 16
+                },
+                "walkable": true,
+                "rigidbody": true,
+                "collider": {
+                    "type": "box",
+                    "offset": {
+                        "x": 0,
+                        "y": 0
+                    },
+                    "size": {
+                        "w": 16,
+                        "h": 16
+                    }
+                }
+            },
+            "position": {
+                "x": 8, 
+                "y": 10
+            },
+            "scale": {
+                "x": 3, 
+                "y": 3
+            },
+            "layer": 1
+        },
+        {
+            "tile": "grass",
+            "texture": "grass_autum_multi_bottom",
+            "group": 4,
+            "properties": {
+                "weight": 10,
+                "size": {
+                    "w": 16, 
+                    "h": 16
+                },
+                "walkable": true,
+                "rigidbody": true,
+                "collider": {
+                    "type": "box",
+                    "offset": {
+                        "x": 0,
+                        "y": 0
+                    },
+                    "size": {
+                        "w": 16,
+                        "h": 16
+                    }
+                }
+            },
+            "position": {
+                "x": 9, 
+                "y": 10
+            },
+            "scale": {
+                "x": 3, 
+                "y": 3
+            },
+            "layer": 1
+        },
+        {
+            "tile": "grass",
+            "texture": "grass_autum_multi_bottom",
+            "group": 4,
+            "properties": {
+                "weight": 10,
+                "size": {
+                    "w": 16, 
+                    "h": 16
+                },
+                "walkable": true,
+                "rigidbody": true,
+                "collider": {
+                    "type": "box",
+                    "offset": {
+                        "x": 0,
+                        "y": 0
+                    },
+                    "size": {
+                        "w": 16,
+                        "h": 16
+                    }
+                }
+            },
+            "position": {
+                "x": 10, 
+                "y": 10
+            },
+            "scale": {
+                "x": 3, 
+                "y": 3
+            },
+            "layer": 1
+        },
+        {
+            "tile": "grass",
+            "texture": "grass_autum_multi_bottom",
+            "group": 4,
+            "properties": {
+                "weight": 10,
+                "size": {
+                    "w": 16, 
+                    "h": 16
+                },
+                "walkable": true,
+                "rigidbody": true,
+                "collider": {
+                    "type": "box",
+                    "offset": {
+                        "x": 0,
+                        "y": 0
+                    },
+                    "size": {
+                        "w": 16,
+                        "h": 16
+                    }
+                }
+            },
+            "position": {
+                "x": 11, 
+                "y": 10
+            },
+            "scale": {
+                "x": 3, 
+                "y": 3
+            },
+            "layer": 1
+        },
+        {
+            "tile": "grass",
+            "texture": "grass_autum_multi_bottom",
+            "group": 4,
+            "properties": {
+                "weight": 10,
+                "size": {
+                    "w": 16, 
+                    "h": 16
+                },
+                "walkable": true,
+                "rigidbody": true,
+                "collider": {
+                    "type": "box",
+                    "offset": {
+                        "x": 0,
+                        "y": 0
+                    },
+                    "size": {
+                        "w": 16,
+                        "h": 16
+                    }
+                }
+            },
+            "position": {
+                "x": 12, 
+                "y": 10
+            },
+            "scale": {
+                "x": 3, 
+                "y": 3
+            },
+            "layer": 1
+        },
+        {
+            "tile": "grass",
+            "texture": "grass_autum_multi_bottom",
+            "group": 4,
+            "properties": {
+                "weight": 10,
+                "size": {
+                    "w": 16, 
+                    "h": 16
+                },
+                "walkable": true,
+                "rigidbody": true,
+                "collider": {
+                    "type": "box",
+                    "offset": {
+                        "x": 0,
+                        "y": 0
+                    },
+                    "size": {
+                        "w": 16,
+                        "h": 16
+                    }
+                }
+            },
+            "position": {
+                "x": 13, 
+                "y": 10
+            },
+            "scale": {
+                "x": 3, 
+                "y": 3
+            },
+            "layer": 1
+        },
+        {
+            "tile": "grass",
+            "texture": "grass_autum_multi_bottom",
+            "group": 4,
+            "properties": {
+                "weight": 10,
+                "size": {
+                    "w": 16, 
+                    "h": 16
+                },
+                "walkable": true,
+                "rigidbody": true,
+                "collider": {
+                    "type": "box",
+                    "offset": {
+                        "x": 0,
+                        "y": 0
+                    },
+                    "size": {
+                        "w": 16,
+                        "h": 16
+                    }
+                }
+            },
+            "position": {
+                "x": 14, 
+                "y": 10
+            },
+            "scale": {
+                "x": 3, 
+                "y": 3
+            },
+            "layer": 1
+        },
+        {
+            "tile": "grass",
+            "texture": "grass_autum_multi_bottom",
+            "group": 4,
+            "properties": {
+                "weight": 10,
+                "size": {
+                    "w": 16, 
+                    "h": 16
+                },
+                "walkable": true,
+                "rigidbody": true,
+                "collider": {
+                    "type": "box",
+                    "offset": {
+                        "x": 0,
+                        "y": 0
+                    },
+                    "size": {
+                        "w": 16,
+                        "h": 16
+                    }
+                }
+            },
+            "position": {
+                "x": 15, 
+                "y": 10
+            },
+            "scale": {
+                "x": 3, 
+                "y": 3
+            },
+            "layer": 1
+        },
+        {
+            "tile": "grass",
+            "texture": "grass_autum_multi_bottom_right",
+            "group": 4,
+            "properties": {
+                "weight": 10,
+                "size": {
+                    "w": 16, 
+                    "h": 16
+                },
+                "walkable": true,
+                "rigidbody": true,
+                "collider": {
+                    "type": "box",
+                    "offset": {
+                        "x": 0,
+                        "y": 0
+                    },
+                    "size": {
+                        "w": 16,
+                        "h": 16
+                    }
+                }
+            },
+            "position": {
+                "x": 16, 
+                "y": 10
+            },
+            "scale": {
+                "x": 3, 
+                "y": 3
+            },
+            "layer": 1
+        },
+
+
+        {
+            "tile": "grass",
+            "texture": "grass_autum_slope_top_right",
+            "group": 5,
+            "properties": {
+                "weight": 10,
+                "size": {
+                    "w": 16, 
+                    "h": 16
+                },
+                "walkable": true,
+                "rigidbody": true,
+                "collider": {
+                    "type": "box",
+                    "offset": {
+                        "x": 0,
+                        "y": 0
+                    },
+                    "size": {
+                        "w": 16,
+                        "h": 16
+                    }
+                }
+            },
+            "position": {
+                "x": 20, 
+                "y": 6
+            },
+            "scale": {
+                "x": 3, 
+                "y": 3
+            },
+            "layer": 1
+        },
+        {
+            "tile": "grass",
+            "texture": "grass_autum_multi_top",
+            "group": 5,
+            "properties": {
+                "weight": 10,
+                "size": {
+                    "w": 16, 
+                    "h": 16
+                },
+                "walkable": true,
+                "rigidbody": true,
+                "collider": {
+                    "type": "box",
+                    "offset": {
+                        "x": 0,
+                        "y": 0
+                    },
+                    "size": {
+                        "w": 16,
+                        "h": 16
+                    }
+                }
+            },
+            "position": {
+                "x": 21, 
+                "y": 6
+            },
+            "scale": {
+                "x": 3, 
+                "y": 3
+            },
+            "layer": 1
+        },
+        {
+            "tile": "grass",
+            "texture": "grass_autum_multi_top",
+            "group": 5,
+            "properties": {
+                "weight": 10,
+                "size": {
+                    "w": 16, 
+                    "h": 16
+                },
+                "walkable": true,
+                "rigidbody": true,
+                "collider": {
+                    "type": "box",
+                    "offset": {
+                        "x": 0,
+                        "y": 0
+                    },
+                    "size": {
+                        "w": 16,
+                        "h": 16
+                    }
+                }
+            },
+            "position": {
+                "x": 22, 
+                "y": 6
+            },
+            "scale": {
+                "x": 3, 
+                "y": 3
+            },
+            "layer": 1
+        },
+        {
+            "tile": "grass",
+            "texture": "grass_autum_multi_top_right",
+            "group": 5,
+            "properties": {
+                "weight": 10,
+                "size": {
+                    "w": 16, 
+                    "h": 16
+                },
+                "walkable": true,
+                "rigidbody": true,
+                "collider": {
+                    "type": "box",
+                    "offset": {
+                        "x": 0,
+                        "y": 0
+                    },
+                    "size": {
+                        "w": 16,
+                        "h": 16
+                    }
+                }
+            },
+            "position": {
+                "x": 23, 
+                "y": 6
+            },
+            "scale": {
+                "x": 3, 
+                "y": 3
+            },
+            "layer": 1
+        },
+        {
+            "tile": "grass",
+            "texture": "wood_walk_piece",
+            "group": 5,
+            "properties": {
+                "weight": 10,
+                "size": {
+                    "w": 16, 
+                    "h": 16
+                },
+                "walkable": true,
+                "rigidbody": true,
+                "collider": {
+                    "type": "box",
+                    "offset": {
+                        "x": 0,
+                        "y": 0
+                    },
+                    "size": {
+                        "w": 16,
+                        "h": 16
+                    }
+                }
+            },
+            "position": {
+                "x": 24, 
+                "y": 6
+            },
+            "scale": {
+                "x": 3, 
+                "y": 3
+            },
+            "layer": 1
+        },
+        {
+            "tile": "grass",
+            "texture": "grass_autum_single_top",
+            "group": 5,
+            "properties": {
+                "weight": 10,
+                "size": {
+                    "w": 16, 
+                    "h": 16
+                },
+                "walkable": true,
+                "rigidbody": true,
+                "collider": {
+                    "type": "box",
+                    "offset": {
+                        "x": 0,
+                        "y": 0
+                    },
+                    "size": {
+                        "w": 16,
+                        "h": 16
+                    }
+                }
+            },
+            "position": {
+                "x": 25, 
+                "y": 6
+            },
+            "scale": {
+                "x": 3, 
+                "y": 3
+            },
+            "layer": 1
+        },
+        {
+            "tile": "grass",
+            "texture": "grass_autum_multi_top_left",
+            "group": 5,
+            "properties": {
+                "weight": 10,
+                "size": {
+                    "w": 16, 
+                    "h": 16
+                },
+                "walkable": true,
+                "rigidbody": true,
+                "collider": {
+                    "type": "box",
+                    "offset": {
+                        "x": 0,
+                        "y": 0
+                    },
+                    "size": {
+                        "w": 16,
+                        "h": 16
+                    }
+                }
+            },
+            "position": {
+                "x": 19, 
+                "y": 7
+            },
+            "scale": {
+                "x": 3, 
+                "y": 3
+            },
+            "layer": 1
+        },
+        {
+            "tile": "grass",
+            "texture": "grass_autum_slope_bottom_right",
+            "group": 5,
+            "properties": {
+                "weight": 10,
+                "size": {
+                    "w": 16, 
+                    "h": 16
+                },
+                "walkable": true,
+                "rigidbody": true,
+                "collider": {
+                    "type": "box",
+                    "offset": {
+                        "x": 0,
+                        "y": 0
+                    },
+                    "size": {
+                        "w": 16,
+                        "h": 16
+                    }
+                }
+            },
+            "position": {
+                "x": 20, 
+                "y": 7
+            },
+            "scale": {
+                "x": 3, 
+                "y": 3
+            },
+            "layer": 1
+        },
+        {
+            "tile": "grass",
+            "texture": "grass_autum_multi_middle",
+            "group": 5,
+            "properties": {
+                "weight": 10,
+                "size": {
+                    "w": 16, 
+                    "h": 16
+                },
+                "walkable": true,
+                "rigidbody": true,
+                "collider": {
+                    "type": "box",
+                    "offset": {
+                        "x": 0,
+                        "y": 0
+                    },
+                    "size": {
+                        "w": 16,
+                        "h": 16
+                    }
+                }
+            },
+            "position": {
+                "x": 21, 
+                "y": 7
+            },
+            "scale": {
+                "x": 3, 
+                "y": 3
+            },
+            "layer": 1
+        },
+        {
+            "tile": "grass",
+            "texture": "grass_autum_multi_bottom",
+            "group": 5,
+            "properties": {
+                "weight": 10,
+                "size": {
+                    "w": 16, 
+                    "h": 16
+                },
+                "walkable": true,
+                "rigidbody": true,
+                "collider": {
+                    "type": "box",
+                    "offset": {
+                        "x": 0,
+                        "y": 0
+                    },
+                    "size": {
+                        "w": 16,
+                        "h": 16
+                    }
+                }
+            },
+            "position": {
+                "x": 22, 
+                "y": 7
+            },
+            "scale": {
+                "x": 3, 
+                "y": 3
+            },
+            "layer": 1
+        },
+        {
+            "tile": "grass",
+            "texture": "grass_autum_multi_bottom_right",
+            "group": 5,
+            "properties": {
+                "weight": 10,
+                "size": {
+                    "w": 16, 
+                    "h": 16
+                },
+                "walkable": true,
+                "rigidbody": true,
+                "collider": {
+                    "type": "box",
+                    "offset": {
+                        "x": 0,
+                        "y": 0
+                    },
+                    "size": {
+                        "w": 16,
+                        "h": 16
+                    }
+                }
+            },
+            "position": {
+                "x": 23, 
+                "y": 7
+            },
+            "scale": {
+                "x": 3, 
+                "y": 3
+            },
+            "layer": 1
+        },
+        {
+            "tile": "grass",
+            "texture": "grass_autum_single_bottom",
+            "group": 5,
+            "properties": {
+                "weight": 10,
+                "size": {
+                    "w": 16, 
+                    "h": 16
+                },
+                "walkable": true,
+                "rigidbody": true,
+                "collider": {
+                    "type": "box",
+                    "offset": {
+                        "x": 0,
+                        "y": 0
+                    },
+                    "size": {
+                        "w": 16,
+                        "h": 16
+                    }
+                }
+            },
+            "position": {
+                "x": 25, 
+                "y": 7
+            },
+            "scale": {
+                "x": 3, 
+                "y": 3
+            },
+            "layer": 1
+        },
+        {
+            "tile": "grass",
+            "texture": "grass_autum_multi_bottom_left",
+            "group": 5,
+            "properties": {
+                "weight": 10,
+                "size": {
+                    "w": 16, 
+                    "h": 16
+                },
+                "walkable": true,
+                "rigidbody": true,
+                "collider": {
+                    "type": "box",
+                    "offset": {
+                        "x": 0,
+                        "y": 0
+                    },
+                    "size": {
+                        "w": 16,
+                        "h": 16
+                    }
+                }
+            },
+            "position": {
+                "x": 19, 
+                "y": 8
+            },
+            "scale": {
+                "x": 3, 
+                "y": 3
+            },
+            "layer": 1
+        },
+        {
+            "tile": "grass",
+            "texture": "grass_autum_multi_bottom",
+            "group": 5,
+            "properties": {
+                "weight": 10,
+                "size": {
+                    "w": 16, 
+                    "h": 16
+                },
+                "walkable": true,
+                "rigidbody": true,
+                "collider": {
+                    "type": "box",
+                    "offset": {
+                        "x": 0,
+                        "y": 0
+                    },
+                    "size": {
+                        "w": 16,
+                        "h": 16
+                    }
+                }
+            },
+            "position": {
+                "x": 20, 
+                "y": 8
+            },
+            "scale": {
+                "x": 3, 
+                "y": 3
+            },
+            "layer": 1
+        },
+        {
+            "tile": "grass",
+            "texture": "grass_autum_multi_bottom_right",
+            "group": 5,
+            "properties": {
+                "weight": 10,
+                "size": {
+                    "w": 16, 
+                    "h": 16
+                },
+                "walkable": true,
+                "rigidbody": true,
+                "collider": {
+                    "type": "box",
+                    "offset": {
+                        "x": 0,
+                        "y": 0
+                    },
+                    "size": {
+                        "w": 16,
+                        "h": 16
+                    }
+                }
+            },
+            "position": {
+                "x": 21, 
+                "y": 8
+            },
+            "scale": {
+                "x": 3, 
+                "y": 3
+            },
+            "layer": 1
+        },
+
+
+        {
+            "tile": "grass",
+            "texture": "grass_autum_single",
+            "group": 6,
+            "properties": {
+                "weight": 10,
+                "size": {
+                    "w": 16, 
+                    "h": 16
+                },
+                "walkable": true,
+                "rigidbody": true,
+                "collider": {
+                    "type": "box",
+                    "offset": {
+                        "x": 0,
+                        "y": 0
+                    },
+                    "size": {
+                        "w": 16,
+                        "h": 16
+                    }
+                }
+            },
+            "position": {
+                "x": 20, 
+                "y": 2
+            },
+            "scale": {
+                "x": 3, 
+                "y": 3
+            },
+            "layer": 1
+        },
+        {
+            "tile": "grass",
+            "texture": "wood_walk_piece",
+            "group": 6,
+            "properties": {
+                "weight": 10,
+                "size": {
+                    "w": 16, 
+                    "h": 16
+                },
+                "walkable": true,
+                "rigidbody": true,
+                "collider": {
+                    "type": "box",
+                    "offset": {
+                        "x": 0,
+                        "y": 0
+                    },
+                    "size": {
+                        "w": 16,
+                        "h": 16
+                    }
+                }
+            },
+            "position": {
+                "x": 21, 
+                "y": 2
+            },
+            "scale": {
+                "x": 3, 
+                "y": 3
+            },
+            "layer": 1
+        },
+        {
+            "tile": "grass",
+            "texture": "wood_walk_piece",
+            "group": 6,
+            "properties": {
+                "weight": 10,
+                "size": {
+                    "w": 16, 
+                    "h": 16
+                },
+                "walkable": true,
+                "rigidbody": true,
+                "collider": {
+                    "type": "box",
+                    "offset": {
+                        "x": 0,
+                        "y": 0
+                    },
+                    "size": {
+                        "w": 16,
+                        "h": 16
+                    }
+                }
+            },
+            "position": {
+                "x": 22, 
+                "y": 2
+            },
+            "scale": {
+                "x": 3, 
+                "y": 3
+            },
+            "layer": 1
+        },
+        {
+            "tile": "grass",
+            "texture": "grass_autum_single",
+            "group": 6,
+            "properties": {
+                "weight": 10,
+                "size": {
+                    "w": 16, 
+                    "h": 16
+                },
+                "walkable": true,
+                "rigidbody": true,
+                "collider": {
+                    "type": "box",
+                    "offset": {
+                        "x": 0,
+                        "y": 0
+                    },
+                    "size": {
+                        "w": 16,
+                        "h": 16
+                    }
+                }
+            },
+            "position": {
+                "x": 23, 
+                "y": 2
+            },
+            "scale": {
+                "x": 3, 
+                "y": 3
+            },
+            "layer": 1
+        },
+        {
+            "tile": "fence_post_left",
+            "texture": "fence_left",
+            "group": 6,
+            "properties": {
+                "weight": 10,
+                "size": {
+                    "w": 16, 
+                    "h": 16
+                },
+                "walkable": false,
+                "rigidbody": false
+            },
+            "position": {
+                "x": 23, 
+                "y": 1
+            },
+            "scale": {
+                "x": 3, 
+                "y": 3
+            },
+            "layer": 1
+        },
+         {
+            "tile": "fence_post_right",
+            "texture": "fence_right",
+            "group": 6,
+            "properties": {
+                "weight": 10,
+                "size": {
+                    "w": 16, 
+                    "h": 16
+                },
+                "walkable": false,
+                "rigidbody": false
+            },
+            "position": {
+                "x": 24, 
+                "y": 1
+            },
+            "scale": {
+                "x": 3, 
+                "y": 3
+            },
+            "layer": 1
+        },
+        {
+            "tile": "grass",
+            "texture": "grass_autum_single_top",
+            "group": 6,
+            "properties": {
+                "weight": 10,
+                "size": {
+                    "w": 16, 
+                    "h": 16
+                },
+                "walkable": true,
+                "rigidbody": true,
+                "collider": {
+                    "type": "box",
+                    "offset": {
+                        "x": 0,
+                        "y": 0
+                    },
+                    "size": {
+                        "w": 16,
+                        "h": 16
+                    }
+                }
+            },
+            "position": {
+                "x": 24, 
+                "y": 2
+            },
+            "scale": {
+                "x": 3, 
+                "y": 3
+            },
+            "layer": 1
+        },
+        {
+            "tile": "grass",
+            "texture": "grass_autum_single_bottom",
+            "group": 6,
+            "properties": {
+                "weight": 10,
+                "size": {
+                    "w": 16, 
+                    "h": 16
+                },
+                "walkable": true,
+                "rigidbody": true,
+                "collider": {
+                    "type": "box",
+                    "offset": {
+                        "x": 0,
+                        "y": 0
+                    },
+                    "size": {
+                        "w": 16,
+                        "h": 16
+                    }
+                }
+            },
+            "position": {
+                "x": 24, 
+                "y": 3
+            },
+            "scale": {
+                "x": 3, 
+                "y": 3
+            },
+            "layer": 1
+        },
+
+
+
+        {
+            "tile": "rock",
+            "texture": "rock_single_top",
+            "group": 7,
+            "properties": {
+                "weight": 10,
+                "size": {
+                    "w": 16, 
+                    "h": 16
+                },
+                "walkable": true,
+                "rigidbody": true,
+                "collider": {
+                    "type": "box",
+                    "offset": {
+                        "x": 0,
+                        "y": 0
+                    },
+                    "size": {
+                        "w": 16,
+                        "h": 16
+                    }
+                }
+            },
+            "position": {
+                "x": 1, 
+                "y": 10
+            },
+            "scale": {
+                "x": 3, 
+                "y": 3
+            },
+            "layer": 1
+        },
+        {
+            "tile": "rock",
+            "texture": "rock_single",
+            "group": 7,
+            "properties": {
+                "weight": 10,
+                "size": {
+                    "w": 16, 
+                    "h": 16
+                },
+                "walkable": true,
+                "rigidbody": true,
+                "collider": {
+                    "type": "box",
+                    "offset": {
+                        "x": 0,
+                        "y": 0
+                    },
+                    "size": {
+                        "w": 16,
+                        "h": 16
+                    }
+                }
+            },
+            "position": {
+                "x": 2, 
+                "y": 10
+            },
+            "scale": {
+                "x": 3, 
+                "y": 3
+            },
+            "layer": 1
+        },
+        {
+            "tile": "rock_large",
+            "texture": "rock_large",
+            "group": 7,
+            "properties": {
+                "weight": 10,
+                "size": {
+                    "w": 16, 
+                    "h": 16
+                },
+                "walkable": false,
+                "rigidbody": false
+            },
+            "position": {
+                "x": 2, 
+                "y": 9
+            },
+            "scale": {
+                "x": 3, 
+                "y": 3
+            },
+            "layer": 1
+        },
+        {
+            "tile": "rock_small",
+            "texture": "rock_small",
+            "group": 7,
+            "properties": {
+                "weight": 10,
+                "size": {
+                    "w": 16, 
+                    "h": 16
+                },
+                "walkable": false,
+                "rigidbody": false
+            },
+            "position": {
+                "x": 3, 
+                "y": 9
+            },
+            "scale": {
+                "x": 3, 
+                "y": 3
+            },
+            "layer": 1
+        },
+        {
+            "tile": "rock",
+            "texture": "rock_single",
+            "group": 7,
+            "properties": {
+                "weight": 10,
+                "size": {
+                    "w": 16, 
+                    "h": 16
+                },
+                "walkable": true,
+                "rigidbody": true,
+                "collider": {
+                    "type": "box",
+                    "offset": {
+                        "x": 0,
+                        "y": 0
+                    },
+                    "size": {
+                        "w": 16,
+                        "h": 16
+                    }
+                }
+            },
+            "position": {
+                "x": 3, 
+                "y": 10
+            },
+            "scale": {
+                "x": 3, 
+                "y": 3
+            },
+            "layer": 1
+        },
+        {
+            "tile": "rock",
+            "texture": "rock_single_bottom",
+            "group": 7,
+            "properties": {
+                "weight": 10,
+                "size": {
+                    "w": 16, 
+                    "h": 16
+                },
+                "walkable": true,
+                "rigidbody": true,
+                "collider": {
+                    "type": "box",
+                    "offset": {
+                        "x": 0,
+                        "y": 0
+                    },
+                    "size": {
+                        "w": 16,
+                        "h": 16
+                    }
+                }
+            },
+            "position": {
+                "x": 1, 
+                "y": 11
+            },
+            "scale": {
+                "x": 3, 
+                "y": 3
+            },
+            "layer": 1
+        }
+    ]
+}

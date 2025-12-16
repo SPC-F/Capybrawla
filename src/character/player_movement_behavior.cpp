@@ -12,7 +12,7 @@ PlayerMovementBehavior::PlayerMovementBehavior()
 PlayerMovementBehavior::PlayerMovementBehavior(
     const float default_standing_height, const float default_crouching_height,
     const Point default_standing_offset, const Point default_crouching_offset)
-    : PlayerMovementBehavior(18.0f, 6.0f, 1.5f, 6.0f, 18.0f,
+    : PlayerMovementBehavior(20.0f, 8.0f, 1.5f, 6.0f, 18.0f,
                              default_standing_height, default_crouching_height,
                              default_standing_offset,
                              default_crouching_offset) {}

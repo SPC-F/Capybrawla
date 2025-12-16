@@ -17,7 +17,7 @@ PlayerObject::PlayerObject(Scene &scene, const Vector3 initial_pos)
   this->name("PlayerObject");
   this->transform().position(initial_pos);
 
-  constexpr float scale_factor = 1.5f;
+  constexpr float scale_factor = 2.0f;
 
   this->transform().scale({scale_factor, scale_factor, 1.0f});
 
