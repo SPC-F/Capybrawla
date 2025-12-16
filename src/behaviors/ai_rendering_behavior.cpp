@@ -13,6 +13,7 @@ AIRenderingBehavior::AIRenderingBehavior(std::reference_wrapper<GameObject> tile
 
 void toggle_pathfinding(Pathfinding& pathfinding) {
     bool path_should_draw = !pathfinding.should_draw();
+
     if (path_should_draw != pathfinding.should_draw()) {
         if (path_should_draw) pathfinding.enable_draw();
         else pathfinding.disable_draw();
@@ -22,17 +23,17 @@ void toggle_pathfinding(Pathfinding& pathfinding) {
 void toggle_navigation_graph(GameObject& tilemap_obj) {
     for (auto& child : tilemap_obj.children()) {
         auto& child_obj = child.get();
+
         for (auto& child_nav_node_obj : child_obj.children()) {
             auto& nav_obj = child_nav_node_obj.get();
             auto maybe_nav_node = nav_obj.get_component<NavigationNode>();
                     
-            if (!maybe_nav_node) {
-                continue; // Skip if no NavigationNode component
-            }
+            if (!maybe_nav_node) continue;
 
             auto& nav_node = maybe_nav_node->get();
             
             bool should_draw = !nav_node.should_draw();
+
             if (should_draw != nav_node.should_draw()) {
                 if (should_draw) nav_node.enable_draw();
                 else nav_node.disable_draw();
@@ -51,11 +52,13 @@ void AIRenderingBehavior::on_update(float dt) {
     auto& tilemap_obj = tilemap_parent_.get();
 
     auto maybe_nav_graph = tilemap_obj.get_component<NavigationGraph>();
+
     if (!maybe_nav_graph) {
         throw std::runtime_error("AIRenderingBehavior requires a NavigationGraph component on the tilemap parent.");
     }
 
     auto maybe_pathfinding = tilemap_obj.get_component<Pathfinding>();
+    
     if (!maybe_pathfinding) {
         throw std::runtime_error("AIRenderingBehavior requires a Pathfinding component on the owner GameObject.");
     }

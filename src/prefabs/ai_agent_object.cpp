@@ -31,22 +31,22 @@ AIAgentObject::AIAgentObject(Scene &scene, const Vector3 initial_pos, std::vecto
   this->transform().position(initial_pos);
 
   auto& tile_parent = get_tilemap_parent(scene);
+  
   constexpr float scale_factor = 1.5f;
   constexpr float size = 32.0f;
+  constexpr float margin = 4.0f;
 
   this->transform().scale({scale_factor, scale_factor, 1.0f});
 
   this->add_component<Sprite>("drone_idle", Color{255, 255, 255, 255}, 0, 0, 0, 0);
   this->add_component<Rigidbody2D>(BodyType2D::Dynamic, 30.0f, true, 1.0f);
-  this->add_component<BoxCollider2D>(0.1f, 0.2f, size * scale_factor, size * scale_factor,
-                                          Point{0.0f, 0.0f});
+  this->add_component<BoxCollider2D>(0.1f, 0.2f, (size - margin) * scale_factor, (size - 6.0f) * scale_factor,
+                                          Point{2.0f, 8.0f});
   this->add_component<Animator>("drone_idle_anim", 64).play(true);
   this->add_component<BehaviorScript>(std::make_unique<AIDroneMovementBehavior>());
   this->add_component<BehaviorScript>(std::make_unique<AIRenderingBehavior>(std::ref(tile_parent)));
   
-  if (patrol_points_.empty()) {
-    patrol_points_ = std::move(target_positions);
-  }
+  if (patrol_points_.empty()) patrol_points_ = std::move(target_positions);
 
   auto& ai_controller = this->add_component<AIController>(tile_parent)
                               .set_height(size * scale_factor)

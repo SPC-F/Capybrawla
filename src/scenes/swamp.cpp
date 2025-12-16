@@ -19,7 +19,7 @@ void load_players(Scene& scene, float start_x = 1000.0f, float start_y = 500.0f)
 void load_ai_agent(Scene& scene) {
     std::vector<Vector3> patrol_points = {
         Vector3{1400.0f, 300.0f, 0.0f},
-        Vector3{500.0f, 400.0f, 0.0f},
+        Vector3{380.0f, 400.0f, 0.0f},
     };
 
     scene.add_game_object<AIAgentObject>(scene, Vector3{1000.0f, 600.0f, 0.0f}, patrol_points);
