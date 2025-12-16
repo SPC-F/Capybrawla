@@ -1,8 +1,9 @@
+#include "game/character/gui/player_info_component.h"
+
 #include <game/scenes/swamp.h>
 
 #include <engine/core/engine.h>
 #include <engine/core/rendering/renderingService.h>
-#include <engine/physics/physics_service.h>
 #include <engine/public/scene_service.h>
 #include <engine/public/components/sprite.h>
 #include <engine/public/gameObject.h>
@@ -15,14 +16,17 @@
 void load_players(Scene& scene, float start_x = 1000.0f, float start_y = 500.0f) {
     auto& player = scene.add_game_object<PlayerObject>(scene, Vector3{start_x, start_y, 0});
     player.layer(Layers::Foreground);
+
+    GameObject& player_info_comp = PlayerInfoComponent::create_and_add(scene, player);
+    player_info_comp.transform().position({50, 950, 0});
 }
 
 Scene& SwampScene::setup() {
     const Engine& engine = Engine::instance();
 
     RenderingService& rendering_service = Engine::instance().services->get_service<RenderingService>().get();
-    int window_width = rendering_service.window().get_window_width();
-    int window_height = rendering_service.window().get_window_height();
+    const int window_width = rendering_service.window().get_window_width();
+    const int window_height = rendering_service.window().get_window_height();
 
     Scene& scene = engine.services->get_service<SceneService>().get().add_scene(SCENE_NAME);
     auto& camera = scene.add_game_object<Camera>(scene, Color(), 1.0f, true);
