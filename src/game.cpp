@@ -1,5 +1,4 @@
 #include <game/game.h>
-
 #include <game/assets.h>
 #include <game/scenes/main_menu.h>
 #include <game/scenes/swamp.h>
