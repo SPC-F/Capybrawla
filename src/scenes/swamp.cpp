@@ -42,7 +42,9 @@ Scene& SwampScene::setup() {
 
     Scene& scene = engine.services->get_service<SceneService>().get().add_scene(SCENE_NAME);
     auto& camera = scene.add_game_object<Camera>(scene, Color(), 1.0f, true);
-    camera.transform().position({window_width / 2.0f, window_height / 2.0f, 0.0f});
+    camera.transform().position({
+        static_cast<float>(window_width) / 2.0f,
+        static_cast<float>(window_height) / 2.0f, 0.0f});
     
     LevelLoader loader;
     loader.load_game_objects_from_json(

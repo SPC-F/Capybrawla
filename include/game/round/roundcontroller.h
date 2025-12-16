@@ -14,7 +14,7 @@ private:
   std::vector<std::reference_wrapper<PlayerObject>> players;
   Vector3 respawn_position_;
 
-  void on_player_death(const PlayerObject &player);
+  static void on_player_death(const PlayerObject &player);
   void round_end() const;
 
 public:
@@ -27,6 +27,6 @@ public:
 
   void on_round_end(const round_end_callback_t &callback);
 
-  Vector3 respawn_position() const;
+  [[nodiscard]] Vector3 respawn_position() const;
   void respawn_position(Vector3 position);
 };
