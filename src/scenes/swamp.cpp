@@ -14,6 +14,10 @@
 #include <game/scenes/level_loader.h>
 #include <game/scripts/timer/RoundTimer.h>
 
+#include <engine/public/components/colliders/box_collider_2d.h>
+#include <game/behaviors/weapon_melee_behavior.h>
+#include <engine/physics/physics_service.h>
+
 const Vector3 DEFAULT_RESPAWN_POSITION = {600, 0, 0};
 
 void load_players(Scene& scene, RoundController& controller, float start_x = 1000.0f, float start_y = 500.0f) {
@@ -25,8 +29,27 @@ void load_players(Scene& scene, RoundController& controller, float start_x = 100
       -SwampScene::out_of_bounds_margin_y,
       SwampScene::map_height + SwampScene::out_of_bounds_margin_y));
 
+    auto& melee_weapon = scene.add_game_object("Player_Melee_Weapon");
+    melee_weapon.transform().local_position({15.0f, 5.0f, 0.0f});
+    melee_weapon.transform().scale({1.5f, 1.5f, 1.0f});
+    melee_weapon.parent(player);
+
+    auto& melee_weapon_hitbox = scene.add_game_object("Player_Melee_Weapon_Hitbox");
+    melee_weapon_hitbox.transform().local_position({50.0f, 0.0f, 0.0f});
+    melee_weapon_hitbox.parent(melee_weapon);
+    melee_weapon_hitbox.add_component<Rigidbody2D>(BodyType2D::Kinematic);
+    melee_weapon_hitbox.add_component<BoxCollider2D>(0.5f, 0.1f, 32.0f, 50.0f, Point{0.0f, 0.0f}, true, false);
+
+    melee_weapon.add_component<Sprite>("bat", Color{255, 255, 255, 255}, 0, 0, 0, 0);
+    melee_weapon.add_component<BehaviorScript>(std::make_unique<WeaponMeleeBehavior>(10, 30, 1, melee_weapon_hitbox));
+    melee_weapon.layer(Layers::Foreground + 1);
+
     player.layer(Layers::Foreground);
+
+    auto& ai_player = scene.add_game_object<PlayerObject>(scene, Vector3{start_x + 40.0f, 100.0f, 0}, false);
+
     controller.add_player(player);
+    controller.add_player(ai_player);
 }
 
 RoundController& add_round_controller(Scene& scene) {
@@ -54,6 +77,9 @@ void load_timer(Scene& scene) {
 
 Scene& SwampScene::setup() {
     const Engine& engine = Engine::instance();
+
+    auto& physics_service = engine.services->get_service<PhysicsService>().get();
+    physics_service.debug_mode(true);
 
     RenderingService& rendering_service = Engine::instance().services->get_service<RenderingService>().get();
     const int window_width = rendering_service.window().get_window_width();

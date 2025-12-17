@@ -63,6 +63,9 @@ void Game::initialize() {
 
         {"character/drone_idle.png", "drone_idle", 1, 1},
         {"character/drone_idle_anim.png", "drone_idle_anim_sheet", 1, 7},
+
+        // Weapons
+        {"weapons/bat.png", "bat_sheet", 1, 2},
     };
     Assets::load_resources(resources);
 
@@ -207,6 +210,10 @@ void Game::initialize() {
         
         {"swamp_autum_tiles", "rock_small", 77},
         {"swamp_autum_tiles", "rock_large", 76},
+
+        // Weapons
+        {"bat_sheet", "bat", 0},
+        {"bat_sheet", "bat_swing", 1},
     };
 
     Assets::register_textures(textures);
