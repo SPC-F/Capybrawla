@@ -5,6 +5,7 @@
 #include <engine/public/gameObject.h>
 #include <engine/public/util/layers.h>
 #include <engine/public/components/behaviorscript.h>
+#include <engine/public/components/animator.h>
 
 #include <game/scenes/swamp.h>
 #include <game/character/player_outofbounds_behavior.h>
@@ -29,20 +30,26 @@ void load_players(Scene& scene, RoundController& controller, float start_x = 100
       -SwampScene::out_of_bounds_margin_y,
       SwampScene::map_height + SwampScene::out_of_bounds_margin_y));
 
+    // add base offset for proper alignment
     auto& melee_weapon = scene.add_game_object("Player_Melee_Weapon");
-    melee_weapon.transform().local_position({15.0f, 5.0f, 0.0f});
-    melee_weapon.transform().scale({1.5f, 1.5f, 1.0f});
     melee_weapon.parent(player);
 
+    // hitbox
     auto& melee_weapon_hitbox = scene.add_game_object("Player_Melee_Weapon_Hitbox");
-    melee_weapon_hitbox.transform().local_position({50.0f, 0.0f, 0.0f});
     melee_weapon_hitbox.parent(melee_weapon);
     melee_weapon_hitbox.add_component<Rigidbody2D>(BodyType2D::Kinematic);
     melee_weapon_hitbox.add_component<BoxCollider2D>(0.5f, 0.1f, 32.0f, 50.0f, Point{0.0f, 0.0f}, true, false);
 
-    melee_weapon.add_component<Sprite>("bat", Color{255, 255, 255, 255}, 0, 0, 0, 0);
-    melee_weapon.add_component<BehaviorScript>(std::make_unique<WeaponMeleeBehavior>(10, 30, 1, melee_weapon_hitbox));
-    melee_weapon.layer(Layers::Foreground + 1);
+    // sprite
+    auto& melee_weapon_sprite = scene.add_game_object("Player_Melee_Weapon_Sprite");
+    melee_weapon_sprite.transform().scale({1.5f, 1.5f, 0.0f});
+    melee_weapon_sprite.parent(melee_weapon);
+    melee_weapon_sprite.add_component<Sprite>("bat", Color{255, 255, 255, 255}, 0, 0, 0, 0);
+    melee_weapon_sprite.add_component<Animator>("bat_swing_anim", 30);
+    melee_weapon_sprite.layer(Layers::Foreground + 1);
+
+    // for animator change the position to show a proper swing position
+    melee_weapon.add_component<BehaviorScript>(std::make_unique<WeaponMeleeBehavior>("bat_swing_anim", 10, 20, 1, 300.0f, melee_weapon_hitbox, melee_weapon_sprite, Point{60, 0}, Point{30.0f, 0}, Point{15.0f, 0}));
 
     player.layer(Layers::Foreground);
 

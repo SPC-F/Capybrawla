@@ -66,6 +66,9 @@ void Game::initialize() {
 
         // Weapons
         {"weapons/bat.png", "bat_sheet", 1, 2},
+        {"weapons/bat_swing_anim.png", "bat_swing_anim_sheet", 1, 4},
+
+        {"weapons/sword_swing_anim.png", "sword_swing_anim_sheet", 1, 4},
     };
     Assets::load_resources(resources);
 
@@ -225,6 +228,8 @@ void Game::initialize() {
         {"capybara_default_duck_anim_sheet", "capybara_default_duck_anim", 0, 7},
         
         {"drone_idle_anim_sheet", "drone_idle_anim", 0, 7},
+        {"bat_swing_anim_sheet", "bat_swing_anim", 0, 4},
+        {"sword_swing_anim_sheet", "sword_swing_anim", 0, 4},
     };
     Assets::register_sprite_sheets(sprite_sheets);
 
