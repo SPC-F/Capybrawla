@@ -8,26 +8,32 @@
 
 WeaponMeleeBehavior::WeaponMeleeBehavior(
     const std::string& attack_animation_name,
+    const std::string& original_texture_name,
     int damage, 
     int range, 
-    int swingspeed, 
-    float knockback_force, 
+    float hitbox_duration, 
+    Point knockback_force, 
     GameObject& hitbox_gameobject,
     GameObject& sprite_gameobject,
     Point hitbox_offset,
     Point sprite_offset_left,
-    Point sprite_offset_right
+    Point sprite_offset_right,
+    Point animator_offset_left,
+    Point animator_offset_right
 )
-: attack_animation_name_(attack_animation_name), 
+: attack_animation_name_(attack_animation_name),
+    original_texture_name_(original_texture_name), 
     damage_(damage), 
     range_(range), 
-    swingspeed_(swingspeed), 
+    hitbox_duration_(hitbox_duration), 
     knockback_force_(knockback_force), 
     hitbox_gameobject_(hitbox_gameobject),
     sprite_gameobject_(sprite_gameobject),
     hitbox_offset_(hitbox_offset),
     sprite_offset_left_(sprite_offset_left),
-    sprite_offset_right_(sprite_offset_right)
+    sprite_offset_right_(sprite_offset_right),
+    animator_offset_left_(animator_offset_left),
+    animator_offset_right_(animator_offset_right)
 {}
     
 void WeaponMeleeBehavior::on_awake() {
@@ -46,9 +52,9 @@ void WeaponMeleeBehavior::on_awake() {
         throw std::runtime_error("WeaponMeleeBehavior requires a parent GameObject.");
     }
 
-    sprite_component_ = maybe_sprite->get();
     hitbox_component_ = maybe_hitbox->get();
     player_component_ = maybe_player->get();
+    sprite_component_ = maybe_sprite->get();
 
     hitbox_component_->get().width(static_cast<float>(range_));
 
@@ -70,8 +76,8 @@ void WeaponMeleeBehavior::on_awake() {
                 }
 
                 auto& rb = other_gameobject.get_component<Rigidbody2D>()->get();
-                float knockback = facing_right_ ? knockback_force_ : -knockback_force_;
-                rb.apply_impulse(Vector3{knockback, 50.0f, 0.0f});
+                Point knockback = facing_right_ ? knockback_force_ : Point{-knockback_force_.x, -knockback_force_.y};
+                rb.apply_impulse(Vector3{knockback.x, knockback.y, 0.0f});
             }
         });
 }
@@ -101,12 +107,11 @@ void WeaponMeleeBehavior::on_update(float dt) {
         if (sprite_component_) {
             animator.set_animation(attack_animation_name_);
 
-            /// Reset sprite position because the animator is flipped
-            /// We always reset to the right as the flip inverts it
-            Point offset = sprite_offset_right_;
+
+            Point animator_offset = facing_right_ ? animator_offset_right_ : animator_offset_left_;
             sprite_gameobject_.get()
                 .transform()
-                .local_position({ offset.x, offset.y, 0.0f });
+                .local_position({ animator_offset.x, animator_offset.y, 0.0f });
 
             animator.play(false);
             hitbox_component_->get().active(true);
@@ -133,7 +138,7 @@ void WeaponMeleeBehavior::on_update(float dt) {
             hitbox_timer_ = 0.0f;
             
             if (sprite_component_) {
-                sprite_component_->get().texture("bat");
+                sprite_component_->get().texture(original_texture_name_);
             }
         }
     }

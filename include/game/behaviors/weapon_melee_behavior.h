@@ -10,34 +10,41 @@ class WeaponMeleeBehavior : public Behavior {
 public:
     WeaponMeleeBehavior(
         const std::string& attack_animation_name,
+        const std::string& original_texture_name,
         int damage,
         int range,
-        int swingspeed,
-        float knockback_force,
+        float hitbox_duration,
+        Point knockback_force,
         GameObject& hitbox_gameobject,
         GameObject& sprite_gameobject,
         Point hitbox_offset = Point{0, 0},
         Point sprite_offset_left = Point{0, 0},
-        Point sprite_offset_right = Point{0, 0}
+        Point sprite_offset_right = Point{0, 0},
+        Point animator_offset_left = Point{0, 0},
+        Point animator_offset_right = Point{0, 0}
     );
     ~WeaponMeleeBehavior() override = default;    
 
     void on_awake() override;
     void on_update(float dt) override;
 private: 
-    std::string attack_animation_name_{"bat_swing_anim"};
+    std::string attack_animation_name_;
+    std::string original_texture_name_;
+    bool facing_right_{true};
+    
     int damage_;
     int range_;
     int swingspeed_;
-    bool facing_right_{true};
-    float knockback_force_{100};
+    Point knockback_force_;
     
     float hitbox_timer_{0.0f};
-    const float hitbox_duration_ = 0.2f;
+    float hitbox_duration_ = 0.2f;
 
     Point hitbox_offset_;
     Point sprite_offset_left_;
     Point sprite_offset_right_;
+    Point animator_offset_left_;
+    Point animator_offset_right_;
 
     std::reference_wrapper<GameObject> sprite_gameobject_;
     std::reference_wrapper<GameObject> hitbox_gameobject_;
