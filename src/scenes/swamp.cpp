@@ -18,8 +18,6 @@
 #include <game/scenes/swamp.h>
 #include <game/scripts/timer/RoundTimer.h>
 
-#include <engine/physics/physics_service.h>
-
 const Vector3 DEFAULT_RESPAWN_POSITION = {600, 0, 0};
 
 void load_players(Scene& scene, RoundController& controller, float start_x = 1000.0f, float start_y = 500.0f) {
@@ -66,9 +64,6 @@ void load_timer(Scene& scene) {
 
 Scene& SwampScene::setup() {
     const Engine& engine = Engine::instance();
-
-    auto& physics_service = engine.services->get_service<PhysicsService>().get();
-    physics_service.debug_mode(true);
 
     RenderingService& rendering_service = Engine::instance().services->get_service<RenderingService>().get();
     const int window_width = rendering_service.window().get_window_width();
