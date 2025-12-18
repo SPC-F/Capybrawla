@@ -7,6 +7,7 @@
 #include <engine/core/engine.h>
 #include <engine/core/rendering/assetService.h>
 #include <engine/core/rendering/renderingService.h>
+#include <engine/audio/audio_service.h>
 #include <engine/public/components/behaviorscript.h>
 #include <engine/public/scene_service.h>
 
@@ -220,6 +221,13 @@ void Game::initialize() {
         {"drone_idle_anim_sheet", "drone_idle_anim", 0, 7},
     };
     Assets::register_sprite_sheets(sprite_sheets);
+
+    const std::vector<LoadAudio> audios {
+        {"./resources/sounds/start_menu.wav", "start_menu", SoundType::SDL_MIXER},
+        {"./resources/sounds/spear_of_justice.wav", "spear_of_justice", SoundType::SDL_MIXER},
+        {"./resources/sounds/enemy_approaching.wav", "enemy_approaching", SoundType::SDL_MIXER},
+    };
+    Assets::register_audio(audios);
 
     auto& window_controller = engine.services->get_service<RenderingService>().get().window();
     window_controller.set_window_fullscreen();

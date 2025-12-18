@@ -2,11 +2,17 @@
 
 #include <engine/core/engine.h>
 #include <engine/core/rendering/assetService.h>
+#include <engine/audio/audio_service.h>
 #include <engine/core/rendering/renderingService.h>
 
 AssetService& get_asset_service() {
   const Engine &engine = Engine::instance();
   return engine.services->get_service<AssetService>().get();
+}
+
+AudioService& get_audio_service() {
+  const Engine &engine = Engine::instance();
+  return engine.services->get_service<AudioService>().get();
 }
 
 void Assets::load_resources(const std::vector<LoadResource> &resources) {
@@ -43,5 +49,21 @@ void Assets::register_sprite_sheets(const std::vector<LoadAnimation> &animations
         animation.resource_name, animation.animation_name,
         static_cast<size_t>(animation.start_frame),
         static_cast<size_t>(animation.frame_count));
+  }
+}
+
+void Assets::register_audio(const std::vector<LoadAudio> &audios) {
+  auto &audio_service = get_audio_service();
+
+  for (const auto &audio : audios) {
+    if (audio.path.empty() || audio.name.empty()) {
+      throw std::runtime_error(
+          "Audio resource path and name cannot be empty");
+    }
+
+    audio_service.register_sound(
+        audio.path,
+        audio.name,
+        audio.type);
   }
 }

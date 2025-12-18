@@ -1,5 +1,6 @@
 #include <engine/core/engine.h>
 #include <engine/core/rendering/renderingService.h>
+#include <engine/audio/audio_service.h>
 #include <engine/public/scene_service.h>
 #include <engine/public/components/sprite.h>
 #include <engine/public/gameObject.h>
@@ -76,6 +77,15 @@ Scene& SwampScene::setup() {
     RoundController& controller = add_round_controller(scene);
     load_players(scene, controller);
     load_ai_agent(scene);
+
+    AudioService &audio_service = Engine::instance().services->get_service<AudioService>().get();
+    scene.on_run([&audio_service](Scene& scene) {
+        audio_service.play_sound("spear_of_justice", 0.1f, true);
+    });
+
+    scene.on_stop([&audio_service](Scene& scene) {
+        audio_service.stop_all_sounds();
+    });
 
     return scene;
 }

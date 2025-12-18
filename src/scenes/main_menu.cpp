@@ -6,6 +6,7 @@
 #include <engine/core/engine.h>
 #include <engine/core/rendering/renderingService.h>
 #include <engine/core/system/system_service.h>
+#include <engine/audio/audio_service.h>
 #include <engine/public/camera.h>
 #include <engine/public/gameObject.h>
 #include <engine/public/components/sprite.h>
@@ -77,6 +78,15 @@ Scene& MainMenuScene::setup(
     setup_credits(scene, credits_parent);
 
     falling_capybaras(scene, 10);
+
+    AudioService &audio_service = Engine::instance().services->get_service<AudioService>().get();
+    scene.on_run([this, &audio_service](Scene& scene) {
+        audio_service.play_sound("start_menu", 0.1f, true);
+    });
+
+    scene.on_stop([this, &audio_service](Scene& scene) {
+        audio_service.stop_all_sounds();
+    });
 
     return scene;
 }
