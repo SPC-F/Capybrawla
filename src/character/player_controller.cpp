@@ -1,4 +1,5 @@
 
+#include <engine/util/uuid.h>
 #include <game/character/player_controller.h>
 
 PlayerControllerBehavior::PlayerControllerBehavior(): PlayerControllerBehavior(100, 100) {}
@@ -31,14 +32,22 @@ int PlayerControllerBehavior::max_health() const { return max_health_; }
 void PlayerControllerBehavior::max_health(const int max_health) {
   max_health_ = max_health;
 }
-void PlayerControllerBehavior::on_health_changed(
+lib::Subscription PlayerControllerBehavior::on_health_changed(
     const health_changed_callback_t &callback) {
-  health_changed_callbacks_.push_back(callback);
+
+  const auto id = uuid::generate_uuid_v4();
+  health_changed_signals_.emplace_back(id, callback);
+  return lib::Subscription([this, id]() {
+      std::erase_if(health_changed_signals_,
+          [&](const lib::Signal<int, int>& signal) {
+              return signal.id() == id;
+          });
+  });
 }
 
 void PlayerControllerBehavior::notify_health_changed(const int old_health) const {
-  for (const auto& callback : health_changed_callbacks_) {
-    callback(old_health, health_);
+  for (const auto& signal : health_changed_signals_) {
+    signal.envoke(old_health, health_);
   }
 }
 
@@ -48,12 +57,21 @@ void PlayerControllerBehavior::lives(const int lives) {
   lives_ = lives;
   notify_lives_changed(old_lives);
 }
-void PlayerControllerBehavior::on_lives_changed(
+lib::Subscription PlayerControllerBehavior::on_lives_changed(
     const lives_changed_callback_t &callback) {
-  lives_changed_callbacks_.push_back(callback);
+
+  const auto id = uuid::generate_uuid_v4();
+  lives_changed_signals_.emplace_back(id, callback);
+
+  return lib::Subscription([this, id]() {
+      std::erase_if(lives_changed_signals_,
+          [&](const lib::Signal<int, int>& signal) {
+              return signal.id() == id;
+          });
+  });
 }
 void PlayerControllerBehavior::notify_lives_changed(const int old_lives) const {
-  for (const auto &callback : lives_changed_callbacks_) {
-    callback(old_lives, lives_);
+  for (const auto &signal : lives_changed_signals_) {
+    signal.envoke(old_lives, lives_);
   }
 }
