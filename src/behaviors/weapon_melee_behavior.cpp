@@ -102,7 +102,7 @@ void WeaponMeleeBehavior::on_update(float dt) {
             .local_position({ offset.x, offset.y, 0.0f });
     }
 
-    // Set all the right positions and activate hitbox
+    /// Set all the right positions and activate hitbox
     if (provider.is_mouse_pressed(MouseButton::left)) {
         if (sprite_component_) {
             animator.set_animation(attack_animation_name_);
@@ -126,7 +126,7 @@ void WeaponMeleeBehavior::on_update(float dt) {
         }
     }
 
-    // reset timer and position + animation reset
+    /// reset timer and position + animation reset
     if (hitbox_timer_ > 0.0f) {
         hitbox_timer_ -= dt;
 

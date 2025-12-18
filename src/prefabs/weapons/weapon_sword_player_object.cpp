@@ -17,6 +17,7 @@ WeaponSwordPlayerObject::WeaponSwordPlayerObject(Scene& scene, GameObject& paren
     
     const std::string attack_idle_name = "sword";
     const std::string attack_animation_name = "sword_swing_anim";
+    
     /// Seperate game object for hitbox
     auto& melee_weapon_hitbox = scene.add_game_object("Player_Melee_Weapon_Hitbox");
     melee_weapon_hitbox.parent(dynamic_cast<GameObject&>(*this));
