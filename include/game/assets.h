@@ -2,6 +2,7 @@
 
 #include <string>
 #include <vector>
+#include <engine/audio/sound/sound_type.h>
 
 struct LoadResource {
     std::string file;
@@ -23,6 +24,12 @@ struct LoadAnimation {
     int frame_count;
 };
 
+struct LoadAudio {
+    std::string path;
+    std::string name;
+    SoundType type;
+};
+
 class Assets {
 public:
     static constexpr const char* SWAMP_BACKGROUND = "swamp_background.png";
@@ -36,4 +43,5 @@ public:
     static void load_resources(const std::vector<LoadResource>& resources);
     static void register_textures(const std::vector<LoadTexture>& textures);
     static void register_sprite_sheets(const std::vector<LoadAnimation>& animations);
+    static void register_audio(const std::vector<LoadAudio>& audio);
 };
