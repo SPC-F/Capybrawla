@@ -1,5 +1,7 @@
 #pragma once
 
+#include <engine/public/scene.h>
+
 /**
  * @brief The Game class manages the main game lifecycle.
  * 
@@ -10,5 +12,7 @@ public:
     static void initialize();
     static void run();
     static void shutdown();
+private:
+    static void bootstrap(Scene& first_scene);
 };
 

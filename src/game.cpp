@@ -4,30 +4,16 @@
 #include <game/scenes/swamp.h>
 #include <game/scenes/swamp_autum.h>
 
+#include <engine/audio/audio_service.h>
 #include <engine/core/engine.h>
 #include <engine/core/rendering/assetService.h>
 #include <engine/core/rendering/renderingService.h>
-#include <engine/audio/audio_service.h>
 #include <engine/public/components/behaviorscript.h>
 #include <engine/public/scene_service.h>
 
 #include <game/pause_menu_ui.h>
 #include <game/behaviors/pause_play_behavior.h>
-
-namespace
-{
-    void strap_pause_menu(Scene& main_menu_scene)
-    {
-        auto ppmenu = std::make_unique<PauseMenuUI>(main_menu_scene);
-        ppmenu->mark_dont_destroy_on_load(true);
-
-        auto& ppc = main_menu_scene.add_game_object("Pause/Play controller");
-        ppc.add_component<BehaviorScript>(std::make_unique<PausePlayBehavior>(*ppmenu));
-        ppc.mark_dont_destroy_on_load(true);
-
-        main_menu_scene.add_game_object(std::move(ppmenu));
-    }
-}
+#include <game/behaviors/physics_gizmo_toggle_behavior.h>
 
 void Game::initialize() {
     const Engine& engine = Engine::instance();
@@ -283,11 +269,24 @@ void Game::run() {
         load_training_scene
     );
 
-    strap_pause_menu(main_menu_scene);
+    bootstrap(main_menu_scene);
     scene_service.load_scene(main_menu_scene.name());
 }
 
 void Game::shutdown() {
     Engine& engine = Engine::instance();
     engine.quit();
+}
+
+void Game::bootstrap(Scene& first_scene) {
+    auto& gizmo_toggle = first_scene.add_game_object("Gizmo Toggle");
+    gizmo_toggle.add_component<BehaviorScript>(std::make_unique<PhysicsGizmoToggleBehavior>());
+    gizmo_toggle.mark_dont_destroy_on_load(true);
+
+    auto& ppmenu = first_scene.add_game_object<PauseMenuUI>(first_scene);
+    ppmenu.mark_dont_destroy_on_load(true);
+
+    auto& ppc = first_scene.add_game_object("Pause/Play controller");
+    ppc.add_component<BehaviorScript>(std::make_unique<PausePlayBehavior>(ppmenu));
+    ppc.mark_dont_destroy_on_load(true);
 }
