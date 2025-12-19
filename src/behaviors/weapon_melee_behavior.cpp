@@ -11,7 +11,6 @@ WeaponMeleeBehavior::WeaponMeleeBehavior(
     const std::string& original_texture_name,
     int damage, 
     int range, 
-    float hitbox_duration, 
     Point knockback_force, 
     GameObject& hitbox_gameobject,
     GameObject& sprite_gameobject,
@@ -25,7 +24,6 @@ WeaponMeleeBehavior::WeaponMeleeBehavior(
     original_texture_name_(original_texture_name), 
     damage_(damage), 
     range_(range), 
-    hitbox_duration_(hitbox_duration), 
     knockback_force_(knockback_force), 
     hitbox_gameobject_(hitbox_gameobject),
     sprite_gameobject_(sprite_gameobject),
@@ -76,7 +74,7 @@ void WeaponMeleeBehavior::on_awake() {
                 }
 
                 auto& rb = other_gameobject.get_component<Rigidbody2D>()->get();
-                Point knockback = facing_right_ ? knockback_force_ : Point{-knockback_force_.x, -knockback_force_.y};
+                Point knockback = facing_right_ ? knockback_force_delta_ : Point{-knockback_force_delta_.x, -knockback_force_delta_.y};
                 rb.apply_impulse(Vector3{knockback.x, knockback.y, 0.0f});
             }
         });
@@ -89,13 +87,16 @@ void WeaponMeleeBehavior::on_update(float dt) {
     auto& rb = game_object().parent()->get().get_component<Rigidbody2D>()->get();
     auto& animator = sprite_gameobject_.get().get_component<Animator>()->get();
 
+    /// Update knockback delta
+    knockback_force_delta_ = {knockback_force_.x * dt * 1000, knockback_force_.y * dt * 1000};
+
     if (rb.velocity().x > 0) facing_right_ = true;
     else if (rb.velocity().x < 0) facing_right_ = false;
     sprite_component_->get().flip_x(!facing_right_);
 
     /// Set sprite position based on direction
     /// Only if not attacking due to animation offset
-    if (hitbox_timer_ <= 0.0f) {
+    if (!animator.is_playing()) {
         Point offset = facing_right_ ? sprite_offset_right_ : sprite_offset_left_;
         sprite_gameobject_.get()
             .transform()
@@ -103,7 +104,7 @@ void WeaponMeleeBehavior::on_update(float dt) {
     }
 
     /// Set all the right positions and activate hitbox
-    if (provider.is_mouse_pressed(MouseButton::left)) {
+    if (provider.is_mouse_pressed(MouseButton::left) && !animator.is_playing()) {
         if (sprite_component_) {
             animator.set_animation(attack_animation_name_);
 
@@ -122,24 +123,15 @@ void WeaponMeleeBehavior::on_update(float dt) {
             }
 
             hitbox_gameobject_.get().transform().local_position({ pos_x, 0.0f, 0.0f });
-            hitbox_timer_ = hitbox_duration_;
         }
     }
 
-    /// reset timer and position + animation reset
-    if (hitbox_timer_ > 0.0f) {
-        hitbox_timer_ -= dt;
-
-        if (hitbox_timer_ <= 0.0f) {
-            animator.reset();
-
-            hitbox_component_->get().active(false);
-            hitbox_gameobject_.get().transform().local_position({0.0f, 0.0f, 0.0f});
-            hitbox_timer_ = 0.0f;
-            
-            if (sprite_component_) {
-                sprite_component_->get().texture(original_texture_name_);
-            }
-        }
+    /// Reset after attack animation is done
+    if (!animator.is_playing()) {
+        animator.reset();
+        sprite_component_->get().texture(original_texture_name_);
+        
+        hitbox_component_->get().active(false);
+        hitbox_gameobject_.get().transform().local_position({0.0f, 0.0f, 0.0f});
     }
 }
