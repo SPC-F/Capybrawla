@@ -13,7 +13,6 @@ public:
         const std::string& original_texture_name,
         int damage,
         int range,
-        float hitbox_duration,
         Point knockback_force,
         GameObject& hitbox_gameobject,
         GameObject& sprite_gameobject,
@@ -36,9 +35,7 @@ private:
     int range_;
     int swingspeed_;
     Point knockback_force_;
-    
-    float hitbox_timer_{0.0f};
-    float hitbox_duration_ = 0.2f;
+    Point knockback_force_delta_;
 
     Point hitbox_offset_;
     Point sprite_offset_left_;
