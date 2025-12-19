@@ -38,7 +38,7 @@ void Game::initialize() {
         // Main menu
         {"ui/main_menu.png", "main_menu_bg", 1, 1},
         {"ui/buttons_large.png", "buttons_large", 2, 2},
-        {"ui/buttons_big.png", "buttons_big", 4, 2},
+        {"ui/buttons_big.png", "buttons_big", 5, 2},
         {"ui/buttons_small.png", "buttons_small", 4, 5},
 
         // Levels
