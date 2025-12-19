@@ -6,13 +6,17 @@
 #include <engine/public/gameObject.h>
 #include <engine/public/util/layers.h>
 #include <engine/public/components/behaviorscript.h>
+#include <engine/public/components/animator.h>
 
-#include <game/scenes/swamp.h>
 #include <game/character/player_outofbounds_behavior.h>
-#include <game/round/roundcontroller.h>
 #include <game/character/player_object.h>
 #include <game/prefabs/ai_drone_agent_object.h>
+#include <game/prefabs/weapons/weapon_bat_player_object.h>
+#include <game/prefabs/weapons/weapon_axe_player_object.h>
+#include <game/prefabs/weapons/weapon_sword_player_object.h>
+#include <game/round/roundcontroller.h>
 #include <game/scenes/level_loader.h>
+#include <game/scenes/swamp.h>
 #include <game/scripts/timer/RoundTimer.h>
 
 const Vector3 DEFAULT_RESPAWN_POSITION = {600, 0, 0};
@@ -26,8 +30,14 @@ void load_players(Scene& scene, RoundController& controller, float start_x = 100
       -SwampScene::out_of_bounds_margin_y,
       SwampScene::map_height + SwampScene::out_of_bounds_margin_y));
 
+    auto& weapon_axe = scene.add_game_object<WeaponAxePlayerObject>(scene, player);
+
     player.layer(Layers::Foreground);
+
+    auto& ai_player = scene.add_game_object<PlayerObject>(scene, Vector3{start_x + 40.0f, 100.0f, 0}, false);
+
     controller.add_player(player);
+    controller.add_player(ai_player);
 }
 
 RoundController& add_round_controller(Scene& scene) {

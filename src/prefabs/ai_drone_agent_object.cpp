@@ -28,6 +28,7 @@ GameObject& get_tilemap_parent(Scene& scene) {
 AIDroneAgentObject::AIDroneAgentObject(Scene &scene, const Vector3 initial_pos, std::vector<Vector3> target_positions)
     : GameObject(scene) {
   this->name("AIDroneAgentObject");
+  this->tag("Drone");
   this->transform().position(initial_pos);
 
   auto& tile_parent = get_tilemap_parent(scene);

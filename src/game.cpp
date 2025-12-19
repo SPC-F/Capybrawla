@@ -64,6 +64,16 @@ void Game::initialize() {
 
         {"character/drone_idle.png", "drone_idle", 1, 1},
         {"character/drone_idle_anim.png", "drone_idle_anim_sheet", 1, 7},
+
+        // Weapons
+        {"weapons/bat.png", "bat_sheet", 1, 2},
+        {"weapons/bat_swing_anim.png", "bat_swing_anim_sheet", 1, 4},
+
+        {"weapons/axe.png", "axe_sheet", 1, 2},
+        {"weapons/axe_swing_anim.png", "axe_swing_anim_sheet", 1, 4},
+
+        {"weapons/sword.png", "sword_sheet", 1, 2},
+        {"weapons/sword_swing_anim.png", "sword_swing_anim_sheet", 1, 4},
     };
     Assets::load_resources(resources);
 
@@ -208,17 +218,34 @@ void Game::initialize() {
         
         {"swamp_autum_tiles", "rock_small", 77},
         {"swamp_autum_tiles", "rock_large", 76},
+
+        // Weapons
+        {"bat_sheet", "bat", 0},
+        {"bat_sheet", "bat_swing", 1},
+
+        {"axe_sheet", "axe", 0},
+        {"axe_sheet", "axe_swing", 1},
+
+        {"sword_sheet", "sword", 0},
+        {"sword_sheet", "sword_swing", 1},
     };
 
     Assets::register_textures(textures);
 
     const std::vector<LoadAnimation> sprite_sheets {
+        // Players
         {"capybara_default_walk_anim_sheet", "capybara_default_walk_anim", 0, 8},
         {"capybara_default_idle_anim_sheet", "capybara_default_idle_anim", 0, 7},
         {"capybara_default_jump_anim_sheet", "capybara_default_jump_anim", 0, 7},
         {"capybara_default_duck_anim_sheet", "capybara_default_duck_anim", 0, 7},
         
+        // Opponents
         {"drone_idle_anim_sheet", "drone_idle_anim", 0, 7},
+
+        // Weapons
+        {"bat_swing_anim_sheet", "bat_swing_anim", 0, 4},
+        {"axe_swing_anim_sheet", "axe_swing_anim", 0, 4},
+        {"sword_swing_anim_sheet", "sword_swing_anim", 0, 4},
     };
     Assets::register_sprite_sheets(sprite_sheets);
 
