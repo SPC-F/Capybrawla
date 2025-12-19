@@ -5,11 +5,11 @@
 ## 📂 Game File Structure
 
 ```
-/src
+/src/game
 │
 ├── main.cpp            # Kick the game off 🚀
 │
-├── game/               # Core game setup & configuration
+├── core/               # Core game setup & configuration
 │ ├── game.cpp          # Scene registration & first scene initialization
 │ └── game_config.h     # Global settings ⚙️
 │
