@@ -1,4 +1,4 @@
-#include <game/behaviors/physics_gizmo_toggle_behavior.h>
+#include <game/behaviors/toggle/gizmo/physics_gizmo_toggle_behavior.h>
 
 #include <engine/core/engine.h>
 #include <engine/input/input_manager.h>

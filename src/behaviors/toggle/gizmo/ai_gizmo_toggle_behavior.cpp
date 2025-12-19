@@ -1,4 +1,4 @@
-#include <game/behaviors/ai_rendering_behavior.h>
+#include <game/behaviors/toggle/gizmo/ai_gizmo_toggle_behavior.h>
 
 #include <engine/core/engine.h>
 #include <engine/input/input_system.h>
@@ -8,7 +8,7 @@
 #include <engine/public/components/ai/navigation/navigation_node.h>
 #include <engine/public/components/ai/navigation/pathfinding.h>
 
-AIRenderingBehavior::AIRenderingBehavior(std::reference_wrapper<GameObject> tilemap_parent)
+AIGizmoToggleBehavior::AIGizmoToggleBehavior(std::reference_wrapper<GameObject> tilemap_parent)
     : tilemap_parent_(tilemap_parent) {}
 
 void toggle_pathfinding(Pathfinding& pathfinding) {
@@ -43,7 +43,7 @@ void toggle_navigation_graph(GameObject& tilemap_obj) {
     }
 }
 
-void AIRenderingBehavior::on_update(float dt) {
+void AIGizmoToggleBehavior::on_update(float dt) {
     
     const IInputProvider &provider =
     Engine::instance().services->get_service<InputManager>().get().provider();

@@ -10,10 +10,12 @@
 #include <engine/core/rendering/renderingService.h>
 #include <engine/public/components/behaviorscript.h>
 #include <engine/public/scene_service.h>
+#include <engine/public/ui/ui_fps.h>
 
 #include <game/pause_menu_ui.h>
 #include <game/behaviors/pause_play_behavior.h>
-#include <game/behaviors/physics_gizmo_toggle_behavior.h>
+#include <game/behaviors/toggle/gizmo/physics_gizmo_toggle_behavior.h>
+#include <game/behaviors/toggle/object_toggle_behavior.h>
 
 void Game::initialize() {
     const Engine& engine = Engine::instance();
@@ -282,6 +284,13 @@ void Game::bootstrap(Scene& first_scene) {
     auto& gizmo_toggle = first_scene.add_game_object("Gizmo Toggle");
     gizmo_toggle.add_component<BehaviorScript>(std::make_unique<PhysicsGizmoToggleBehavior>());
     gizmo_toggle.mark_dont_destroy_on_load(true);
+
+    auto& fps_counter = first_scene.add_game_object<UIFPS>(first_scene);
+    fps_counter.mark_dont_destroy_on_load(true);
+
+    auto& fps_controller = first_scene.add_game_object("FPS Toggle");
+    fps_controller.add_component<BehaviorScript>(std::make_unique<ObjectToggleBehavior>(fps_counter));
+    fps_controller.mark_dont_destroy_on_load(true);
 
     auto& ppmenu = first_scene.add_game_object<PauseMenuUI>(first_scene);
     ppmenu.mark_dont_destroy_on_load(true);
