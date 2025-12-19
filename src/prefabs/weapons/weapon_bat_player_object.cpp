@@ -29,12 +29,11 @@ WeaponBatPlayerObject::WeaponBatPlayerObject(Scene& scene, GameObject& parent)
     melee_weapon_sprite.transform().scale({1.5f, 1.5f, 0.0f});
     melee_weapon_sprite.parent(dynamic_cast<GameObject&>(*this));
     melee_weapon_sprite.add_component<Sprite>(attack_idle_name, Color{255, 255, 255, 255}, 0, 0, 0, 0);
-    melee_weapon_sprite.add_component<Animator>(attack_animation_name, 30);
+    melee_weapon_sprite.add_component<Animator>(attack_animation_name, 50);
     melee_weapon_sprite.layer(Layers::Foreground + 1);
 
     const int damage = 10;
     const int range = 20;
-    float hitbox_duration = 0.2f;
     const Point knockback_force = Point{200.0f, 50.0f};
 
     const Point hitbox_offset{60, 0};
@@ -48,7 +47,6 @@ WeaponBatPlayerObject::WeaponBatPlayerObject(Scene& scene, GameObject& parent)
         attack_idle_name,
         damage,
         range,
-        hitbox_duration,
         knockback_force,
         melee_weapon_hitbox,
         melee_weapon_sprite,
