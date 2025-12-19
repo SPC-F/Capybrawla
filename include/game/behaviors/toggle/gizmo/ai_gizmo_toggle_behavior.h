@@ -5,10 +5,13 @@
 #include <engine/public/components/rigidbody_2d.h>
 #include <engine/public/util/layers.h>
 
-class AIRenderingBehavior : public Behavior {
+/**
+ * @brief Behavior to toggle AI gizmos (navigation graph and pathfinding) with F3 and F4 key presses.
+ */
+class AIGizmoToggleBehavior : public Behavior {
 public:
-    AIRenderingBehavior(std::reference_wrapper<GameObject> tilemap_parent);
-    ~AIRenderingBehavior() override = default;    
+    AIGizmoToggleBehavior(std::reference_wrapper<GameObject> tilemap_parent);
+    ~AIGizmoToggleBehavior() override = default;    
 
     void on_update(float dt) override;
 private: 
