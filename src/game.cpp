@@ -256,7 +256,9 @@ void Game::run() {
     SwampScene::setup();
     SwampAutumScene::setup();
 
-    auto load_create_game_scene = [](){};
+    auto load_create_game_scene = [&scene_service]() {
+        scene_service.load_scene(SwampAutumScene::SCENE_NAME);
+    };
 
     auto load_join_game_scene = [](const std::string& address){};
 

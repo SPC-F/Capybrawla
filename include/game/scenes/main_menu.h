@@ -28,6 +28,7 @@ public:
     void setup_main_menu(
         Scene& scene,
         GameObject& parent,
+        create_callback_t create_callback_t,
         training_callback_t training_callback
     );
 

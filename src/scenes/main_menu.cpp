@@ -64,7 +64,7 @@ Scene& MainMenuScene::setup(
     };
     
     GameObject& main_menu_parent = add_menu_parent("MainMenuParent", true);
-    setup_main_menu(scene, main_menu_parent, training_callback);
+    setup_main_menu(scene, main_menu_parent, create_callback, training_callback);
 
     GameObject& create_game_parent = add_menu_parent("CreateGameParent", false);
     setup_create_game(scene, create_game_parent, create_callback);
@@ -92,7 +92,7 @@ Scene& MainMenuScene::setup(
     return scene;
 }
 
-void MainMenuScene::setup_main_menu(Scene& scene, GameObject& parent, training_callback_t training_callback) {
+void MainMenuScene::setup_main_menu(Scene& scene, GameObject& parent, create_callback_t create_callback, training_callback_t training_callback) {
     SceneService& scene_service = Engine::instance().services->get_service<SceneService>().get();
 
     UIText& title_text = create_text(
@@ -115,9 +115,17 @@ void MainMenuScene::setup_main_menu(Scene& scene, GameObject& parent, training_c
         "button_large_blue"
     );
     create_game_button.parent(parent);
-    create_game_button.add_on_press([this](UIButton& /*btn*/) {
-        toggle_parent_visibility("CreateGameParent");
+    create_game_button.add_on_press([this, create_callback](UIButton& btn) {
+        auto& system_service = Engine::instance().services->get_service<SystemService>().get();
+        system_service.set_cursor_to_arrow();
+
+        create_callback();
     });
+
+    // May be used later if a lobby is implemented before joining a game.
+    // create_game_button.add_on_press([this](UIButton& /*btn*/) {
+    //     toggle_parent_visibility("CreateGameParent");
+    // });
 
     UIButton& training_button = create_button(
         scene,
