@@ -15,6 +15,10 @@
 #include <game/prefabs/weapons/weapon_bat_player_object.h>
 #include <game/prefabs/weapons/weapon_axe_player_object.h>
 #include <game/prefabs/weapons/weapon_sword_player_object.h>
+#include <game/behaviors/multiplayer/multiplayer_controller.h>
+#include <game/network/message_types.h>
+
+#include <iostream>
 
 const Vector3 DEFAULT_MULTIPLAYER_RESPAWN_POSITION = {600, 0, 0};
 
@@ -29,7 +33,7 @@ void load_multiplayer_players(Scene& scene, RoundController& controller, float s
 
     auto& weapon_axe = scene.add_game_object<WeaponAxePlayerObject>(scene, player);
 
-    player.layer(Layers::Background);
+    player.layer(Layers::Foreground);
 
     controller.add_player(player);
 }
@@ -40,18 +44,45 @@ RoundController& add_multiplayer_round_controller(Scene& scene) {
     return *dynamic_cast<RoundController*>(&comp.behavior());
 }
 
+MultiplayerController& add_multiplayer_controller(Scene& scene) {
+    GameObject& wrapper = scene.add_game_object("MultiplayerControllerWrapper");
+    auto& comp = wrapper.add_component<BehaviorScript>(std::make_unique<MultiplayerController>());
+    return *dynamic_cast<MultiplayerController*>(&comp.behavior());
+}
+
 void initial_variable_load(Scene& scene) {
     // Set all values that need to be reset each load here.
     Engine& engine = Engine::instance();
     auto& multiplayer_service = engine.services->get_service<MultiplayerService>().get();
 
-    multiplayer_service.set_host();
-    multiplayer_service.set_max_clients(4);
-    multiplayer_service.set_connection_port(1024);
-    multiplayer_service.start_server();
+    MultiplayerController& multiplayer_controller = add_multiplayer_controller(scene);
+    if (multiplayer_service.get_peer_type() == PeerType::HOST) {
+        multiplayer_service.set_max_clients(4);
+        multiplayer_service.set_connection_port(1024);
+        multiplayer_service.start_server();
 
-    RoundController& controller = add_multiplayer_round_controller(scene);
-    load_multiplayer_players(scene, controller);
+        multiplayer_service.register_handler(CustomMessageTypes::USER_JOIN, [](const Message& message) {
+            MsgUserJoin data{};
+            std::memcpy(&data, message.payload.data(), sizeof(data));
+
+            std::cout << "New user joined with UUID " << data.uuid << std::endl;
+        });
+
+        RoundController& controller = add_multiplayer_round_controller(scene);
+        load_multiplayer_players(scene, controller);
+    } else {
+        multiplayer_controller.on_connection_state_change([&scene, &multiplayer_service](ConnectionState old_state, ConnectionState new_state) {
+            if (new_state == ConnectionState::CONNECTED) {
+                std::cout << "Connected with UUID " << multiplayer_service.get_uuid() << std::endl;
+
+                MsgUserJoin data{};
+                std::strncpy(data.uuid, multiplayer_service.get_uuid().c_str(), sizeof(data.uuid) - 1);
+
+                Message msg = serialize_message(data, CustomMessageTypes::USER_JOIN);
+                multiplayer_service.send(msg);
+            }
+        });
+    }
 }
 
 void deinitialize_variable_load(Scene& scene) {
@@ -60,12 +91,16 @@ void deinitialize_variable_load(Scene& scene) {
 
     multiplayer_service.disconnect();
 
+    // Destroy the multiplayer controller
+
     for (auto& object : scene.game_objects()) {
         auto& obj = object.get();
 
         if (dynamic_cast<PlayerObject*>(&obj) != nullptr) {
             scene.remove_game_object(obj);
         } else if (obj.name() == "RoundControllerWrapper") {
+            scene.remove_game_object(obj);
+        } else if (obj.name() == "MultiplayerControllerWrapper") {
             scene.remove_game_object(obj);
         }
     }
