@@ -1,8 +1,6 @@
-#include "engine/public/components/rigidbody_2d.h"
-
+#include <engine/public/components/rigidbody_2d.h>
 #include <engine/public/scene.h>
 #include <game/character/player_controller.h>
-
 #include <game/round/roundcontroller.h>
 
 RoundController::RoundController(const Vector3 respawn_position): Behavior(), respawn_position_(respawn_position) {}
@@ -12,13 +10,14 @@ void RoundController::on_update(float dt) {}
 
 void RoundController::add_player(PlayerObject &player) {
   for (auto behavior : player.get_components<BehaviorScript>()) {
-    if (auto pc = dynamic_cast<PlayerControllerBehavior *>(&behavior.get().behavior())) {
-      pc->on_health_changed([&, pc](int old_health, int new_health) {
+    if (auto pc = dynamic_cast<PlayerController *>(&behavior.get().behavior())) {
+
+      on_player_health_changed_subscriptions.try_emplace("", std::move(pc->on_health_changed([&, pc](int old_health, int new_health) {
         if (pc->is_alive()) {
           return;
         }
         on_player_death(player);
-      });
+      })));
     }
   }
 
@@ -27,7 +26,7 @@ void RoundController::add_player(PlayerObject &player) {
 
 void RoundController::on_player_death(const PlayerObject &player) {
   for (auto behavior : player.get_components<BehaviorScript>()) {
-    const auto controller = dynamic_cast<PlayerControllerBehavior *>(&behavior.get().behavior());
+    const auto controller = dynamic_cast<PlayerController *>(&behavior.get().behavior());
     if (!controller) {
       continue;
     }
@@ -35,7 +34,6 @@ void RoundController::on_player_death(const PlayerObject &player) {
     controller->lives(controller->lives() - 1);
 
     if (controller->lives() < 1) {
-      controller->disable();
       return;
     }
 

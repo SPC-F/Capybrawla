@@ -30,7 +30,7 @@ namespace PlayerInfoComponent {
     constexpr float health_bar_height = right_col_height - (right_col_internal_offset * 6) - live_height -
                                         player_name_height;
 
-    HealthBar::HealthBar(Scene &scene, PlayerControllerBehavior &controller)
+    HealthBar::HealthBar(Scene &scene, PlayerController &controller)
         : GameObject(scene),
           _health_changed_subscription{} {
         UIImage &health_bar = scene.add_game_object<UIImage>(scene, "", health_bar_width, health_bar_height, Point{},
@@ -41,26 +41,31 @@ namespace PlayerInfoComponent {
         });
         this->add_child(health_bar);
 
-        this->_health_changed_subscription = controller.on_health_changed(
-            [&](const int old_health, const int new_health) {
-                if (old_health > 0 && new_health <= 0 && controller.lives() < 1) {
-                    scene.remove_game_object(health_bar);
-
-                    UIText &skill_issue = scene.add_game_object<UIText>(
+        UIText &death_text = scene.add_game_object<UIText>(
                         scene,
-                        "Skill issue",
+                        "",
                         "ByteBounce",
                         "resources/fonts/bytebounce/ByteBounce.ttf",
                         right_col_width,
                         player_name_height,
                         Point{},
                         Point{});
+        death_text.transform().local_position({
+            right_col_internal_offset, right_col_internal_offset + player_name_height, 0
+        });
+        this->add_child(death_text);
 
-                    skill_issue.transform().local_position({
-                        right_col_internal_offset, right_col_internal_offset + player_name_height, 0
-                    });
-                    this->add_child(skill_issue);
+        this->_health_changed_subscription = controller.on_health_changed(
+            [&](const int old_health, const int new_health) {
+
+                // This ideally only triggers one time, unless you regain lives after death.
+                if (controller.is_hard_dead()) {
+                    health_bar.width(0);
+                    death_text.text("Unfortunate skill issue");
                     return;
+                }
+                if (!controller.is_hard_dead() && death_text.text().empty()) {
+                    death_text.text("");
                 }
 
                 if (new_health == old_health || new_health < 0) {
@@ -68,35 +73,18 @@ namespace PlayerInfoComponent {
                 }
 
                 if (new_health == controller.max_health()) {
-                    scene.remove_game_object(health_bar);
-
-                    UIImage &new_health_bar = scene.add_game_object<UIImage>(
-                        scene, "", health_bar_width, health_bar_height, Point{}, Point{});
-                    new_health_bar.color(Color(255, 0, 0, 100));
-                    new_health_bar.transform().local_position({
-                        right_col_internal_offset, right_col_internal_offset + player_name_height, 0
-                    });
-                    this->add_child(new_health_bar);
-
+                    health_bar.width(health_bar_width);
                     return;
                 }
 
                 const float health_percentage = static_cast<float>(new_health) / static_cast<float>(controller.
                                                     max_health());
 
-                scene.remove_game_object(health_bar);
-
-                UIImage &new_health_bar = scene.add_game_object<UIImage>(
-                    scene, "", health_bar_width * health_percentage, health_bar_height, Point{}, Point{});
-                new_health_bar.color(Color(255, 0, 0, 100));
-                new_health_bar.transform().local_position({
-                    right_col_internal_offset, right_col_internal_offset + player_name_height, 0
-                });
-                this->add_child(new_health_bar);
+                health_bar.width(health_bar_width * health_percentage);
             });
     }
     LivesBar::LivesBar(Scene &scene,
-                           PlayerControllerBehavior &controller)
+                           PlayerController &controller)
             : GameObject(scene), _lives_changed_subscription{} {
         this->transform().local_position({
             right_col_internal_offset, health_bar_height + player_name_height + right_col_internal_offset * 2, 0
@@ -117,7 +105,8 @@ namespace PlayerInfoComponent {
 
                 const auto children_copy = this->children();
                 for (auto &child: children_copy) {
-                    scene.remove_game_object(child);
+                    child.get().mark_for_deletion();
+                    child.get().set_inactive();
                 }
 
                 for (int i = 0; i < controller.lives(); i++) {
@@ -160,9 +149,9 @@ namespace PlayerInfoComponent {
         GameObject &right_col = scene.add_game_object("");
         right_col.transform().local_position({left_col_width, 0, 0});
 
-        std::optional<std::reference_wrapper<PlayerControllerBehavior> > player_controller_opt{std::nullopt};
+        std::optional<std::reference_wrapper<PlayerController> > player_controller_opt{std::nullopt};
         for (auto &comp: player.get_components<BehaviorScript>()) {
-            if (auto *controller = dynamic_cast<PlayerControllerBehavior *>(&comp.get().behavior())) {
+            if (auto *controller = dynamic_cast<PlayerController *>(&comp.get().behavior())) {
                 player_controller_opt.emplace(*controller);
             }
         }
@@ -170,7 +159,7 @@ namespace PlayerInfoComponent {
             throw std::runtime_error(
                 "A player must have a PlayerController behavior registered in order to create a player_info gui element");
         }
-        PlayerControllerBehavior &controller = player_controller_opt.value();
+        PlayerController &controller = player_controller_opt.value();
 
         right_col.add_child(player_name(scene, player));
         right_col.add_child(scene.add_game_object<HealthBar>(scene, controller));

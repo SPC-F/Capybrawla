@@ -7,7 +7,7 @@
 using health_changed_callback_t = std::function<void(const int old_health, const int new_health)>;
 using lives_changed_callback_t = std::function<void(const int old_lives, const int new_lives)>;
 
-class PlayerControllerBehavior final : public Behavior {
+class PlayerController final : public Behavior {
 private:
   int max_health_;
   int health_;
@@ -19,9 +19,9 @@ private:
   void notify_lives_changed(int old_lives) const;
 
 public:
-  explicit PlayerControllerBehavior();
-  explicit PlayerControllerBehavior(int max_health, int start_health_);
-  ~PlayerControllerBehavior() override = default;
+  explicit PlayerController();
+  explicit PlayerController(int max_health, int start_health_);
+  ~PlayerController() override = default;
 
   void on_awake() override;
   void on_start() override;
@@ -40,4 +40,7 @@ public:
   [[nodiscard]] int lives() const;
   void lives(int lives);
   lib::Subscription on_lives_changed(const lives_changed_callback_t &callback);
+
+  [[nodiscard]] bool is_soft_dead() const;
+  [[nodiscard]] bool is_hard_dead() const;
 };

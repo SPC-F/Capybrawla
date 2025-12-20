@@ -12,7 +12,7 @@ namespace PlayerInfoComponent {
     private:
         lib::Subscription _health_changed_subscription;
     public:
-        HealthBar(Scene &scene, PlayerControllerBehavior &controller);
+        HealthBar(Scene &scene, PlayerController &controller);
     };
 
     class LivesBar : public GameObject {
@@ -20,6 +20,6 @@ namespace PlayerInfoComponent {
         lib::Subscription _lives_changed_subscription;
     public:
         LivesBar(Scene &scene,
-                 PlayerControllerBehavior &controller);
+                 PlayerController &controller);
     };
 };
