@@ -35,7 +35,6 @@ private:
     int range_;
     int swingspeed_;
     Point knockback_force_;
-    Point knockback_force_delta_;
 
     Point hitbox_offset_;
     Point sprite_offset_left_;
@@ -48,5 +47,4 @@ private:
     std::optional<std::reference_wrapper<Sprite>> sprite_component_;
     std::optional<std::reference_wrapper<BoxCollider2D>> hitbox_component_;
     std::optional<std::reference_wrapper<GameObject>> player_component_;
-
 };
