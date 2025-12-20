@@ -38,6 +38,6 @@ private:
     std::unordered_map<int, std::unordered_map<int, std::vector<TileColliderData>>> collider_rows;
 
     void create_backgrounds(Scene& scene, const json& backgrounds_json);
-    void create_tiles(Scene& scene, const json& tiles_json);
+    void create_tiles(Scene& scene, const json& tiles_json, bool navgraph_enabled, bool pathfinding_enabled);
     void create_tile_colliders(Scene& scene, const json& tiles_json);
 };

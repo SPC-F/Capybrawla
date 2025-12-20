@@ -4,29 +4,18 @@
 #include <game/scenes/swamp.h>
 #include <game/scenes/swamp_autum.h>
 
+#include <engine/audio/audio_service.h>
 #include <engine/core/engine.h>
 #include <engine/core/rendering/assetService.h>
 #include <engine/core/rendering/renderingService.h>
 #include <engine/public/components/behaviorscript.h>
 #include <engine/public/scene_service.h>
+#include <engine/public/ui/ui_fps.h>
 
 #include <game/pause_menu_ui.h>
 #include <game/behaviors/pause_play_behavior.h>
-
-namespace
-{
-    void strap_pause_menu(Scene& main_menu_scene)
-    {
-        auto ppmenu = std::make_unique<PauseMenuUI>(main_menu_scene);
-        ppmenu->mark_dont_destroy_on_load(true);
-
-        auto& ppc = main_menu_scene.add_game_object("Pause/Play controller");
-        ppc.add_component<BehaviorScript>(std::make_unique<PausePlayBehavior>(*ppmenu));
-        ppc.mark_dont_destroy_on_load(true);
-
-        main_menu_scene.add_game_object(std::move(ppmenu));
-    }
-}
+#include <game/behaviors/toggle/gizmo/physics_gizmo_toggle_behavior.h>
+#include <game/behaviors/toggle/object_toggle_behavior.h>
 
 void Game::initialize() {
     const Engine& engine = Engine::instance();
@@ -37,7 +26,7 @@ void Game::initialize() {
         // Main menu
         {"ui/main_menu.png", "main_menu_bg", 1, 1},
         {"ui/buttons_large.png", "buttons_large", 2, 2},
-        {"ui/buttons_big.png", "buttons_big", 4, 2},
+        {"ui/buttons_big.png", "buttons_big", 5, 2},
         {"ui/buttons_small.png", "buttons_small", 4, 5},
 
         // Levels
@@ -63,6 +52,19 @@ void Game::initialize() {
 
         // Player status bar
         {"character/heart.png", "heart_icon", 1, 1},
+
+        {"character/drone_idle.png", "drone_idle", 1, 1},
+        {"character/drone_idle_anim.png", "drone_idle_anim_sheet", 1, 7},
+
+        // Weapons
+        {"weapons/bat.png", "bat_sheet", 1, 2},
+        {"weapons/bat_swing_anim.png", "bat_swing_anim_sheet", 1, 4},
+
+        {"weapons/axe.png", "axe_sheet", 1, 2},
+        {"weapons/axe_swing_anim.png", "axe_swing_anim_sheet", 1, 4},
+
+        {"weapons/sword.png", "sword_sheet", 1, 2},
+        {"weapons/sword_swing_anim.png", "sword_swing_anim_sheet", 1, 4},
     };
     Assets::load_resources(resources);
 
@@ -208,17 +210,43 @@ void Game::initialize() {
         
         {"swamp_autum_tiles", "rock_small", 77},
         {"swamp_autum_tiles", "rock_large", 76},
+
+        // Weapons
+        {"bat_sheet", "bat", 0},
+        {"bat_sheet", "bat_swing", 1},
+
+        {"axe_sheet", "axe", 0},
+        {"axe_sheet", "axe_swing", 1},
+
+        {"sword_sheet", "sword", 0},
+        {"sword_sheet", "sword_swing", 1},
     };
 
     Assets::register_textures(textures);
 
     const std::vector<LoadAnimation> sprite_sheets {
+        // Players
         {"capybara_default_walk_anim_sheet", "capybara_default_walk_anim", 0, 8},
         {"capybara_default_idle_anim_sheet", "capybara_default_idle_anim", 0, 7},
         {"capybara_default_jump_anim_sheet", "capybara_default_jump_anim", 0, 7},
-        {"capybara_default_duck_anim_sheet", "capybara_default_duck_anim", 0, 7}
+        {"capybara_default_duck_anim_sheet", "capybara_default_duck_anim", 0, 7},
+
+        // Opponents
+        {"drone_idle_anim_sheet", "drone_idle_anim", 0, 7},
+
+        // Weapons
+        {"bat_swing_anim_sheet", "bat_swing_anim", 0, 4},
+        {"axe_swing_anim_sheet", "axe_swing_anim", 0, 4},
+        {"sword_swing_anim_sheet", "sword_swing_anim", 0, 4},
     };
     Assets::register_sprite_sheets(sprite_sheets);
+
+    const std::vector<LoadAudio> audios {
+        {"./resources/sounds/start_menu.wav", "start_menu", SoundType::SDL_MIXER},
+        {"./resources/sounds/spear_of_justice.wav", "spear_of_justice", SoundType::SDL_MIXER},
+        {"./resources/sounds/enemy_approaching.wav", "enemy_approaching", SoundType::SDL_MIXER},
+    };
+    Assets::register_audio(audios);
 
     auto& window_controller = engine.services->get_service<RenderingService>().get().window();
     window_controller.set_window_fullscreen();
@@ -247,11 +275,31 @@ void Game::run() {
         load_training_scene
     );
 
-    strap_pause_menu(main_menu_scene);
+    bootstrap(main_menu_scene);
     scene_service.load_scene(main_menu_scene.name());
 }
 
 void Game::shutdown() {
     Engine& engine = Engine::instance();
     engine.quit();
+}
+
+void Game::bootstrap(Scene& first_scene) {
+    auto& gizmo_toggle = first_scene.add_game_object("Gizmo Toggle");
+    gizmo_toggle.add_component<BehaviorScript>(std::make_unique<PhysicsGizmoToggleBehavior>());
+    gizmo_toggle.mark_dont_destroy_on_load(true);
+
+    auto& fps_counter = first_scene.add_game_object<UIFPS>(first_scene);
+    fps_counter.mark_dont_destroy_on_load(true);
+
+    auto& fps_controller = first_scene.add_game_object("FPS Toggle");
+    fps_controller.add_component<BehaviorScript>(std::make_unique<ObjectToggleBehavior>(fps_counter));
+    fps_controller.mark_dont_destroy_on_load(true);
+
+    auto& ppmenu = first_scene.add_game_object<PauseMenuUI>(first_scene);
+    ppmenu.mark_dont_destroy_on_load(true);
+
+    auto& ppc = first_scene.add_game_object("Pause/Play controller");
+    ppc.add_component<BehaviorScript>(std::make_unique<PausePlayBehavior>(ppmenu));
+    ppc.mark_dont_destroy_on_load(true);
 }

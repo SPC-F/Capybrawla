@@ -1,16 +1,18 @@
 #include <game/scenes/main_menu.h>
-#include <game/behaviors/ui_fall_behavior.h>
+#include <game/behaviors/ui/main_menu/main_menu_controller_behavior.h>
 
 #include <memory>
 
 #include <engine/core/engine.h>
 #include <engine/core/rendering/renderingService.h>
 #include <engine/core/system/system_service.h>
+#include <engine/audio/audio_service.h>
 #include <engine/public/camera.h>
 #include <engine/public/gameObject.h>
 #include <engine/public/components/sprite.h>
 #include <engine/public/components/behaviorscript.h>
 #include <engine/public/scene_service.h>
+#include <engine/public/util/layers.h>
 
 constexpr float BUTTON_WIDTH = 400.0f;
 constexpr float BUTTON_HEIGHT = 80.0f;
@@ -76,7 +78,16 @@ Scene& MainMenuScene::setup(
     GameObject& credits_parent = add_menu_parent("CreditsParent", false);
     setup_credits(scene, credits_parent);
 
-    falling_capybaras(scene, 10);
+    falling_capybaras(scene);
+
+    AudioService &audio_service = Engine::instance().services->get_service<AudioService>().get();
+    scene.on_run([this, &audio_service](Scene& scene) {
+        audio_service.play_sound("start_menu", 0.1f, true);
+    });
+
+    scene.on_stop([this, &audio_service](Scene& scene) {
+        audio_service.stop_all_sounds();
+    });
 
     return scene;
 }
@@ -298,32 +309,10 @@ void MainMenuScene::setup_credits(Scene& scene, GameObject& parent) {
     });
 }
 
-void MainMenuScene::falling_capybaras(Scene& scene, int count) {
-    std::string capybaras[] = {
-        "capybara_default_idle",
-        "capybara_red_idle",
-        "capybara_blue_idle",
-        "capybara_green_idle",
-    };
-
-    for (int i = 0; i < count; ++i) {
-        float size_modifier     = 2.0f + static_cast<float>(rand()) / (static_cast<float>(RAND_MAX / 3.8f));
-        float rotation_speed    = 20.0f + static_cast<float>(rand()) / (static_cast<float>(RAND_MAX / 80.0f));
-        float fall_speed        = 50.0f + static_cast<float>(rand()) / (static_cast<float>(RAND_MAX / 150.0f));
-        float position_x        = static_cast<float>(rand()) / (static_cast<float>(RAND_MAX / SCREEN_WIDTH));
-        float position_y        = -100.0f - static_cast<float>(rand()) / (static_cast<float>(RAND_MAX / 500.0f));
-        float capybara_choice   = static_cast<float>(rand()) / (static_cast<float>(RAND_MAX / 5.0f));
-
-        std::string chosen_capybara = capybaras[static_cast<int>(capybara_choice) % (sizeof(capybaras) / sizeof(capybaras[0]))];
-
-        GameObject& falling_object = scene.add_game_object("Falling_Capybara_" + std::to_string(i));
-        falling_object.transform().position({position_x, position_y, 0.0f});
-        falling_object.transform().scale({size_modifier, size_modifier, 1.0f});
-        falling_object.add_component<Sprite>(chosen_capybara, Color{255, 255, 255, 255}, 0, 0, 0, 0);
-        falling_object.add_component<BehaviorScript>(std::make_unique<UIFallBehavior>(rotation_speed, fall_speed, static_cast<float>(SCREEN_HEIGHT)));
-        falling_object.layer(Layers::Foreground);
-    }
-
+void MainMenuScene::falling_capybaras(Scene& scene) {
+    auto& controller = scene.add_game_object("FallingCapybarasController");
+    controller.add_component<BehaviorScript>(std::make_unique<MainMenuControllerBehavior>(SCREEN_WIDTH, SCREEN_HEIGHT));
+    controller.layer(Layers::Foreground);
 }
 
 void MainMenuScene::toggle_parent_visibility(const std::string& parent_name) {

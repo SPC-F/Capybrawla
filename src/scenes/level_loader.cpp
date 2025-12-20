@@ -8,6 +8,9 @@
 #include <engine/public/components/sprite.h>
 #include <engine/public/components/rigidbody_2d.h>
 #include <engine/public/components/colliders/box_collider_2d.h>
+#include <engine/public/components/ai/ai_controller.h>
+#include <engine/public/components/ai/navigation/navigation_graph.h>
+#include <engine/public/components/ai/navigation/pathfinding.h>
 #include <engine/public/gameObject.h>
 #include <engine/public/scene_service.h>
 #include <engine/public/util/color.h>
@@ -30,12 +33,15 @@ void LevelLoader::load_game_objects_from_json(
     tile_x_center_offset_ = tile_size_ * map_json.value("center_x_offset", 0);
     tile_y_center_offset_ = tile_size_ * map_json.value("center_y_offset", 0);
 
+    bool navgraph_enabled = map_json.value("navgraph_enabled", false);
+    bool pathfinding_enabled = map_json.value("pathfinding_enabled", false);
+
     if (map_json.contains("backgrounds")) {
         create_backgrounds(scene, map_json["backgrounds"]);
     }
 
     if (map_json.contains("tiles")) {
-        create_tiles(scene, map_json["tiles"]);
+        create_tiles(scene, map_json["tiles"], navgraph_enabled, pathfinding_enabled);
         create_tile_colliders(scene, map_json["tiles"]);
     }
 }
@@ -71,7 +77,12 @@ void LevelLoader::create_backgrounds(Scene& scene, const json& backgrounds_json)
     }
 }
 
-void LevelLoader::create_tiles(Scene& scene, const json& tiles_json) {
+void LevelLoader::create_tiles(Scene& scene, const json& tiles_json, bool navgraph_enabled, bool pathfinding_enabled) {
+    auto& dynamic_parent = scene.add_game_object("TileMapDynamic_Parent");
+    auto& kinetic_parent = scene.add_game_object("TileMapKinematic_Parent");
+
+    int grid_tile_size = 0;
+
     for (const auto& tile_json : tiles_json) {
 
         std::string texture_name =
@@ -89,6 +100,8 @@ void LevelLoader::create_tiles(Scene& scene, const json& tiles_json) {
         auto scale = tile_json.value("scale", json::object());
         float scale_x = scale.value("x", 1.0f);
         float scale_y = scale.value("y", 1.0f);
+
+        if (grid_tile_size == 0) grid_tile_size = local_tile_w * scale_x;
 
         int layer = tile_json.value("layer", 1);
         int group = tile_json.value("group", 0);
@@ -111,6 +124,8 @@ void LevelLoader::create_tiles(Scene& scene, const json& tiles_json) {
         tile_obj.layer(layer);
 
         if (props.contains("collider")) {
+            tile_obj.parent(dynamic_parent);
+
             auto collider_props = props["collider"];
 
             std::string type = collider_props.value("type", "");
@@ -134,6 +149,19 @@ void LevelLoader::create_tiles(Scene& scene, const json& tiles_json) {
 
             collider_rows[group][grid_y].push_back(data);
         }
+        else {
+            tile_obj.parent(kinetic_parent);
+        }
+    }
+
+    if (navgraph_enabled) {
+        auto& nav_graph = dynamic_parent.add_component<NavigationGraph>(grid_tile_size, 5);
+
+        if (pathfinding_enabled) {
+            dynamic_parent.add_component<Pathfinding>();
+        }
+
+        nav_graph.generate_graph();
     }
 }
 

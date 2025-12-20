@@ -10,9 +10,10 @@
 #include "engine/public/components/sprite.h"
 #include "game/character/player_outofbounds_behavior.h"
 
-PlayerObject::PlayerObject(Scene &scene, const Vector3 initial_pos)
+PlayerObject::PlayerObject(Scene &scene, const Vector3 initial_pos, bool is_local_player)
     : GameObject(scene) {
   this->name("PlayerObject");
+  this->tag("Player");
   this->transform().position(initial_pos);
 
   constexpr float scale_factor = 2.0f;
@@ -33,9 +34,11 @@ PlayerObject::PlayerObject(Scene &scene, const Vector3 initial_pos)
                                      default_height, default_offset);
 
   // how we behave
-  this->add_component<BehaviorScript>(std::make_unique<PlayerMovementBehavior>(
-      default_height, default_height / 2.0f, default_offset,
-      Point{default_x_offset, default_height / 2.4 * scale_factor}));
+  if (is_local_player) {
+    this->add_component<BehaviorScript>(std::make_unique<PlayerMovementBehavior>(
+        default_height, default_height / 2.0f, default_offset,
+        Point{default_x_offset, default_height / 2.4 * scale_factor}));
+  }
 
   this->add_component<BehaviorScript>(std::make_unique<PlayerController>(100, 100));
 }
