@@ -1,12 +1,10 @@
 #pragma once
 
 #include <engine/public/gameObject.h>
+#include <engine/public/ui/ui_image.h>
+#include <engine/public/scene.h>
 #include <game/character/player_controller.h>
 #include <lib/subscription.h>
-#include "engine/public/scene.h"
-#include "engine/public/ui/ui_image.h"
-#include "engine/public/ui/ui_object.h"
-#include <game/character/gui/player_info_component.h>
 
 namespace PlayerInfoComponent {
     class LivesBar : public GameObject {

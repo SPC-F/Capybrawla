@@ -1,5 +1,11 @@
 #include <game/character/gui/health_bar_component.h>
 
+#include <engine/public/ui/ui_image.h>
+
+#include <engine/public/ui/ui_text.h>
+
+
+
 namespace PlayerInfoComponent {
     HealthBar::HealthBar(Scene &scene,
                          PlayerController &controller,
