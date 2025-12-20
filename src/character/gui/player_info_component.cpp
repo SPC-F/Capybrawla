@@ -64,7 +64,7 @@ namespace PlayerInfoComponent {
                     death_text.text("Unfortunate skill issue");
                     return;
                 }
-                if (!controller.is_hard_dead() && death_text.text().empty()) {
+                if (!controller.is_hard_dead() && !death_text.text().empty()) {
                     death_text.text("");
                 }
 

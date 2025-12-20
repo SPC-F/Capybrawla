@@ -14,7 +14,7 @@ namespace lib {
     public:
         Signal(std::string id, std::function<void(Args...)> fn): id_(std::move(id)), fn_(fn) {}
         [[nodiscard]] const std::string& id() const { return id_; }
-        void envoke(Args... args) const {
+        void invoke(Args... args) const {
             fn_(args...);
         }
     };

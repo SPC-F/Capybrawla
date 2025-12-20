@@ -20,7 +20,7 @@ private:
 
 public:
   explicit PlayerController();
-  explicit PlayerController(int max_health, int start_health_);
+  explicit PlayerController(int max_health, int start_health);
   ~PlayerController() override = default;
 
   void on_awake() override;

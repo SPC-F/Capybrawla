@@ -3,7 +3,7 @@
 #include <game/character/player_controller.h>
 
 PlayerController::PlayerController(): PlayerController(100, 100) {}
-PlayerController::PlayerController(const int max_health, const int start_health_): max_health_(max_health), health_ { start_health_ }, lives_(3) {}
+PlayerController::PlayerController(const int max_health, const int start_health): max_health_(max_health), health_ { start_health }, lives_(3) {}
 
 void PlayerController::on_awake() {}
 void PlayerController::on_start() {}
@@ -47,7 +47,7 @@ lib::Subscription PlayerController::on_health_changed(
 
 void PlayerController::notify_health_changed(const int old_health) const {
   for (const auto& signal : health_changed_signals_) {
-    signal.envoke(old_health, health_);
+    signal.invoke(old_health, health_);
   }
 }
 
@@ -72,7 +72,7 @@ lib::Subscription PlayerController::on_lives_changed(
 }
 void PlayerController::notify_lives_changed(const int old_lives) const {
   for (const auto &signal : lives_changed_signals_) {
-    signal.envoke(old_lives, lives_);
+    signal.invoke(old_lives, lives_);
   }
 }
 

@@ -12,7 +12,7 @@ void RoundController::add_player(PlayerObject &player) {
   for (auto behavior : player.get_components<BehaviorScript>()) {
     if (auto pc = dynamic_cast<PlayerController *>(&behavior.get().behavior())) {
 
-      on_player_health_changed_subscriptions.try_emplace("", std::move(pc->on_health_changed([&, pc](int old_health, int new_health) {
+      on_player_health_changed_subscriptions.try_emplace(player.id(), std::move(pc->on_health_changed([&, pc](int old_health, int new_health) {
         if (pc->is_alive()) {
           return;
         }
