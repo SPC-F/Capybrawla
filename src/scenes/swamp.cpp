@@ -33,6 +33,7 @@ void load_players(Scene& scene, RoundController& controller, float start_x = 100
     auto& weapon_axe = scene.add_game_object<WeaponAxePlayerObject>(scene, player);
 
     player.layer(Layers::Foreground);
+    player.set_controllable();
 
     auto& ai_player = scene.add_game_object<PlayerObject>(scene, Vector3{start_x + 40.0f, 100.0f, 0}, false);
 
