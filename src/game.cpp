@@ -21,7 +21,7 @@ void Game::initialize() {
     const Engine& engine = Engine::instance();
     Engine::initialize();
 
-    const std::vector<LoadResource> resources {
+    const std::vector<LoadResourceData> resources {
         // UI
         // Main menu
         {"ui/main_menu.png", "main_menu_bg", 1, 1},
