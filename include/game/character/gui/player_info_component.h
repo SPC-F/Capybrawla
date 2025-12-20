@@ -7,19 +7,4 @@
 
 namespace PlayerInfoComponent {
     GameObject &create_and_add(Scene &scene, PlayerObject &player);
-
-    class HealthBar : public GameObject {
-    private:
-        lib::Subscription _health_changed_subscription;
-    public:
-        HealthBar(Scene &scene, PlayerController &controller);
-    };
-
-    class LivesBar : public GameObject {
-    private:
-        lib::Subscription _lives_changed_subscription;
-    public:
-        LivesBar(Scene &scene,
-                 PlayerController &controller);
-    };
 };
