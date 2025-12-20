@@ -62,7 +62,7 @@ void WeaponMeleeBehavior::on_awake() {
             auto other_parent_opt = other.parent();
             if (other_parent_opt.has_value()) {
                 auto& other_gameobject = other_parent_opt->get();
-                if (other_gameobject.tag() != "Player" && other_gameobject.id() != player_component_->get().id()) return;
+                if (other_gameobject.tag() != "Player" || other_gameobject.id() == player_component_->get().id()) return;
 
                 auto behaviors = other_gameobject.get_components<BehaviorScript>();
                 for (auto& behavior_ref : behaviors) {
