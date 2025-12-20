@@ -74,7 +74,7 @@ void WeaponMeleeBehavior::on_awake() {
                 }
 
                 auto& rb = other_gameobject.get_component<Rigidbody2D>()->get();
-                Point knockback = facing_right_ ? knockback_force_delta_ : Point{-knockback_force_delta_.x, -knockback_force_delta_.y};
+                Point knockback = facing_right_ ? knockback_force_ : Point{-knockback_force_.x, -knockback_force_.y};
                 rb.apply_impulse(Vector3{knockback.x, knockback.y, 0.0f});
             }
         });
@@ -86,9 +86,6 @@ void WeaponMeleeBehavior::on_update(float dt) {
 
     auto& rb = game_object().parent()->get().get_component<Rigidbody2D>()->get();
     auto& animator = sprite_gameobject_.get().get_component<Animator>()->get();
-
-    /// Update knockback delta
-    knockback_force_delta_ = {knockback_force_.x * dt * 1000, knockback_force_.y * dt * 1000};
 
     if (rb.velocity().x > 0) facing_right_ = true;
     else if (rb.velocity().x < 0) facing_right_ = false;
@@ -107,7 +104,6 @@ void WeaponMeleeBehavior::on_update(float dt) {
     if (provider.is_mouse_pressed(MouseButton::left) && !animator.is_playing()) {
         if (sprite_component_) {
             animator.set_animation(attack_animation_name_);
-
 
             Point animator_offset = facing_right_ ? animator_offset_right_ : animator_offset_left_;
             sprite_gameobject_.get()
@@ -132,6 +128,6 @@ void WeaponMeleeBehavior::on_update(float dt) {
         sprite_component_->get().texture(original_texture_name_);
         
         hitbox_component_->get().active(false);
-        hitbox_gameobject_.get().transform().local_position({0.0f, 0.0f, 0.0f});
+        hitbox_gameobject_.get().transform().local_position({0.0f, -100.0f, 0.0f});
     }
 }
