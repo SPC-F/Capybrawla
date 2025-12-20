@@ -68,7 +68,7 @@ void WeaponMeleeBehavior::on_awake() {
                 for (auto& behavior_ref : behaviors) {
                     auto& behavior = behavior_ref.get().behavior();
 
-                    if (auto ctrl = dynamic_cast<PlayerControllerBehavior*>(&behavior); ctrl != nullptr) {
+                    if (auto ctrl = dynamic_cast<PlayerController*>(&behavior); ctrl != nullptr) {
                         ctrl->damage(damage_);
                     }
                 }
