@@ -8,6 +8,11 @@ public:
   explicit FallingCapybaraObject(Scene& scene, float max_fall_height, float size_modifier, float rotation_speed, float fall_speed, float position_x, float position_y);
   ~FallingCapybaraObject() override = default;
 
+    [[nodiscard]] std::unique_ptr<GameObject> clone() const override
+    {
+        return std::make_unique<FallingCapybaraObject>(scene(), max_fall_height_, size, rotation_speed, fall_speed, position_x, position_y);
+    }
+
 private:
     float max_fall_height_{800.0f};
     float size{2.0f};

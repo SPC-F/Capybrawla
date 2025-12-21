@@ -34,6 +34,7 @@ PlayerObject::PlayerObject(Scene &scene, const Vector3 initial_pos, bool is_loca
                                      default_height, default_offset);
 
   // how we behave
+    this->is_local_player = is_local_player;
   if (is_local_player) {
     this->add_component<BehaviorScript>(std::make_unique<PlayerMovementBehavior>(
         default_height, default_height / 2.0f, default_offset,

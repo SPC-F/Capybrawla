@@ -62,6 +62,12 @@ void Game::initialize() {
 
         {"weapons/sword.png", "sword_sheet", 1, 2},
         {"weapons/sword_swing_anim.png", "sword_swing_anim_sheet", 1, 4},
+
+        // Interactables
+        {"interactables/teleporter_purple.png", "item_dropper", 1, 1},
+        {"interactables/teleporter_purple_anim.png", "item_dropper_anim_sheet", 1, 9},
+        {"interactables/health.png", "health_pack", 1, 1},
+        {"interactables/health_anim.png", "health_pack_anim_sheet", 1, 9},
     };
     Assets::load_resources(resources);
 
@@ -216,6 +222,10 @@ void Game::initialize() {
 
         {"sword_sheet", "sword", 0},
         {"sword_sheet", "sword_swing", 1},
+
+        // Interactables
+        {"item_dropper", "item_dropper", 0},
+        {"health_pack", "health_pack", 0},
     };
 
     Assets::register_textures(textures);
@@ -234,6 +244,10 @@ void Game::initialize() {
         {"bat_swing_anim_sheet", "bat_swing_anim", 0, 4},
         {"axe_swing_anim_sheet", "axe_swing_anim", 0, 4},
         {"sword_swing_anim_sheet", "sword_swing_anim", 0, 4},
+
+        // Interactables
+        {"item_dropper_anim_sheet", "item_dropper_idle", 0, 9},
+        {"health_pack_anim_sheet", "health_pack_idle", 0, 9},
     };
     Assets::register_sprite_sheets(sprite_sheets);
 

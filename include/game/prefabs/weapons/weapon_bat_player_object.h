@@ -9,4 +9,8 @@ public:
   explicit WeaponBatPlayerObject(Scene& scene, GameObject& parent);
   ~WeaponBatPlayerObject() override = default;
 
+  [[nodiscard]] std::unique_ptr<GameObject> clone() const override
+  {
+    return std::make_unique<WeaponBatPlayerObject>(scene(), parent().value());
+  }
 };

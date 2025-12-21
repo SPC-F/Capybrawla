@@ -19,6 +19,8 @@
 #include <game/scenes/swamp.h>
 #include <game/scripts/timer/RoundTimer.h>
 
+#include "game/behaviors/interactable/ItemDropper.h"
+
 const Vector3 DEFAULT_RESPAWN_POSITION = {600, 0, 0};
 
 void load_players(Scene& scene, RoundController& controller, float start_x = 1000.0f, float start_y = 500.0f) {
@@ -63,6 +65,23 @@ void load_timer(Scene& scene) {
     round_timer_obj.add_component<BehaviorScript>(std::move(round_timer));
 }
 
+void add_interactables(Scene& scene)
+{
+    GameObject& interactable1 = scene.add_game_object("Interactable 1");
+    interactable1.add_component<BehaviorScript>(std::make_unique<ItemDropper>());
+    interactable1.add_component<Sprite>("item_dropper", Color(), 0, 0, 0, 0);
+    interactable1.add_component<Animator>("item_dropper_idle", 128).play(true);
+    interactable1.transform().scale({2, 2, 2});
+    interactable1.transform().position({1368, 480, 0});
+
+    GameObject& interactable2 = scene.add_game_object("Interactable 2");
+    interactable2.add_component<BehaviorScript>(std::make_unique<ItemDropper>());
+    interactable2.add_component<Sprite>("item_dropper", Color(), 0, 0, 0, 0);
+    interactable2.add_component<Animator>("item_dropper_idle", 128).play(true);
+    interactable2.transform().scale({2, 2, 2});
+    interactable2.transform().position({350, 432, 0});
+}
+
 Scene& SwampScene::setup() {
     const Engine& engine = Engine::instance();
 
@@ -96,6 +115,8 @@ Scene& SwampScene::setup() {
     scene.on_stop([&audio_service](Scene& scene) {
         audio_service.stop_all_sounds();
     });
+    
+    add_interactables(scene);
 
     return scene;
 }
