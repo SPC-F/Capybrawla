@@ -64,6 +64,7 @@ void initial_variable_load(Scene& scene) {
     Engine& engine = Engine::instance();
     auto& multiplayer_service = engine.services->get_service<MultiplayerService>().get();
     auto& prefab_service = engine.services->get_service<PrefabService>().get();
+    RoundController& controller = add_multiplayer_round_controller(scene);
 
     MultiplayerController& multiplayer_controller = add_multiplayer_controller(scene);
     if (multiplayer_service.get_peer_type() == PeerType::HOST) {
@@ -71,14 +72,17 @@ void initial_variable_load(Scene& scene) {
         multiplayer_service.set_connection_port(1024);
         multiplayer_service.start_server();
 
-        multiplayer_service.register_handler(CustomMessageTypes::USER_JOIN, [](const Message& message) {
+        multiplayer_service.register_handler(CustomMessageTypes::USER_JOIN, [&multiplayer_service, &controller, &prefab_service, &scene](const Message& message) {
             MsgUserJoin data{};
             std::memcpy(&data, message.payload.data(), sizeof(data));
 
             std::cout << "New user joined with UUID " << data.uuid << std::endl;
-        });
+            Message msg = serialize_message(data, CustomMessageTypes::USER_JOIN);
+            multiplayer_service.send(msg);
 
-        RoundController& controller = add_multiplayer_round_controller(scene);
+            auto& player = *dynamic_cast<PlayerObject*>(&prefab_service.instantiate("PlayerObject", scene, data.uuid).get());
+            controller.add_player(player);
+        });
 
         auto& player = *dynamic_cast<PlayerObject*>(&prefab_service.instantiate("PlayerObject", scene, multiplayer_service.get_uuid().c_str()).get());
         player.set_controllable();
@@ -94,6 +98,18 @@ void initial_variable_load(Scene& scene) {
                 Message msg = serialize_message(data, CustomMessageTypes::USER_JOIN);
                 multiplayer_service.send(msg);
             }
+        });
+
+        multiplayer_service.register_handler(CustomMessageTypes::USER_JOIN, [&multiplayer_service, &controller, &prefab_service, &scene](const Message& message) {
+            MsgUserJoin data{};
+            std::memcpy(&data, message.payload.data(), sizeof(data));
+
+            std::cout << "New user joined with UUID " << data.uuid << std::endl;
+
+            auto& player = *dynamic_cast<PlayerObject*>(&prefab_service.instantiate("PlayerObject", scene, data.uuid).get());
+            controller.add_player(player);
+            if (data.uuid == multiplayer_service.get_uuid())
+                player.set_controllable();
         });
     }
 }
