@@ -31,3 +31,9 @@ PlayerObject::PlayerObject(Scene &scene, const Vector3 initial_pos, bool is_loca
 
   this->add_component<BehaviorScript>(std::make_unique<PlayerControllerBehavior>(100));
 }
+
+void PlayerObject::set_controllable() {
+  this->add_component<BehaviorScript>(std::make_unique<PlayerMovementBehavior>(
+      default_height_, default_height_ / 2.0f, default_offset_,
+      Point{default_x_offset_, default_height_ / 2.4 * scale_factor_}));
+};

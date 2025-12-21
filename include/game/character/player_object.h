@@ -10,11 +10,7 @@ public:
   explicit PlayerObject(Scene& scene, Vector3 initial_pos, bool is_local_player = true);
   ~PlayerObject() override = default;
 
-  void set_controllable() {
-    this->add_component<BehaviorScript>(std::make_unique<PlayerMovementBehavior>(
-        default_height_, default_height_ / 2.0f, default_offset_,
-        Point{default_x_offset_, default_height_ / 2.4 * scale_factor_}));
-  };
+  void set_controllable();
 
 private:
   const float scale_factor_ = 2.0f;
