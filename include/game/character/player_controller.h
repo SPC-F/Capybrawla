@@ -11,10 +11,16 @@ class PlayerController final : public Behavior {
 private:
   int max_health_;
   int health_;
+  int lives_;
+
+  /**
+   * @brief Acts as a validity token for possible subscriptions, so they know if they can call the unsubscribe callback safely
+   */
+  std::shared_ptr<void> emitter_validity_token_;
+
   std::vector<lib::Signal<int, int>> health_changed_signals_;
   void notify_health_changed(int old_health) const;
 
-  int lives_;
   std::vector<lib::Signal<int, int>> lives_changed_signals_;
   void notify_lives_changed(int old_lives) const;
 

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <functional>
+#include <memory>
 #include <string>
 #include <utility>
 
@@ -22,10 +23,11 @@ namespace lib {
     class Subscription {
     private:
         std::function<void()> unsubscribe_;
+        std::weak_ptr<void> emitter_validity_token_;
     public:
         Subscription() noexcept = default;
 
-        explicit Subscription(std::function<void()> unsubscribe);
+        explicit Subscription(std::function<void()> unsubscribe, std::weak_ptr<void> emitter_validity_token);
 
         Subscription(Subscription&& other) noexcept;
 
@@ -35,6 +37,8 @@ namespace lib {
         Subscription& operator=(const Subscription&) = delete;
 
         ~Subscription();
+
+        bool expired() const;
 
         void reset();
 

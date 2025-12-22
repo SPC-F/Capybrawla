@@ -2,8 +2,9 @@
 #include <lib/subscription.h>
 
 namespace lib {
-    Subscription::Subscription(std::function<void()> unsubscribe)
-          : unsubscribe_(std::move(unsubscribe)) {}
+    Subscription::Subscription(std::function<void()> unsubscribe, std::weak_ptr<void> emitter_validity_token)
+          : unsubscribe_(std::move(unsubscribe)), emitter_validity_token_(std::move(emitter_validity_token)) {}
+
     Subscription::Subscription(Subscription&& other) noexcept
           : unsubscribe_(std::exchange(other.unsubscribe_, {})) {}
 
@@ -11,6 +12,7 @@ namespace lib {
         if (this != &other) {
             reset();
             unsubscribe_ = std::exchange(other.unsubscribe_, {});
+            emitter_validity_token_ = std::move(other.emitter_validity_token_);
         }
         return *this;
     }
@@ -19,14 +21,19 @@ namespace lib {
         reset();
     }
 
+    bool Subscription::expired() const {
+        return emitter_validity_token_.expired();
+    }
+
     void Subscription::reset() {
-        if (unsubscribe_) {
+        if (unsubscribe_ && !emitter_validity_token_.expired()) {
             unsubscribe_();
             unsubscribe_ = {};
+            emitter_validity_token_.reset();
         }
     }
 
     Subscription::operator bool() const noexcept {
-        return static_cast<bool>(unsubscribe_);
+        return !emitter_validity_token_.expired() && static_cast<bool>(unsubscribe_);
     }
 }
