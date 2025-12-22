@@ -16,8 +16,7 @@
 #include <game/behaviors/pause_play_behavior.h>
 #include <game/behaviors/toggle/gizmo/physics_gizmo_toggle_behavior.h>
 #include <game/behaviors/toggle/object_toggle_behavior.h>
-
-#include "game/settings/settings.h"
+#include <game/settings/settings.h>
 
 void Game::initialize() {
     const Engine& engine = Engine::instance();
