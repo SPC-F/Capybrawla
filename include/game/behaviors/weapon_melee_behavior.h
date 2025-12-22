@@ -26,11 +26,12 @@ public:
 
     void on_awake() override;
     void on_update(float dt) override;
+    void attack();
 private: 
     std::string attack_animation_name_;
     std::string original_texture_name_;
     bool facing_right_{true};
-    
+
     int damage_;
     int range_;
     int swingspeed_;
@@ -47,4 +48,6 @@ private:
     std::optional<std::reference_wrapper<Sprite>> sprite_component_;
     std::optional<std::reference_wrapper<BoxCollider2D>> hitbox_component_;
     std::optional<std::reference_wrapper<GameObject>> player_component_;
+
+    bool is_multiplayer_and_local();
 };

@@ -66,6 +66,9 @@ void Game::initialize() {
 
         {"weapons/sword.png", "sword_sheet", 1, 2},
         {"weapons/sword_swing_anim.png", "sword_swing_anim_sheet", 1, 4},
+
+        {"weapons/boxing_gloves.png", "boxing_gloves_sheet", 1, 1},
+        {"weapons/boxing_gloves_swing_anim.png", "boxing_gloves_swing_anim_sheet", 1, 4},
     };
     Assets::load_resources(resources);
 
@@ -221,6 +224,8 @@ void Game::initialize() {
 
         {"sword_sheet", "sword", 0},
         {"sword_sheet", "sword_swing", 1},
+
+        {"boxing_gloves_sheet", "boxing_gloves", 0},
     };
 
     Assets::register_textures(textures);
@@ -239,6 +244,7 @@ void Game::initialize() {
         {"bat_swing_anim_sheet", "bat_swing_anim", 0, 4},
         {"axe_swing_anim_sheet", "axe_swing_anim", 0, 4},
         {"sword_swing_anim_sheet", "sword_swing_anim", 0, 4},
+        {"boxing_gloves_swing_anim_sheet", "boxing_gloves_swing_anim", 0, 4},
     };
     Assets::register_sprite_sheets(sprite_sheets);
 
