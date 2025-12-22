@@ -101,6 +101,6 @@ bool PlayerController::is_soft_dead() const {
 }
 
 void PlayerController::on_destroy() {
-  // health_changed_signals_.clear();
-  // lives_changed_signals_.clear();
+  health_changed_signals_.clear();
+  lives_changed_signals_.clear();
 }
