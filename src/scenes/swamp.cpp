@@ -36,7 +36,7 @@ void load_players(Scene& scene, RoundController& controller, float start_x = 100
     auto& weapon_axe = scene.add_game_object<WeaponAxePlayerObject>(scene, player);
 
     player.layer(Layers::Foreground);
-    player.set_local_player();
+    player.set_controllable();
 
     GameObject& player_info_comp = PlayerInfoComponent::create_and_add(scene, player);
     player_info_comp.transform().position({50, 950, 0});

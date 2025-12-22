@@ -35,7 +35,7 @@ PlayerObject::PlayerObject(Scene &scene, const Vector3 initial_pos, bool is_loca
   this->add_component<BehaviorScript>(std::make_unique<PlayerController>(100, 100));
   this->add_component<BehaviorScript>(std::make_unique<PlayerMovementBehavior>(
       default_height, default_height / 2.0f, default_offset,
-      Point{default_x_offset, default_height / 2.4 * scale_factor}));
+      Point{default_x_offset, default_height / 3.2f * scale_factor}));
 }
 
 void PlayerObject::set_local_player() noexcept {
@@ -47,3 +47,13 @@ void PlayerObject::set_local_player() noexcept {
       }
   }
 };
+
+void PlayerObject::set_controllable() noexcept {
+  for (auto& behavior_ref : get_components<BehaviorScript>()) {
+      auto& behavior = behavior_ref.get().behavior();
+
+      if (auto movement = dynamic_cast<PlayerMovementBehavior*>(&behavior); movement != nullptr) {
+        movement->set_controllable();
+      }
+  }
+}

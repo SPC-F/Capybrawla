@@ -10,7 +10,8 @@ public:
   explicit PlayerObject(Scene& scene, Vector3 initial_pos, bool is_local_player = true);
   ~PlayerObject() override = default;
 
-  void set_local_player() noexcept ;
+  void set_local_player() noexcept;
+  void set_controllable() noexcept;
 
 private:
 };
