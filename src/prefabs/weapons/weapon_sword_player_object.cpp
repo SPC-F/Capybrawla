@@ -22,7 +22,7 @@ WeaponSwordPlayerObject::WeaponSwordPlayerObject(Scene& scene, GameObject& paren
     auto& melee_weapon_hitbox = scene.add_game_object("Player_Melee_Weapon_Hitbox");
     melee_weapon_hitbox.parent(dynamic_cast<GameObject&>(*this));
     melee_weapon_hitbox.add_component<Rigidbody2D>(BodyType2D::Kinematic);
-    melee_weapon_hitbox.add_component<BoxCollider2D>(0.5f, 0.1f, 32.0f, 50.0f, Point{0.0f, 0.0f}, true, false);
+    melee_weapon_hitbox.add_component<BoxCollider2D>(0.5f, 0.1f, 32.0f, 60.0f, Point{0.0f, 0.0f}, true, false);
 
     /// Seperate game object for sprite
     auto& melee_weapon_sprite = scene.add_game_object("Player_Melee_Weapon_Sprite");
@@ -34,7 +34,7 @@ WeaponSwordPlayerObject::WeaponSwordPlayerObject(Scene& scene, GameObject& paren
 
     const int damage = 20;
     const int range = 25;
-    const Point knockback_force = Point{500.0f, 50.0f};
+    const Point knockback_force = Point{200.0f, 50.0f};
 
     const Point hitbox_offset{60, 0};
     const Point sprite_offset_left{15.0f, 0};
