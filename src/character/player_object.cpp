@@ -16,24 +16,34 @@ PlayerObject::PlayerObject(Scene &scene, const Vector3 initial_pos, bool is_loca
   this->tag("Player");
   this->transform().position(initial_pos);
 
-  this->transform().scale({scale_factor_, scale_factor_, 1.0f});
+  constexpr float scale_factor = 2.0f;
+  this->transform().scale({scale_factor, scale_factor, 1.0f});
 
   // how we look
   this->add_component<Sprite>("capybara_default_idle", Color(), 0, 0, 0, 0);
   this->add_component<Animator>("capybara_default_walk_anim", 95);
 
   // how we physics
-  const Point default_offset = {default_x_offset_, 4 * scale_factor_};
+  constexpr float default_height = 28 * scale_factor;
+  constexpr float default_x_offset = 6 * scale_factor;
+  const Point default_offset = {default_x_offset, 4 * scale_factor};
 
   this->add_component<Rigidbody2D>(BodyType2D::Type::Dynamic, 35.0f);
-  this->add_component<BoxCollider2D>(0.1f, 0.2f, 20 * scale_factor_,
-                                     default_height_, default_offset);
+  this->add_component<BoxCollider2D>(0.1f, 0.2f, 20 * scale_factor,
+                                     default_height, default_offset);
 
   this->add_component<BehaviorScript>(std::make_unique<PlayerController>(100, 100));
+  this->add_component<BehaviorScript>(std::make_unique<PlayerMovementBehavior>(
+      default_height, default_height / 2.0f, default_offset,
+      Point{default_x_offset, default_height / 2.4 * scale_factor}));
 }
 
-void PlayerObject::set_controllable() {
-  this->add_component<BehaviorScript>(std::make_unique<PlayerMovementBehavior>(
-      default_height_, default_height_ / 2.0f, default_offset_,
-      Point{default_x_offset_, default_height_ / 2.4 * scale_factor_}));
+void PlayerObject::set_local_player() noexcept {
+  for (auto& behavior_ref : get_components<BehaviorScript>()) {
+      auto& behavior = behavior_ref.get().behavior();
+
+      if (auto movement = dynamic_cast<PlayerMovementBehavior*>(&behavior); movement != nullptr) {
+        movement->set_local_player();
+      }
+  }
 };

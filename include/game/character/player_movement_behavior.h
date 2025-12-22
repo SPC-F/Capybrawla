@@ -30,6 +30,8 @@ private:
   Point default_standing_offset_;
   Point default_crouching_offset_;
 
+  bool is_local_player_;
+
   [[nodiscard]] bool player_has_required_components() const;
 
 public:
@@ -67,6 +69,8 @@ public:
   [[nodiscard]] bool is_jumping() const;
   [[nodiscard]] bool is_double_jumping() const;
   [[nodiscard]] bool is_walking() const;
+
+  void set_local_player() noexcept;
 
   void on_start() override;
   void on_update(float dt) override;

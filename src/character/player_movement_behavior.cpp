@@ -89,11 +89,18 @@ bool PlayerMovementBehavior::player_has_required_components() const {
          sprite_opt_.has_value() && box_collider_opt_.has_value();
 }
 
+void PlayerMovementBehavior::set_local_player() noexcept {
+  is_local_player_ = true;
+}
+
 void PlayerMovementBehavior::on_update(float dt) {
   const IInputProvider &provider =
       Engine::instance().services->get_service<InputManager>().get().provider();
 
   if (!player_has_required_components())
+    return;
+
+  if (!is_local_player_)
     return;
 
   auto &rigidbody = rigidbody_opt_->get();

@@ -85,7 +85,7 @@ void initial_variable_load(Scene& scene) {
         });
 
         auto& player = *dynamic_cast<PlayerObject*>(&prefab_service.instantiate("PlayerObject", scene, multiplayer_service.get_uuid().c_str()).get());
-        player.set_controllable();
+        player.set_local_player();
         controller.add_player(player);
     } else {
         multiplayer_controller.on_connection_state_change([&scene, &multiplayer_service](ConnectionState old_state, ConnectionState new_state) {
@@ -109,7 +109,7 @@ void initial_variable_load(Scene& scene) {
             auto& player = *dynamic_cast<PlayerObject*>(&prefab_service.instantiate("PlayerObject", scene, data.uuid).get());
             controller.add_player(player);
             if (data.uuid == multiplayer_service.get_uuid())
-                player.set_controllable();
+                player.set_local_player();
         });
     }
 }
