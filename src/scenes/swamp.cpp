@@ -16,6 +16,7 @@
 #include <game/prefabs/ai_drone_agent_object.h>
 #include <game/prefabs/weapons/weapon_bat_player_object.h>
 #include <game/prefabs/weapons/weapon_axe_player_object.h>
+#include <game/prefabs/weapons/weapon_boxing_gloves_player_object.h>
 #include <game/prefabs/weapons/weapon_sword_player_object.h>
 #include <game/round/roundcontroller.h>
 #include <game/scenes/level_loader.h>
@@ -35,8 +36,7 @@ void SwampScene::load_players(Scene& scene, RoundController& controller, float s
       -out_of_bounds_margin_y_,
       map_height_ + out_of_bounds_margin_y_));
 
-    auto& weapon_axe = scene.add_game_object<WeaponAxePlayerObject>(scene, player);
-
+    auto& weapon_boxing_gloves = scene.add_game_object<WeaponBoxingGlovesPlayerObject>(scene, player);
     player.layer(Layers::Foreground);
     player.set_controllable();
 

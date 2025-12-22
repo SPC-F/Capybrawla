@@ -14,6 +14,8 @@
 #include <engine/public/scene_service.h>
 #include <engine/public/util/layers.h>
 
+#include <game/settings/settings.h>
+
 constexpr float BUTTON_WIDTH = 400.0f;
 constexpr float BUTTON_HEIGHT = 80.0f;
 constexpr float BUTTON_FONT_SIZE = 46.0f;
@@ -247,21 +249,21 @@ void MainMenuScene::setup_join_game(Scene& scene, GameObject& parent) {
 
 void MainMenuScene::setup_settings(Scene& scene, GameObject& parent) {
     auto& rendering_service = Engine::instance().services->get_service<RenderingService>().get();
-    bool vsync = rendering_service.vsync();
+    const bool initial_vsync = rendering_service.vsync();
 
     UIButton& vsync_button = create_button(
         scene,
-        vsync ? "Toggle VSync: OFF" : "Toggle VSync: ON",
+        initial_vsync ? "VSync: ON" : "VSync: OFF",
         BUTTON_START_X,
         BUTTON_START_Y,
         "button_large_blue"
     );
     vsync_button.parent(parent);
-    vsync_button.add_on_press([this, &rendering_service](UIButton& btn) {
-        bool current_vsync = rendering_service.vsync();
-        rendering_service.vsync(!current_vsync);
+    vsync_button.add_on_press([&rendering_service](UIButton& btn) {
+        const bool current_vsync = rendering_service.vsync();
+        settings::toggle_vsync(!current_vsync);
 
-        btn.label(current_vsync ? "Toggle VSync: ON" : "Toggle VSync: OFF");
+        btn.label(!current_vsync ? "VSync: ON" : "VSync: OFF");
     });
 
     UIButton& back_button = create_button(
