@@ -17,10 +17,11 @@
 int main() {
     //tracy_init();
     
+    Game game;
     try {
-        Game::initialize();
-        Game::run();
-        Game::shutdown();
+        game.initialize();
+        game.run();
+        game.shutdown();
     } catch (const std::exception& e) {
         std::cerr << "Unhandled exception: " << e.what() << std::endl;
         return 1;
