@@ -14,7 +14,7 @@
 #include <engine/public/scene_service.h>
 #include <engine/public/util/layers.h>
 
-#include "game/settings/settings.h"
+#include <game/settings/settings.h>
 
 constexpr float BUTTON_WIDTH = 400.0f;
 constexpr float BUTTON_HEIGHT = 80.0f;
