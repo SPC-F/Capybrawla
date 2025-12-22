@@ -14,6 +14,8 @@
 #include <engine/public/scene_service.h>
 #include <engine/public/util/layers.h>
 
+#include <game/settings/settings.h>
+
 constexpr float BUTTON_WIDTH = 400.0f;
 constexpr float BUTTON_HEIGHT = 80.0f;
 constexpr float BUTTON_FONT_SIZE = 46.0f;
@@ -32,20 +34,30 @@ constexpr float TITLE_Y = BUTTON_START_Y - 200.0f;
 constexpr float TITLE_X = CENTER_X - 250.0f;
 constexpr float TITLE_FONT_SIZE = 180.0f;
 
-Scene& MainMenuScene::setup(
-    create_callback_t create_callback,
-    join_callback_t join_callback,
-    training_callback_t training_callback
-) {
-    RenderingService& rendering_service = Engine::instance().services->get_service<RenderingService>().get();
-    int window_width = rendering_service.window().get_window_width();
-    int window_height = rendering_service.window().get_window_height();
+MainMenuScene::MainMenuScene(
+    create_callback_t&& create_callback,
+    join_callback_t&& join_callback,
+    training_callback_t&& training_callback
+) : 
+    Level("MainMenuScene", false),
+    create_callback_(create_callback),
+    join_callback_(join_callback),
+    training_callback_(training_callback)
+{}
 
-    SceneService& scene_service = Engine::instance().services->get_service<SceneService>().get();
-    Scene& scene = scene_service.add_scene(SCENE_NAME);
-    
-    auto& camera = scene.add_game_object<Camera>(scene, Color(), 1.0f, true);
-    camera.transform().position({window_width / 2.0f, window_height / 2.0f, 0.0f});
+void MainMenuScene::setup(Scene& scene) {
+    AudioService &audio_service = Engine::instance().services->get_service<AudioService>().get();
+    scene.on_run([this, &audio_service](Scene& scene) {
+        audio_service.play_sound("start_menu", 0.1f, true);
+    });
+
+    scene.on_stop([this, &audio_service](Scene& scene) {
+        audio_service.stop_all_sounds();
+    });
+}
+
+void MainMenuScene::load(Scene& scene) {
+    MainMenuScene::load_camera();
 
     GameObject& bg = scene.add_game_object("Background");
     bg.add_component<Sprite>("main_menu_bg", Color{255, 255, 255, 255}, 0, 0, 0, 0);
@@ -64,13 +76,13 @@ Scene& MainMenuScene::setup(
     };
     
     GameObject& main_menu_parent = add_menu_parent("MainMenuParent", true);
-    setup_main_menu(scene, main_menu_parent, create_callback, training_callback);
+    setup_main_menu(scene, main_menu_parent);
 
     GameObject& create_game_parent = add_menu_parent("CreateGameParent", false);
-    setup_create_game(scene, create_game_parent, create_callback);
+    setup_create_game(scene, create_game_parent);
 
     GameObject& join_game_parent = add_menu_parent("JoinGameParent", false);
-    setup_join_game(scene, join_game_parent, join_callback);
+    setup_join_game(scene, join_game_parent);
 
     GameObject& settings_parent = add_menu_parent("SettingsParent", false);
     setup_settings(scene, settings_parent);
@@ -79,20 +91,9 @@ Scene& MainMenuScene::setup(
     setup_credits(scene, credits_parent);
 
     falling_capybaras(scene);
-
-    AudioService &audio_service = Engine::instance().services->get_service<AudioService>().get();
-    scene.on_run([this, &audio_service](Scene& scene) {
-        audio_service.play_sound("start_menu", 0.1f, true);
-    });
-
-    scene.on_stop([this, &audio_service](Scene& scene) {
-        audio_service.stop_all_sounds();
-    });
-
-    return scene;
 }
 
-void MainMenuScene::setup_main_menu(Scene& scene, GameObject& parent, create_callback_t create_callback, training_callback_t training_callback) {
+void MainMenuScene::setup_main_menu(Scene& scene, GameObject& parent) {
     SceneService& scene_service = Engine::instance().services->get_service<SceneService>().get();
 
     UIText& title_text = create_text(
@@ -115,11 +116,11 @@ void MainMenuScene::setup_main_menu(Scene& scene, GameObject& parent, create_cal
         "button_large_blue"
     );
     create_game_button.parent(parent);
-    create_game_button.add_on_press([this, create_callback](UIButton& btn) {
+    create_game_button.add_on_press([this](UIButton& btn) {
         auto& system_service = Engine::instance().services->get_service<SystemService>().get();
         system_service.set_cursor_to_arrow();
 
-        create_callback();
+        create_callback_();
     });
 
     // May be used later if a lobby is implemented before joining a game.
@@ -135,11 +136,11 @@ void MainMenuScene::setup_main_menu(Scene& scene, GameObject& parent, create_cal
         "button_large_green"
     );
     training_button.parent(parent);
-    training_button.add_on_press([this, training_callback](UIButton& btn) {
+    training_button.add_on_press([this](UIButton& btn) {
         auto& system_service = Engine::instance().services->get_service<SystemService>().get();
         system_service.set_cursor_to_arrow();
 
-        training_callback();
+        training_callback_();
     });
 
     UIButton& join_game_button = create_button(
@@ -188,12 +189,12 @@ void MainMenuScene::setup_main_menu(Scene& scene, GameObject& parent, create_cal
     exit_button.parent(parent);
     exit_button.add_on_press([this, &scene_service](UIButton& /*btn*/) {
         if (auto current_scene_opt = scene_service.current_scene(); current_scene_opt.has_value()) {
-            current_scene_opt->get().stop();
+            current_scene_opt->get().mark_for_stopping();
         }
     });
 }
 
-void MainMenuScene::setup_create_game(Scene& scene, GameObject& parent, create_callback_t create_callback) {
+void MainMenuScene::setup_create_game(Scene& scene, GameObject& parent) {
     UIButton& back_button = create_button(
         scene,
         "Back",
@@ -207,7 +208,7 @@ void MainMenuScene::setup_create_game(Scene& scene, GameObject& parent, create_c
     });
 }
 
-void MainMenuScene::setup_join_game(Scene& scene, GameObject& parent, join_callback_t join_callback) {
+void MainMenuScene::setup_join_game(Scene& scene, GameObject& parent) {
     UIInput& address_input = create_input(
         scene,
         CENTER_X - (BUTTON_WIDTH / 2),
@@ -226,11 +227,11 @@ void MainMenuScene::setup_join_game(Scene& scene, GameObject& parent, join_callb
         "button_large_green"
     );
     join_button.parent(parent);
-    join_button.add_on_press([this, join_callback, &address_input](UIButton& /*btn*/) {
+    join_button.add_on_press([this, &address_input](UIButton& /*btn*/) {
         auto& system_service = Engine::instance().services->get_service<SystemService>().get();
         system_service.set_cursor_to_arrow();
         
-        join_callback(address_input.text());
+        join_callback_(address_input.text());
     });
     
     UIButton& back_button = create_button(
@@ -248,21 +249,21 @@ void MainMenuScene::setup_join_game(Scene& scene, GameObject& parent, join_callb
 
 void MainMenuScene::setup_settings(Scene& scene, GameObject& parent) {
     auto& rendering_service = Engine::instance().services->get_service<RenderingService>().get();
-    bool vsync = rendering_service.vsync();
+    const bool initial_vsync = rendering_service.vsync();
 
     UIButton& vsync_button = create_button(
         scene,
-        vsync ? "Toggle VSync: OFF" : "Toggle VSync: ON",
+        initial_vsync ? "VSync: ON" : "VSync: OFF",
         BUTTON_START_X,
         BUTTON_START_Y,
         "button_large_blue"
     );
     vsync_button.parent(parent);
-    vsync_button.add_on_press([this, &rendering_service](UIButton& btn) {
-        bool current_vsync = rendering_service.vsync();
-        rendering_service.vsync(!current_vsync);
+    vsync_button.add_on_press([&rendering_service](UIButton& btn) {
+        const bool current_vsync = rendering_service.vsync();
+        settings::toggle_vsync(!current_vsync);
 
-        btn.label(current_vsync ? "Toggle VSync: ON" : "Toggle VSync: OFF");
+        btn.label(!current_vsync ? "VSync: ON" : "VSync: OFF");
     });
 
     UIButton& back_button = create_button(

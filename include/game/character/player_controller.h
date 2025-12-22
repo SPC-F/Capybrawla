@@ -43,4 +43,6 @@ public:
 
   [[nodiscard]] bool is_soft_dead() const;
   [[nodiscard]] bool is_hard_dead() const;
+
+  void on_destroy() override;
 };

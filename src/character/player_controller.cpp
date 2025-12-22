@@ -83,3 +83,8 @@ bool PlayerController::is_hard_dead() const {
 bool PlayerController::is_soft_dead() const {
   return lives_ >= 1 && health_ <= 0;
 }
+
+void PlayerController::on_destroy() {
+  health_changed_signals_.clear();
+  lives_changed_signals_.clear();
+}

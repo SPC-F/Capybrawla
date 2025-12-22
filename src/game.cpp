@@ -2,11 +2,11 @@
 #include <game/assets.h>
 #include <game/scenes/main_menu.h>
 #include <game/scenes/swamp.h>
+#include <game/scenes/level.h>
 #include <game/scenes/swamp_autum.h>
 
 #include <engine/audio/audio_service.h>
 #include <engine/core/engine.h>
-#include <engine/core/rendering/assetService.h>
 #include <engine/core/rendering/renderingService.h>
 #include <engine/network/multiplayer_service.h>
 #include <engine/public/components/behaviorscript.h>
@@ -17,6 +17,7 @@
 #include <game/behaviors/pause_play_behavior.h>
 #include <game/behaviors/toggle/gizmo/physics_gizmo_toggle_behavior.h>
 #include <game/behaviors/toggle/object_toggle_behavior.h>
+#include <game/settings/settings.h>
 
 void Game::initialize() {
     const Engine& engine = Engine::instance();
@@ -66,6 +67,9 @@ void Game::initialize() {
 
         {"weapons/sword.png", "sword_sheet", 1, 2},
         {"weapons/sword_swing_anim.png", "sword_swing_anim_sheet", 1, 4},
+
+        {"weapons/boxing_gloves.png", "boxing_gloves_sheet", 1, 1},
+        {"weapons/boxing_gloves_swing_anim.png", "boxing_gloves_swing_anim_sheet", 1, 4},
     };
     Assets::load_resources(resources);
 
@@ -221,6 +225,8 @@ void Game::initialize() {
 
         {"sword_sheet", "sword", 0},
         {"sword_sheet", "sword_swing", 1},
+
+        {"boxing_gloves_sheet", "boxing_gloves", 0},
     };
 
     Assets::register_textures(textures);
@@ -239,6 +245,7 @@ void Game::initialize() {
         {"bat_swing_anim_sheet", "bat_swing_anim", 0, 4},
         {"axe_swing_anim_sheet", "axe_swing_anim", 0, 4},
         {"sword_swing_anim_sheet", "sword_swing_anim", 0, 4},
+        {"boxing_gloves_swing_anim_sheet", "boxing_gloves_swing_anim", 0, 4},
     };
     Assets::register_sprite_sheets(sprite_sheets);
 
@@ -251,6 +258,15 @@ void Game::initialize() {
 
     auto& window_controller = engine.services->get_service<RenderingService>().get().window();
     window_controller.set_window_fullscreen();
+
+    settings::apply_current_settings();
+
+    levels_.emplace_back(std::make_unique<SwampScene>());
+    levels_.emplace_back(std::make_unique<SwampAutumScene>());
+
+    for (auto& level : levels_) {
+        level->init();
+    }
 }
 
 void Game::run() {
@@ -258,38 +274,34 @@ void Game::run() {
     auto& scene_service = engine.services->get_service<SceneService>().get();
     auto& multiplayer_service = engine.services->get_service<MultiplayerService>().get();
 
-    // setup levels
-    SwampScene::setup();
-    SwampAutumScene::setup();
-
-    auto load_create_game_scene = [&scene_service, &multiplayer_service]() {
+    auto load_create_game_scene = [&scene_service, &multiplayer_service, this]() {
         multiplayer_service.set_host();
-        scene_service.load_scene(SwampAutumScene::SCENE_NAME);
+        scene_service.load_scene(levels_[1]->name());
     };
 
-    auto load_join_game_scene = [&scene_service](const std::string& address){
+    auto load_join_game_scene = [&scene_service, this](const std::string& address){
         Engine& engine = Engine::instance();
         auto& multiplayer_service = engine.services->get_service<MultiplayerService>().get();
 
         multiplayer_service.set_client();
         multiplayer_service.connect(address);
 
-        scene_service.load_scene(SwampAutumScene::SCENE_NAME);
+        scene_service.load_scene(levels_[1]->name());
     };
 
-    auto load_training_scene = [&scene_service]() {
-        scene_service.load_scene(SwampScene::SCENE_NAME);
+    auto load_training_scene = [&scene_service, this]() {
+        scene_service.load_scene(levels_[0]->name());
     };
 
-    MainMenuScene main_menu;
-    Scene& main_menu_scene = main_menu.setup(
+    MainMenuScene main_menu(
         load_create_game_scene,
         load_join_game_scene,
         load_training_scene
     );
+    main_menu.init();
 
-    bootstrap(main_menu_scene);
-    scene_service.load_scene(main_menu_scene.name());
+    bootstrap(main_menu.scene());
+    scene_service.load_scene(main_menu.name());
 }
 
 void Game::shutdown() {
@@ -304,6 +316,7 @@ void Game::bootstrap(Scene& first_scene) {
 
     auto& fps_counter = first_scene.add_game_object<UIFPS>(first_scene);
     fps_counter.mark_dont_destroy_on_load(true);
+    fps_counter.layer(Layers::UI);
 
     auto& fps_controller = first_scene.add_game_object("FPS Toggle");
     fps_controller.add_component<BehaviorScript>(std::make_unique<ObjectToggleBehavior>(fps_counter));

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <game/scenes/level.h>
 #include <engine/public/scene.h>
 
 /**
@@ -9,10 +10,12 @@
  */
 class Game {
 public:
-    static void initialize();
-    static void run();
-    static void shutdown();
+    void initialize();
+    void run();
+    void shutdown();
 private:
-    static void bootstrap(Scene& first_scene);
+    std::vector<std::unique_ptr<Level>> levels_;
+
+    void bootstrap(Scene& first_scene);
 };
 
