@@ -24,17 +24,19 @@
 
 const Vector3 DEFAULT_MULTIPLAYER_RESPAWN_POSITION = {600, 0, 0};
 
-PlayerObject& create_player_object(Scene& scene, const std::string& name) {
+SwampAutumScene::SwampAutumScene() : Level("Level_SwampAutumScene") {}
+
+PlayerObject& SwampAutumScene::create_player_object(Scene& scene, const std::string& name) {
     float start_x = 1000.0f;
     float start_y = 500.0f;
 
     auto& obj = scene.add_game_object<PlayerObject>(scene, Vector3{start_x, start_y, 0});
     obj.prefab_type_id("PlayerObject");
     obj.add_component<BehaviorScript>(std::make_unique<PlayerOutOfBoundsBehavior>(
-      -SwampAutumScene::out_of_bounds_margin_x,
-      SwampAutumScene::map_width + SwampAutumScene::out_of_bounds_margin_x,
-      -SwampAutumScene::out_of_bounds_margin_y,
-      SwampAutumScene::map_height + SwampAutumScene::out_of_bounds_margin_y));
+      -out_of_bounds_margin_x_,
+      map_width_ + out_of_bounds_margin_x_,
+      -out_of_bounds_margin_y_,
+      map_height_ + out_of_bounds_margin_y_));
 
     Engine& engine = Engine::instance();
     auto& multiplayer_service = engine.services->get_service<MultiplayerService>().get();
@@ -47,20 +49,34 @@ PlayerObject& create_player_object(Scene& scene, const std::string& name) {
     return obj;
 }
 
-RoundController& add_multiplayer_round_controller(Scene& scene) {
+RoundController& SwampAutumScene::add_multiplayer_round_controller(Scene& scene) {
     GameObject& wrapper = scene.add_game_object("RoundControllerWrapper");
     auto& comp = wrapper.add_component<BehaviorScript>(std::make_unique<RoundController>(DEFAULT_MULTIPLAYER_RESPAWN_POSITION));
     return *dynamic_cast<RoundController*>(&comp.behavior());
 }
 
-MultiplayerController& add_multiplayer_controller(Scene& scene) {
+MultiplayerController& SwampAutumScene::add_multiplayer_controller(Scene& scene) {
     GameObject& wrapper = scene.add_game_object("MultiplayerControllerWrapper");
     auto& comp = wrapper.add_component<BehaviorScript>(std::make_unique<MultiplayerController>());
     return *dynamic_cast<MultiplayerController*>(&comp.behavior());
 }
 
-void initial_variable_load(Scene& scene) {
-    // Set all values that need to be reset each load here.
+void SwampAutumScene::setup(Scene& scene) {
+    add_on_stop_callback([](Scene& scene) {
+        auto& multiplayer_service = Engine::instance().services->get_service<MultiplayerService>().get();
+        multiplayer_service.disconnect();
+    });
+
+    PrefabService& prefab_service = Engine::instance().services->get_service<PrefabService>().get();
+    prefab_service.register_prefab("PlayerObject", [this](Scene& scene, const std::string& name) -> GameObject& {
+        return create_player_object(scene, name);
+    });
+}
+
+void SwampAutumScene::load(Scene& scene) {
+    SwampAutumScene::load_camera();
+    SwampAutumScene::load_map(std::string(Assets::MAP_SWAMP_AUTUM));
+
     Engine& engine = Engine::instance();
     auto& multiplayer_service = engine.services->get_service<MultiplayerService>().get();
     auto& prefab_service = engine.services->get_service<PrefabService>().get();
@@ -112,58 +128,4 @@ void initial_variable_load(Scene& scene) {
                 player.set_controllable();
         });
     }
-}
-
-void deinitialize_variable_load(Scene& scene) {
-    Engine& engine = Engine::instance();
-    auto& multiplayer_service = engine.services->get_service<MultiplayerService>().get();
-
-    multiplayer_service.disconnect();
-
-    // Destroy the multiplayer controller
-
-    for (auto& object : scene.game_objects()) {
-        auto& obj = object.get();
-
-        if (dynamic_cast<PlayerObject*>(&obj) != nullptr) {
-            scene.remove_game_object(obj);
-        } else if (obj.name() == "RoundControllerWrapper") {
-            scene.remove_game_object(obj);
-        } else if (obj.name() == "MultiplayerControllerWrapper") {
-            scene.remove_game_object(obj);
-        }
-    }
-}
-
-Scene& SwampAutumScene::setup() {
-    Engine& engine = Engine::instance();
-
-    RenderingService& rendering_service = Engine::instance().services->get_service<RenderingService>().get();
-    int window_width = rendering_service.window().get_window_width();
-    int window_height = rendering_service.window().get_window_height();
-
-    Scene& scene = engine.services->get_service<SceneService>().get().add_scene(SCENE_NAME);
-    auto& camera = scene.add_game_object<Camera>(scene, Color(), 1.0f, true);
-    camera.transform().position({
-        static_cast<float>(window_width) / 2.0f,
-        static_cast<float>(window_height) / 2.0f, 0.0f});
-
-    LevelLoader loader;
-    loader.load_game_objects_from_json(
-        std::string(Assets::MAP_SWAMP_AUTUM),
-        scene
-    );
-
-    PrefabService& prefab_service = engine.services->get_service<PrefabService>().get();
-    prefab_service.register_prefab("PlayerObject", create_player_object);
-
-    scene.on_run([](Scene& scene) {
-        initial_variable_load(scene);
-    });
-
-    scene.on_stop([](Scene& scene) {
-        deinitialize_variable_load(scene);
-    });
-
-    return scene;
 }
