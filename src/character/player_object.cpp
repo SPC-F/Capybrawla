@@ -29,7 +29,7 @@ PlayerObject::PlayerObject(Scene &scene, const Vector3 initial_pos, bool is_loca
   this->add_component<BoxCollider2D>(0.1f, 0.2f, 20 * scale_factor_,
                                      default_height_, default_offset);
 
-  this->add_component<BehaviorScript>(std::make_unique<PlayerControllerBehavior>(100));
+  this->add_component<BehaviorScript>(std::make_unique<PlayerController>(100, 100));
 }
 
 void PlayerObject::set_controllable() {

@@ -1,3 +1,6 @@
+#include "game/character/gui/player_info_component.h"
+#include <game/scenes/swamp.h>
+
 #include <engine/core/engine.h>
 #include <engine/core/rendering/renderingService.h>
 #include <engine/audio/audio_service.h>
@@ -34,6 +37,9 @@ void load_players(Scene& scene, RoundController& controller, float start_x = 100
 
     player.layer(Layers::Foreground);
     player.set_controllable();
+
+    GameObject& player_info_comp = PlayerInfoComponent::create_and_add(scene, player);
+    player_info_comp.transform().position({50, 950, 0});
 
     auto& ai_player = scene.add_game_object<PlayerObject>(scene, Vector3{start_x + 40.0f, 100.0f, 0}, false);
 
