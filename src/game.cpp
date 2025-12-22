@@ -8,6 +8,7 @@
 #include <engine/core/engine.h>
 #include <engine/core/rendering/assetService.h>
 #include <engine/core/rendering/renderingService.h>
+#include <engine/network/multiplayer_service.h>
 #include <engine/public/components/behaviorscript.h>
 #include <engine/public/scene_service.h>
 #include <engine/public/ui/ui_fps.h>
@@ -21,7 +22,7 @@ void Game::initialize() {
     const Engine& engine = Engine::instance();
     Engine::initialize();
 
-    const std::vector<LoadResource> resources {
+    const std::vector<LoadResourceData> resources {
         // UI
         // Main menu
         {"ui/main_menu.png", "main_menu_bg", 1, 1},
@@ -255,14 +256,26 @@ void Game::initialize() {
 void Game::run() {
     const Engine & engine = Engine::instance();
     auto& scene_service = engine.services->get_service<SceneService>().get();
+    auto& multiplayer_service = engine.services->get_service<MultiplayerService>().get();
 
     // setup levels
     SwampScene::setup();
     SwampAutumScene::setup();
 
-    auto load_create_game_scene = [](){};
+    auto load_create_game_scene = [&scene_service, &multiplayer_service]() {
+        multiplayer_service.set_host();
+        scene_service.load_scene(SwampAutumScene::SCENE_NAME);
+    };
 
-    auto load_join_game_scene = [](const std::string& address){};
+    auto load_join_game_scene = [&scene_service](const std::string& address){
+        Engine& engine = Engine::instance();
+        auto& multiplayer_service = engine.services->get_service<MultiplayerService>().get();
+
+        multiplayer_service.set_client();
+        multiplayer_service.connect(address);
+
+        scene_service.load_scene(SwampAutumScene::SCENE_NAME);
+    };
 
     auto load_training_scene = [&scene_service]() {
         scene_service.load_scene(SwampScene::SCENE_NAME);

@@ -15,7 +15,7 @@ AudioService& get_audio_service() {
   return engine.services->get_service<AudioService>().get();
 }
 
-void Assets::load_resources(const std::vector<LoadResource> &resources) {
+void Assets::load_resources(const std::vector<LoadResourceData> &resources) {
   auto &asset_service = get_asset_service();
   for (const auto &resource : resources) {
     asset_service.load_from_resource(resource.file, resource.name,
