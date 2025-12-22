@@ -6,7 +6,6 @@
 
 #include <engine/audio/audio_service.h>
 #include <engine/core/engine.h>
-#include <engine/core/rendering/assetService.h>
 #include <engine/core/rendering/renderingService.h>
 #include <engine/network/multiplayer_service.h>
 #include <engine/public/components/behaviorscript.h>
@@ -17,6 +16,8 @@
 #include <game/behaviors/pause_play_behavior.h>
 #include <game/behaviors/toggle/gizmo/physics_gizmo_toggle_behavior.h>
 #include <game/behaviors/toggle/object_toggle_behavior.h>
+
+#include "game/settings/settings.h"
 
 void Game::initialize() {
     const Engine& engine = Engine::instance();
@@ -251,6 +252,8 @@ void Game::initialize() {
 
     auto& window_controller = engine.services->get_service<RenderingService>().get().window();
     window_controller.set_window_fullscreen();
+
+    settings::apply_current_settings();
 }
 
 void Game::run() {
