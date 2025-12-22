@@ -50,6 +50,9 @@ void Game::initialize() {
         {"character/capybara_blue_idle.png", "capybara_blue_idle", 1, 1},
         {"character/capybara_green_idle.png", "capybara_green_idle", 1, 1},
 
+        // Player status bar
+        {"character/heart.png", "heart_icon", 1, 1},
+
         {"character/drone_idle.png", "drone_idle", 1, 1},
         {"character/drone_idle_anim.png", "drone_idle_anim_sheet", 1, 7},
 
@@ -101,6 +104,7 @@ void Game::initialize() {
         {"buttons_small", "button_small_black_deny", 18},
         {"buttons_small", "button_small_black_accept", 19},
 
+        {"heart_icon", "heart", 0},
 
         // Swamp textures
         {"swamp_tiles", "grass_single_top", 0},
@@ -226,7 +230,7 @@ void Game::initialize() {
         {"capybara_default_idle_anim_sheet", "capybara_default_idle_anim", 0, 7},
         {"capybara_default_jump_anim_sheet", "capybara_default_jump_anim", 0, 7},
         {"capybara_default_duck_anim_sheet", "capybara_default_duck_anim", 0, 7},
-        
+
         // Opponents
         {"drone_idle_anim_sheet", "drone_idle_anim", 0, 7},
 
