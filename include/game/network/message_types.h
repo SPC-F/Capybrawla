@@ -5,6 +5,8 @@
 enum class CustomMessageTypes : uint16_t {
     USER_JOIN,
     USER_LEAVE,
+
+    USER_MOVE,
 };
 
 struct MsgUserJoin {
@@ -13,4 +15,10 @@ struct MsgUserJoin {
 
 struct MsgUserLeave {
     char uuid[37];
+};
+
+struct MsgUserMove {
+    char uuid[37];
+    uint32_t size;
+    uint8_t movement[4];
 };

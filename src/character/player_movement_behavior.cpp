@@ -2,7 +2,9 @@
 #include "engine/core/rendering/assetService.h"
 #include "engine/input/i_input_provider.h"
 #include "engine/input/input_manager.h"
+#include <engine/network/multiplayer_service.h>
 
+#include <game/network/message_types.h>
 #include <game/character/playerConstants.h>
 #include <game/character/player_movement_behavior.h>
 
@@ -89,120 +91,155 @@ bool PlayerMovementBehavior::player_has_required_components() const {
          sprite_opt_.has_value() && box_collider_opt_.has_value();
 }
 
-void PlayerMovementBehavior::on_update(float dt) {
-  const IInputProvider &provider =
+void PlayerMovementBehavior::set_local_player() noexcept {
+  is_local_player_ = true;
+}
+
+void PlayerMovementBehavior::set_controllable() noexcept {
+  is_controllable_ = true;
+}
+
+void PlayerMovementBehavior::on_update(float dt)
+{
+  if (is_controllable_) {
+    std::vector<PlayerMovementTypes> movement;
+
+    gather_input(movement);
+    handle_movement(movement);
+
+    if (is_local_player_)
+      send_movement_if_needed(movement);
+  } else {
+    apply_physics();
+  }
+}
+
+void PlayerMovementBehavior::handle_movement(std::vector<PlayerMovementTypes> movement) {
+  set_movement_flags(movement);
+  apply_physics();
+  update_animation();
+}
+
+void PlayerMovementBehavior::gather_input(std::vector<PlayerMovementTypes>& movement) {
+  const IInputProvider& input_provider =
       Engine::instance().services->get_service<InputManager>().get().provider();
 
+    if (input_provider.is_key_held(KeyCode::s)) movement.push_back(PlayerMovementTypes::CROUCH);
+    if (input_provider.is_key_held(KeyCode::space)
+      || input_provider.is_key_held(KeyCode::w)) movement.push_back(PlayerMovementTypes::JUMP);
+    if (input_provider.is_key_held(KeyCode::a)) movement.push_back(PlayerMovementTypes::MOVE_LEFT);
+    if (input_provider.is_key_held(KeyCode::d)) movement.push_back(PlayerMovementTypes::MOVE_RIGHT);
+}
+
+void PlayerMovementBehavior::set_movement_flags(const std::vector<PlayerMovementTypes>& movement) {
+  crouch_ = std::find(movement.begin(), movement.end(), PlayerMovementTypes::CROUCH) != movement.end();
+  jump_ = std::find(movement.begin(), movement.end(), PlayerMovementTypes::JUMP) != movement.end();
+  move_left_ = std::find(movement.begin(), movement.end(), PlayerMovementTypes::MOVE_LEFT) != movement.end();
+  move_right_ = std::find(movement.begin(), movement.end(), PlayerMovementTypes::MOVE_RIGHT) != movement.end();
+}
+
+void PlayerMovementBehavior::apply_physics()
+{
   if (!player_has_required_components())
     return;
 
-  auto &rigidbody = rigidbody_opt_->get();
-  auto &box_collider = this->box_collider_opt_->get();
-  auto &animator = animator_opt_->get();
-  auto &sprite = sprite_opt_->get();
+  auto& rigidbody = rigidbody_opt_->get();
+  auto& box_collider = box_collider_opt_->get();
 
-  const bool crouch_input = provider.is_key_held(KeyCode::s);
-  const bool jump_input = provider.is_key_pressed(KeyCode::space) ||
-                          provider.is_key_pressed(KeyCode::w);
-  const bool walk_left_input = provider.is_key_held(KeyCode::a);
-  const bool walk_right_input = provider.is_key_held(KeyCode::d);
-
-  const bool walking = walk_left_input || walk_right_input;
-  const bool is_moving = crouch_input || jump_input || walking;
-
-  if (!is_moving) {
-    sprite.texture("capybara_default_idle");
-  }
-
-  if (crouch_input && !is_crouching_) {
+  // crouch collider logic
+  if (crouch_ && !is_crouching_) {
     box_collider.offset(default_crouching_offset_);
     box_collider.height(default_crouching_height_);
-
-    sprite.texture("capybara_default_duck");
-    animator.pause();
-
     is_crouching_ = true;
     is_walking_ = false;
-
-  } else if (!crouch_input && is_crouching_) {
+  } else if (!crouch_ && is_crouching_) {
     box_collider.offset(default_standing_offset_);
     box_collider.height(default_standing_height_);
-
-    sprite.texture("capybara_default_idle");
-    if (is_walking_)
-      animator.play("capybara_default_walk_anim", true);
-    else
-      animator.pause();
-
     is_crouching_ = false;
   }
 
-  if (walking && !is_walking_ && !is_crouching_) {
-    if (!is_jumping()) {
-      animator.play(PlayerConstants::WALKING_ANIMATION, true);
-    }
-
-    is_walking_ = true;
-  } else if (!walking && is_walking_) {
-    animator.pause();
-    is_walking_ = false;
-  }
-
   float velocity_x = 0.0f;
-  float applied_force_y = 0.0f;
+  float applied_force_y = crouch_ ? dropping_speed_ : 0.0f;
 
-  if (crouch_input) {
-    applied_force_y += dropping_speed_;
+  if (!is_crouching_) {
+    if (move_left_)  velocity_x -= horizontal_velocity_;
+    if (move_right_) velocity_x += horizontal_velocity_;
   }
 
-  if (walk_left_input && !is_crouching_) {
-    velocity_x -= horizontal_velocity_;
-    if (!sprite.flip_x())
-      sprite.flip_x(true);
-  }
-
-  if (walk_right_input && !is_crouching_) {
-    velocity_x += horizontal_velocity_;
-    if (sprite.flip_x())
-      sprite.flip_x(false);
-  }
+  // Decide if moving
+  is_walking_ = (move_left_ || move_right_) && !is_crouching_;
 
   const float current_velocity_y = rigidbody.velocity().y;
-  if (jump_input && !is_jumping_) {
-    if (std::abs(current_velocity_y) < velocity_y_threshold_) {
-      rigidbody.velocity(
-          {rigidbody.velocity().x, 0.0f, rigidbody.velocity().z});
-    }
+  if (jump_ && !is_jumping_) {
+    if (std::abs(current_velocity_y) < velocity_y_threshold_)
+      rigidbody.velocity({ rigidbody.velocity().x, 0.0f, rigidbody.velocity().z });
 
     applied_force_y -= jumping_force_;
     is_jumping_ = true;
-
-    sprite.texture("capybara_default_idle");
-    animator.pause();
-  } else if (jump_input && !is_double_jumping_) {
+  } else if (jump_ && !is_double_jumping_) {
     const float abs_velocity_y = std::abs(current_velocity_y);
-    if (abs_velocity_y < velocity_y_threshold_) {
-      rigidbody.velocity(
-          {rigidbody.velocity().x, 0.0f, rigidbody.velocity().z});
-    }
+    if (abs_velocity_y < velocity_y_threshold_)
+      rigidbody.velocity({ rigidbody.velocity().x, 0.0f, rigidbody.velocity().z });
 
     applied_force_y -= double_jump_force_;
     // To make double jump feel smoother, we apply less force if the player is
     // already moving upwards
-    applied_force_y +=
-        std::clamp(current_velocity_y, 0.0f, velocity_y_threshold_);
+    applied_force_y += std::clamp(current_velocity_y, 0.0f, velocity_y_threshold_);
 
     is_double_jumping_ = true;
-
-    sprite.texture("capybara_default_idle");
-    animator.pause();
   }
 
   Vector3 velocity = rigidbody.velocity();
   velocity.x = velocity_x;
-
   rigidbody.velocity(velocity);
   rigidbody.apply_force({0, applied_force_y, 0});
+}
+
+void PlayerMovementBehavior::update_animation()
+{
+  auto& animator = animator_opt_->get();
+  auto& sprite   = sprite_opt_->get();
+
+  if (is_crouching_) {
+    sprite.texture("capybara_default_duck");
+    animator.pause();
+    return;
+  }
+
+  sprite.texture("capybara_default_idle");
+  if (is_walking_) {
+    animator.play(PlayerConstants::WALKING_ANIMATION, true);
+  } else {
+    animator.pause();
+  }
+
+  if (move_left_) sprite.flip_x(true);
+  if (move_right_) sprite.flip_x(false);
+}
+
+void PlayerMovementBehavior::send_movement_if_needed(const std::vector<PlayerMovementTypes>& movement) {
+  // If we're not detecting any input, send one final message stating that we are no longer moving.
+  if (movement.empty()) {
+    if (!send_empty_message_) return;
+    send_empty_message_ = false;
+  } else {
+    send_empty_message_ = true;
+  }
+
+  // Send message containing all movement
+  MultiplayerService& multiplayer_service =
+    Engine::instance().services->get_service<MultiplayerService>().get();
+
+  MsgUserMove body{};
+  std::strncpy(body.uuid, multiplayer_service.get_uuid().c_str(), sizeof(body.uuid) - 1);
+  body.size = movement.size();
+
+  for (int i = 0; i < movement.size(); ++i) {
+    body.movement[i] = static_cast<uint8_t>(movement[i]);
+  }
+
+  Message msg = serialize_message(body, CustomMessageTypes::USER_MOVE);
+  multiplayer_service.send(msg);
 }
 
 float PlayerMovementBehavior::horizontal_velocity() const {

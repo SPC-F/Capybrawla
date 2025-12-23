@@ -6,6 +6,8 @@
 #include "engine/public/components/sprite.h"
 #include "engine/public/scene.h"
 
+#include <game/character/player_movement_types.h>
+
 class PlayerMovementBehavior final : public Behavior {
 private:
   std::optional<std::reference_wrapper<Rigidbody2D>> rigidbody_opt_;
@@ -24,11 +26,22 @@ private:
   bool is_double_jumping_;
   bool is_walking_;
 
+  // Used when updating the player objects of peers during which we don't want to reset these states.
+  bool crouch_;
+  bool jump_;
+  bool move_left_;
+  bool move_right_;
+
+  bool send_empty_message_; // First message sent after no movement has been detected to clean animation states on peers
+
   float default_standing_height_;
   float default_crouching_height_;
 
   Point default_standing_offset_;
   Point default_crouching_offset_;
+
+  bool is_local_player_ = false;
+  bool is_controllable_ = false;
 
   [[nodiscard]] bool player_has_required_components() const;
 
@@ -67,6 +80,16 @@ public:
   [[nodiscard]] bool is_jumping() const;
   [[nodiscard]] bool is_double_jumping() const;
   [[nodiscard]] bool is_walking() const;
+
+  void set_local_player() noexcept; // If this player object belongs to you
+  void set_controllable() noexcept; // If it should listen to user input
+
+  void handle_movement(std::vector<PlayerMovementTypes> movement);
+  void gather_input(std::vector<PlayerMovementTypes>& movement);
+  void set_movement_flags(const std::vector<PlayerMovementTypes>& movement);
+  void apply_physics();
+  void update_animation();
+  void send_movement_if_needed(const std::vector<PlayerMovementTypes>& movement);
 
   void on_start() override;
   void on_update(float dt) override;
