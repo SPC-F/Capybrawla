@@ -31,7 +31,7 @@ void SwampScene::load_players(Scene& scene, RoundController& controller, float s
     auto& player = scene.add_game_object<PlayerObject>(scene, Vector3{start_x, start_y, 0});
 
     player.add_component<BehaviorScript>(std::make_unique<PlayerOutOfBoundsBehavior>(
-      out_of_bounds_margin_x_,
+      -out_of_bounds_margin_x_,
       map_width_ + out_of_bounds_margin_x_,
       -out_of_bounds_margin_y_,
       map_height_ + out_of_bounds_margin_y_));
