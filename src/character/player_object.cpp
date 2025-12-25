@@ -29,7 +29,7 @@ PlayerObject::PlayerObject(Scene &scene, const Vector3 initial_pos, bool is_loca
   const Point default_offset = {default_x_offset, 4 * scale_factor};
 
   this->add_component<Rigidbody2D>(BodyType2D::Type::Dynamic, 35.0f);
-  this->add_component<BoxCollider2D>(0.1f, 0.2f, 20 * scale_factor,
+  this->add_component<BoxCollider2D>(0.1f, .0f, 20 * scale_factor,
                                      default_height, default_offset);
 
   this->add_component<BehaviorScript>(std::make_unique<PlayerController>(100, 100));

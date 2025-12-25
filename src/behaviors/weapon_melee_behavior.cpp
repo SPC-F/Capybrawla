@@ -1,6 +1,8 @@
 #include <game/behaviors/weapon_melee_behavior.h>
 
 #include <game/character/player_controller.h>
+#include <game/character/player_movement_behavior.h>
+
 #include <engine/core/engine.h>
 #include <engine/input/input_system.h>
 #include <engine/input/input_manager.h>
@@ -69,15 +71,16 @@ void WeaponMeleeBehavior::on_awake() {
                 auto behaviors = other_gameobject.get_components<BehaviorScript>();
                 for (auto& behavior_ref : behaviors) {
                     auto& behavior = behavior_ref.get().behavior();
-
+                    
                     if (auto ctrl = dynamic_cast<PlayerController*>(&behavior); ctrl != nullptr) {
                         ctrl->damage(damage_);
                     }
+                    
+                    if (auto movement = dynamic_cast<PlayerMovementBehavior*>(&behavior); movement != nullptr) {
+                        Point knockback = facing_right_ ? knockback_force_ : Point{-knockback_force_.x, knockback_force_.y};
+                        movement->apply_knockback(knockback);
+                    }
                 }
-
-                auto& rb = other_gameobject.get_component<Rigidbody2D>()->get();
-                Point knockback = facing_right_ ? knockback_force_ : Point{-knockback_force_.x, -knockback_force_.y};
-                rb.apply_impulse(Vector3{knockback.x, knockback.y, 0.0f});
             }
         });
 }

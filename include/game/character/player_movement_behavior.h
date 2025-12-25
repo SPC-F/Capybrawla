@@ -15,12 +15,17 @@ private:
   std::optional<std::reference_wrapper<Sprite>> sprite_opt_;
   std::optional<std::reference_wrapper<BoxCollider2D>> box_collider_opt_;
 
+  float latest_dt_;
+
   float horizontal_velocity_;
   float jumping_force_;
   float dropping_speed_;
   float double_jump_force_;
   float velocity_y_threshold_;
+  float knockback_decay_;
+  Vector3 knockback_velocity_;
 
+  bool is_grounded_;
   bool is_crouching_;
   bool is_jumping_;
   bool is_double_jumping_;
@@ -76,6 +81,8 @@ public:
   [[nodiscard]] float velocity_y_threshold() const;
   void velocity_y_threshold(const float threshold);
 
+  void apply_knockback(const Point& force);
+
   [[nodiscard]] bool is_crouching() const;
   [[nodiscard]] bool is_jumping() const;
   [[nodiscard]] bool is_double_jumping() const;
@@ -84,10 +91,10 @@ public:
   void set_local_player() noexcept; // If this player object belongs to you
   void set_controllable() noexcept; // If it should listen to user input
 
-  void handle_movement(std::vector<PlayerMovementTypes> movement);
+  void handle_movement(const std::vector<PlayerMovementTypes>& movement);
   void gather_input(std::vector<PlayerMovementTypes>& movement);
   void set_movement_flags(const std::vector<PlayerMovementTypes>& movement);
-  void apply_physics();
+  void apply_physics(const std::vector<PlayerMovementTypes>& movement);
   void update_animation();
   void send_movement_if_needed(const std::vector<PlayerMovementTypes>& movement);
 

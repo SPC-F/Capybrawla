@@ -14,7 +14,7 @@ PlayerMovementBehavior::PlayerMovementBehavior()
 PlayerMovementBehavior::PlayerMovementBehavior(
     const float default_standing_height, const float default_crouching_height,
     const Point default_standing_offset, const Point default_crouching_offset)
-    : PlayerMovementBehavior(20.0f, 8.0f, 1.5f, 6.0f, 18.0f,
+    : PlayerMovementBehavior(30.0f, 8.0f, 1.5f, 6.0f, 18.0f,
                              default_standing_height, default_crouching_height,
                              default_standing_offset,
                              default_crouching_offset) {}
@@ -32,11 +32,11 @@ PlayerMovementBehavior::PlayerMovementBehavior(
       // Configurable params for movement physics
       horizontal_velocity_(horizontal_velocity), jumping_force_(jumping_force),
       dropping_speed_(dropping_speed), double_jump_force_(double_jump_force),
-      velocity_y_threshold_(velocity_y_threshold),
+      velocity_y_threshold_(velocity_y_threshold), knockback_decay_(7.0f),
 
       // State flags
-      is_crouching_(false), is_jumping_(false), is_double_jumping_(false),
-      is_walking_(false),
+      is_grounded_(false), is_crouching_(false), is_jumping_(false),
+      is_double_jumping_(false), is_walking_(false),
 
       // Default collider heights
       default_standing_height_(default_standing_height),
@@ -47,43 +47,34 @@ PlayerMovementBehavior::PlayerMovementBehavior(
       default_crouching_offset_(default_crouching_offset) {}
 
 void PlayerMovementBehavior::on_start() {
-  rigidbody_opt_ = this->get_component<Rigidbody2D>();
-  animator_opt_ = this->get_component<Animator>();
-  sprite_opt_ = this->get_component<Sprite>();
-  box_collider_opt_ = this->get_component<BoxCollider2D>();
+  rigidbody_opt_    = get_component<Rigidbody2D>();
+  animator_opt_     = get_component<Animator>();
+  sprite_opt_       = get_component<Sprite>();
+  box_collider_opt_ = get_component<BoxCollider2D>();
 
   if (!player_has_required_components()) {
-    throw std::runtime_error(
-        "player_has_required_components() returned false in "
-        "PlayerMovementBehavior::on_start");
+    throw std::runtime_error("PlayerMovementBehavior missing components");
   }
 
-  box_collider_opt_.value().get().add_on_collision_enter(
-      [&](Collider2D &self, Collider2D &other) {
-        const auto parent_opt = self.parent();
-        const auto other_parent_opt = other.parent();
-        if (!parent_opt.has_value() || !other_parent_opt.has_value())
-          return;
+  auto& collider = box_collider_opt_->get();
 
-        const Transform &self_transform = parent_opt->get().transform();
-        const Transform &other_transform = other_parent_opt->get().transform();
+  collider.add_on_collision_enter(
+    [&](Collider2D& self, Collider2D& other) {
+      if (other.parent()->get().tag() != "Ground")
+        return;
 
-        // Are we grounded?
-        if (self_transform.position().y > other_transform.position().y) {
-          return;
-        }
+      is_grounded_ = true;
+      is_jumping_ = false;
+      is_double_jumping_ = false;
 
-        // If we are both walking and jumping at the same time, resume walking
-        if (is_walking_ && is_jumping_) {
-          animator_opt_->get().play("capybara_default_walk_anim", true);
-        }
+      self.friction(0.6f);
+    });
 
-        is_jumping_ = false;
-        is_double_jumping_ = false;
-
-        Vector3 velocity = rigidbody_opt_->get().velocity();
-        rigidbody_opt_->get().velocity({velocity.x, 0.0f, velocity.z});
-      });
+  collider.add_on_collision_exit(
+    [&](Collider2D& self, Collider2D& other) {
+      if (other.parent()->get().tag() == "Ground")
+        is_grounded_ = false;
+    });
 }
 
 bool PlayerMovementBehavior::player_has_required_components() const {
@@ -99,123 +90,163 @@ void PlayerMovementBehavior::set_controllable() noexcept {
   is_controllable_ = true;
 }
 
-void PlayerMovementBehavior::on_update(float dt)
-{
-  if (is_controllable_) {
-    std::vector<PlayerMovementTypes> movement;
+void PlayerMovementBehavior::on_update(float dt) {
+  latest_dt_ = dt;
 
-    gather_input(movement);
-    handle_movement(movement);
-
-    if (is_local_player_)
-      send_movement_if_needed(movement);
-  } else {
-    apply_physics();
+  if (!is_controllable_) {
+    apply_physics({});
+    update_animation();
+    return;
   }
+
+  std::vector<PlayerMovementTypes> movement;
+  gather_input(movement);
+
+  handle_movement(movement);
+
+  if (is_local_player_)
+    send_movement_if_needed(movement);
 }
 
-void PlayerMovementBehavior::handle_movement(std::vector<PlayerMovementTypes> movement) {
+
+void PlayerMovementBehavior::handle_movement(
+  const std::vector<PlayerMovementTypes>& movement
+) {
   set_movement_flags(movement);
-  apply_physics();
+  apply_physics(movement);
   update_animation();
 }
 
-void PlayerMovementBehavior::gather_input(std::vector<PlayerMovementTypes>& movement) {
-  const IInputProvider& input_provider =
-      Engine::instance().services->get_service<InputManager>().get().provider();
 
-    if (input_provider.is_key_held(KeyCode::s)) movement.push_back(PlayerMovementTypes::CROUCH);
-    if (input_provider.is_key_held(KeyCode::space)
-      || input_provider.is_key_held(KeyCode::w)) movement.push_back(PlayerMovementTypes::JUMP);
-    if (input_provider.is_key_held(KeyCode::a)) movement.push_back(PlayerMovementTypes::MOVE_LEFT);
-    if (input_provider.is_key_held(KeyCode::d)) movement.push_back(PlayerMovementTypes::MOVE_RIGHT);
+void PlayerMovementBehavior::gather_input(
+  std::vector<PlayerMovementTypes>& movement
+) {
+  const auto& input =
+    Engine::instance().services
+      ->get_service<InputManager>().get().provider();
+
+  if (input.is_key_held(KeyCode::a))
+    movement.push_back(PlayerMovementTypes::MOVE_LEFT);
+
+  if (input.is_key_held(KeyCode::d))
+    movement.push_back(PlayerMovementTypes::MOVE_RIGHT);
+
+  if (input.is_key_held(KeyCode::s))
+    movement.push_back(PlayerMovementTypes::CROUCH);
+
+  if (input.is_key_pressed(KeyCode::space) ||
+      input.is_key_pressed(KeyCode::w))
+    movement.push_back(PlayerMovementTypes::JUMP);
 }
 
-void PlayerMovementBehavior::set_movement_flags(const std::vector<PlayerMovementTypes>& movement) {
-  crouch_ = std::find(movement.begin(), movement.end(), PlayerMovementTypes::CROUCH) != movement.end();
-  jump_ = std::find(movement.begin(), movement.end(), PlayerMovementTypes::JUMP) != movement.end();
-  move_left_ = std::find(movement.begin(), movement.end(), PlayerMovementTypes::MOVE_LEFT) != movement.end();
-  move_right_ = std::find(movement.begin(), movement.end(), PlayerMovementTypes::MOVE_RIGHT) != movement.end();
+
+void PlayerMovementBehavior::set_movement_flags(
+  const std::vector<PlayerMovementTypes>& movement
+) {
+  auto has = [&](const std::vector<PlayerMovementTypes>& vec,
+                 PlayerMovementTypes type) {
+    return std::find(vec.begin(), vec.end(), type) != vec.end();
+  };
+
+  move_left_  = has(movement, PlayerMovementTypes::MOVE_LEFT);
+  move_right_ = has(movement, PlayerMovementTypes::MOVE_RIGHT);
+  crouch_     = has(movement, PlayerMovementTypes::CROUCH);
+  jump_       = has(movement, PlayerMovementTypes::JUMP);
 }
 
-void PlayerMovementBehavior::apply_physics()
-{
+void PlayerMovementBehavior::apply_physics(
+  const std::vector<PlayerMovementTypes>& movement
+) {
   if (!player_has_required_components())
     return;
 
-  auto& rigidbody = rigidbody_opt_->get();
-  auto& box_collider = box_collider_opt_->get();
+  auto& rb  = rigidbody_opt_->get();
+  auto& col = box_collider_opt_->get();
 
-  // crouch collider logic
-  if (crouch_ && !is_crouching_) {
-    box_collider.offset(default_crouching_offset_);
-    box_collider.height(default_crouching_height_);
+  Vector3 velocity = rb.velocity();
+  Vector3 force = {};
+
+  float horizontal = 0.0f;
+  if (!is_crouching_) {
+    if (move_left_)  horizontal -= horizontal_velocity_;
+    if (move_right_) horizontal += horizontal_velocity_;
+  }
+
+  velocity.x = horizontal + knockback_velocity_.x;
+  velocity.y += knockback_velocity_.y;
+
+  is_walking_ = (horizontal != 0.0f);
+
+  if (crouch_ && is_grounded_) {
+    if (!is_crouching_) {
+      col.height(default_crouching_height_);
+      col.offset(default_crouching_offset_);
+    }
     is_crouching_ = true;
-    is_walking_ = false;
-  } else if (!crouch_ && is_crouching_) {
-    box_collider.offset(default_standing_offset_);
-    box_collider.height(default_standing_height_);
+  } else {
+    if (is_crouching_) {
+      col.height(default_standing_height_);
+      col.offset(default_standing_offset_);
+    }
     is_crouching_ = false;
   }
 
-  float velocity_x = 0.0f;
-  float applied_force_y = crouch_ ? dropping_speed_ : 0.0f;
-
-  if (!is_crouching_) {
-    if (move_left_)  velocity_x -= horizontal_velocity_;
-    if (move_right_) velocity_x += horizontal_velocity_;
+  if (jump_) {
+    if (is_grounded_) {
+      force.y = -jumping_force_;
+      is_grounded_ = false;
+      is_double_jumping_ = false;
+    }
+    else if (!is_double_jumping_) {
+      force.y = -double_jump_force_;
+      is_double_jumping_ = true;
+    }
   }
 
-  // Decide if moving
-  is_walking_ = (move_left_ || move_right_) && !is_crouching_;
-
-  const float current_velocity_y = rigidbody.velocity().y;
-  if (jump_ && !is_jumping_) {
-    if (std::abs(current_velocity_y) < velocity_y_threshold_)
-      rigidbody.velocity({ rigidbody.velocity().x, 0.0f, rigidbody.velocity().z });
-
-    applied_force_y -= jumping_force_;
-    is_jumping_ = true;
-  } else if (jump_ && !is_double_jumping_) {
-    const float abs_velocity_y = std::abs(current_velocity_y);
-    if (abs_velocity_y < velocity_y_threshold_)
-      rigidbody.velocity({ rigidbody.velocity().x, 0.0f, rigidbody.velocity().z });
-
-    applied_force_y -= double_jump_force_;
-    // To make double jump feel smoother, we apply less force if the player is
-    // already moving upwards
-    applied_force_y += std::clamp(current_velocity_y, 0.0f, velocity_y_threshold_);
-
-    is_double_jumping_ = true;
+  // Optional fast-fall
+  if (crouch_ && !is_grounded_) {
+    force.y += dropping_speed_;
+    is_crouching_ = true;
   }
 
-  Vector3 velocity = rigidbody.velocity();
-  velocity.x = velocity_x;
-  rigidbody.velocity(velocity);
-  rigidbody.apply_force({0, applied_force_y, 0});
+  rb.velocity(velocity);
+  rb.apply_force(force);
+
+  knockback_velocity_ -= knockback_velocity_ * knockback_decay_ * latest_dt_;
+
+  if (knockback_velocity_.length() < 0.01f) {
+    knockback_velocity_ = {0, 0, 0};
+  }
 }
 
-void PlayerMovementBehavior::update_animation()
-{
+
+void PlayerMovementBehavior::update_animation() {
   auto& animator = animator_opt_->get();
   auto& sprite   = sprite_opt_->get();
 
-  if (is_crouching_) {
-    sprite.texture("capybara_default_duck");
-    animator.pause();
+  if (crouch_) {
+    sprite.texture(PlayerConstants::CROUCHING_TEXTURE);
     return;
   }
 
-  sprite.texture("capybara_default_idle");
-  if (is_walking_) {
-    animator.play(PlayerConstants::WALKING_ANIMATION, true);
-  } else {
-    animator.pause();
+  if ((jump_ || is_double_jumping_) && !is_grounded_) {
+    sprite.texture(PlayerConstants::JUMPING_TEXTURE);
+    return;
   }
 
-  if (move_left_) sprite.flip_x(true);
+  if (is_walking_ && is_grounded_ && !animator.is_playing()) {
+    animator.play(PlayerConstants::WALKING_ANIMATION, true);
+  }
+
+  if (!crouch_ && !is_walking_ && is_grounded_) {
+    animator.pause();
+    sprite.texture(PlayerConstants::IDLE_TEXTURE);
+  }
+
+  if (move_left_)  sprite.flip_x(true);
   if (move_right_) sprite.flip_x(false);
 }
+
 
 void PlayerMovementBehavior::send_movement_if_needed(const std::vector<PlayerMovementTypes>& movement) {
   // If we're not detecting any input, send one final message stating that we are no longer moving.
@@ -279,3 +310,8 @@ bool PlayerMovementBehavior::is_double_jumping() const {
 }
 bool PlayerMovementBehavior::is_walking() const {
   return is_walking_; }
+
+void PlayerMovementBehavior::apply_knockback(const Point& force) {
+  knockback_velocity_.x += force.x;
+  knockback_velocity_.y += force.y;
+}
