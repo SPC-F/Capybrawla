@@ -11,6 +11,6 @@ namespace PlayerConstants {
     constexpr auto IDLE_TEXTURE = "capybara_default_idle";
     constexpr auto CROUCHING_TEXTURE = "capybara_default_duck";
     constexpr auto JUMPING_TEXTURE = "capybara_default_jump";
-    constexpr auto DEATH_TEXTURE = "capybara_default_dead";
+    constexpr auto DEATH_TEXTURE = "capybara_default_death";
     constexpr auto HIT_TEXTURE = "capybara_default_hit";
 }

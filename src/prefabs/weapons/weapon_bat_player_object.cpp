@@ -34,7 +34,7 @@ WeaponBatPlayerObject::WeaponBatPlayerObject(Scene& scene, GameObject& parent)
 
     const int damage = 10;
     const int range = 20;
-    const Point knockback_force = Point{300.0f, 50.0f};
+    const Point knockback_force = Point{24.0f, -1.0f};
 
     const Point hitbox_offset{60, 0};
     const Point sprite_offset_left{30.0f, 0};

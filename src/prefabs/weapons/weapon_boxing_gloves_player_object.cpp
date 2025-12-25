@@ -34,7 +34,8 @@ WeaponBoxingGlovesPlayerObject::WeaponBoxingGlovesPlayerObject(Scene& scene, Gam
 
     const int damage = 5;
     const int range = 20;
-    const Point knockback_force = Point{10.0f, -0.5f};
+    const Point knockback_force = Point{30.0f, -1.5f};
+    // const Point knockback_force = Point{16.0f, -1.0f};
 
     const Point hitbox_offset{60, 0};
     const Point sprite_offset_left{-10.0f, 15.0f};
