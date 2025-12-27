@@ -41,9 +41,6 @@ PlayerObject& SwampAutumScene::create_player_object(Scene& scene, const std::str
     Engine& engine = Engine::instance();
     auto& multiplayer_service = engine.services->get_service<MultiplayerService>().get();
     obj.add_component<NetworkIdentity>(name.c_str());
-
-    auto& weapon_axe = scene.add_game_object<WeaponAxePlayerObject>(scene, obj);
-
     obj.layer(Layers::Foreground);
 
     return obj;

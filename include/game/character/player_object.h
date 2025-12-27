@@ -13,5 +13,7 @@ public:
   void set_local_player() noexcept;
   void set_controllable() noexcept;
 
+  static bool is_multiplayer_and_local(GameObject& obj);
+
 private:
 };

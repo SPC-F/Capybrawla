@@ -2,6 +2,7 @@
 
 #include <game/character/player_controller.h>
 #include <game/character/player_movement_behavior.h>
+#include <game/character/player_object.h>
 
 #include <engine/core/engine.h>
 #include <engine/input/input_system.h>
@@ -118,24 +119,12 @@ void WeaponMeleeBehavior::on_update(float dt) {
         hitbox_gameobject_.get().transform().local_position({0.0f, -100.0f, 0.0f});
     }
 
-    if (!is_multiplayer_and_local()) return;
+    if (!PlayerObject::is_multiplayer_and_local(this->game_object())) return;
     
     /// Set all the right positions and activate hitbox
     if (provider.is_mouse_pressed(MouseButton::left) && !animator.is_playing()) {
         attack();
     }
-}
-
-bool WeaponMeleeBehavior::is_multiplayer_and_local() {
-    auto network_identity = game_object().parent()->get().get_component<NetworkIdentity>();
-    if (network_identity.has_value() && !network_identity->get().uuid().empty()) {
-        auto uuid = network_identity->get().uuid();
-        auto multiplayer_uuid = Engine::instance().services->get_service<MultiplayerService>().get().get_uuid();
-
-        return multiplayer_uuid == uuid;
-    }
-
-    return true;
 }
 
 void WeaponMeleeBehavior::attack() {

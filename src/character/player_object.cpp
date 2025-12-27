@@ -2,13 +2,21 @@
 #include <game/character/player_movement_behavior.h>
 #include <game/character/player_object.h>
 #include <game/character/player_controller.h>
+#include <game/character/player_outofbounds_behavior.h>
+#include <game/character/player_weapon_controller.h>
+#include <game/prefabs/weapons/weapon_bat_player_object.h>
+#include <game/prefabs/weapons/weapon_axe_player_object.h>
+#include <game/prefabs/weapons/weapon_boxing_gloves_player_object.h>
+#include <game/prefabs/weapons/weapon_sword_player_object.h>
 
-#include "engine/public/components/animator.h"
-#include "engine/public/components/behaviorscript.h"
-#include "engine/public/components/colliders/box_collider_2d.h"
-#include "engine/public/components/rigidbody_2d.h"
-#include "engine/public/components/sprite.h"
-#include "game/character/player_outofbounds_behavior.h"
+#include <engine/core/engine.h>
+#include <engine/public/components/animator.h>
+#include <engine/public/components/behaviorscript.h>
+#include <engine/public/components/colliders/box_collider_2d.h>
+#include <engine/public/components/rigidbody_2d.h>
+#include <engine/public/components/sprite.h>
+#include <engine/public/components/network_identity.h>
+#include <engine/network/multiplayer_service.h>
 
 PlayerObject::PlayerObject(Scene &scene, const Vector3 initial_pos, bool is_local_player)
     : GameObject(scene) {
@@ -19,11 +27,11 @@ PlayerObject::PlayerObject(Scene &scene, const Vector3 initial_pos, bool is_loca
   constexpr float scale_factor = 2.0f;
   this->transform().scale({scale_factor, scale_factor, 1.0f});
 
-  // how we look
+  // Visuals
   this->add_component<Sprite>("capybara_default_idle", Color(), 0, 0, 0, 0);
   this->add_component<Animator>("capybara_default_walk_anim", 95);
 
-  // how we physics
+  // Physics
   constexpr float default_height = 28 * scale_factor;
   constexpr float default_x_offset = 6 * scale_factor;
   const Point default_offset = {default_x_offset, 4 * scale_factor};
@@ -36,6 +44,13 @@ PlayerObject::PlayerObject(Scene &scene, const Vector3 initial_pos, bool is_loca
   this->add_component<BehaviorScript>(std::make_unique<PlayerMovementBehavior>(
       default_height, default_height / 2.0f, default_offset,
       Point{default_x_offset, default_height / 3.2f * scale_factor}));
+
+  // Default weapons
+  if (is_local_player) {
+    auto& weapon = scene.add_game_object<WeaponBoxingGlovesPlayerObject>(scene, *this);
+    scene.add_game_object<WeaponAxePlayerObject>(scene, *this);
+    this->add_component<BehaviorScript>(std::make_unique<PlayerWeaponController>(weapon));
+  }
 }
 
 void PlayerObject::set_local_player() noexcept {
@@ -56,4 +71,17 @@ void PlayerObject::set_controllable() noexcept {
         movement->set_controllable();
       }
   }
+}
+
+bool PlayerObject::is_multiplayer_and_local(GameObject& obj) {
+    auto network_identity = obj.get_component<NetworkIdentity>();
+
+    if (network_identity.has_value() && !network_identity->get().uuid().empty()) {
+        auto uuid = network_identity->get().uuid();
+        auto multiplayer_uuid = Engine::instance().services->get_service<MultiplayerService>().get().get_uuid();
+
+        return multiplayer_uuid == uuid;
+    }
+
+    return true;
 }
