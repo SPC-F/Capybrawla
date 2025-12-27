@@ -43,6 +43,9 @@ void Game::initialize() {
         // Characters
         {"character/capybara_default_idle.png", "capybara_default_idle", 1, 1},
         {"character/capybara_default_duck.png", "capybara_default_duck", 1, 1},
+        {"character/capybara_default_jump.png", "capybara_default_jump", 1, 1},
+        {"character/capybara_default_death.png", "capybara_default_death", 1, 1},
+        {"character/capybara_default_hit.png", "capybara_default_hit", 1, 1},
         {"character/capybara_default_walk_anim.png", "capybara_default_walk_anim_sheet", 1, 8},
         {"character/capybara_default_idle_anim.png", "capybara_default_idle_anim_sheet", 1, 7},
         {"character/capybara_default_jump_anim.png", "capybara_default_jump_anim_sheet", 1, 7},

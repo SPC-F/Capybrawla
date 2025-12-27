@@ -34,7 +34,8 @@ WeaponAxePlayerObject::WeaponAxePlayerObject(Scene& scene, GameObject& parent)
 
     const int damage = 40;
     const int range = 20;
-    const Point knockback_force = Point{200.0f, 100.0f};
+    const Point knockback_force = Point{24.0f, -1.5f};
+
 
     const Point hitbox_offset{60, 0};
     const Point sprite_offset_left{-5.0f, 0};

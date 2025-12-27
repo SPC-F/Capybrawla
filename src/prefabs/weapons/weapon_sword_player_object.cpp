@@ -34,7 +34,8 @@ WeaponSwordPlayerObject::WeaponSwordPlayerObject(Scene& scene, GameObject& paren
 
     const int damage = 20;
     const int range = 25;
-    const Point knockback_force = Point{200.0f, 50.0f};
+    const Point knockback_force = Point{16.0f, -1.0f};
+
 
     const Point hitbox_offset{60, 0};
     const Point sprite_offset_left{15.0f, 0};
