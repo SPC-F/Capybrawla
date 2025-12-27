@@ -52,9 +52,6 @@ void PlayerMovementBehavior::on_start() {
   sprite_opt_       = get_component<Sprite>();
   box_collider_opt_ = get_component<BoxCollider2D>();
 
-  /// TO BE REMOVED AFTER ENGINE PATCH
-  rigidbody_opt_->get().gravity_scale(3.0f);
-
   if (!player_has_required_components()) {
     throw std::runtime_error("PlayerMovementBehavior missing components");
   }
