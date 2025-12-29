@@ -159,4 +159,7 @@ void WeaponMeleeBehavior::attack() {
 
         hitbox_gameobject_.get().transform().local_position({ pos_x, 0.0f, 0.0f });
     }
+
+    auto& audio_controller = Engine::instance().services->get_service<AudioService>().get();
+    audio_controller.play_sound("player_punch", 0.15f, false);
 }
