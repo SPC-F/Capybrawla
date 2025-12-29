@@ -84,10 +84,10 @@ void PlayerMovementBehavior::on_start() {
         is_grounded_ = false;
     });
 
-  move_sound_opt_ = audio_service_->get().play_sound("player_move", 0.25f, true);
+  move_sound_opt_ = audio_service_->get().play_sound("player_move", 0.1f, true);
   move_sound_opt_->get().pause();
 
-  jump_sound_opt_ = audio_service_->get().play_sound("player_jump", 0.25f, true);
+  jump_sound_opt_ = audio_service_->get().play_sound("player_jump", 0.35f, true);
   jump_sound_opt_->get().pause();
 }
 

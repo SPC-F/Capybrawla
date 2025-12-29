@@ -76,7 +76,7 @@ void SwampScene::load_timer(Scene& scene) {
 void SwampScene::setup(Scene& scene) {
     AudioService &audio_service = Engine::instance().services->get_service<AudioService>().get();
     scene.on_run([&audio_service](Scene& scene) {
-        audio_service.play_sound("spear_of_justice", 0.1f, true);
+        audio_service.play_sound("spear_of_justice", 0.05f, true);
     });
 
     scene.on_stop([&audio_service](Scene& scene) {
