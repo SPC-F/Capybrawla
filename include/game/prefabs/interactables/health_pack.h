@@ -8,9 +8,4 @@ private:
 public:
     explicit HealthPackPrefab(Scene& scene);
     ~HealthPackPrefab() override = default;
-
-    [[nodiscard]] std::unique_ptr<GameObject> clone() const override
-    {
-        return std::make_unique<HealthPackPrefab>(scene());
-    }
 };

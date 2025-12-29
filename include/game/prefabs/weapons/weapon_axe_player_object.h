@@ -8,9 +8,4 @@ class WeaponAxePlayerObject final : public GameObject {
 public:
   explicit WeaponAxePlayerObject(Scene& scene, GameObject& parent);
   ~WeaponAxePlayerObject() override = default;
-
-  [[nodiscard]] std::unique_ptr<GameObject> clone() const override
-  {
-    return std::make_unique<WeaponAxePlayerObject>(scene(), parent().value());
-  }
 };
