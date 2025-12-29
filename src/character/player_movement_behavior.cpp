@@ -67,12 +67,6 @@ void PlayerMovementBehavior::on_start() {
       is_jumping_ = false;
       is_double_jumping_ = false;
     });
-
-  collider.add_on_collision_exit(
-    [&](Collider2D& self, Collider2D& other) {
-      if (other.parent()->get().tag() == "Ground")
-        is_grounded_ = false;
-    });
 }
 
 bool PlayerMovementBehavior::player_has_required_components() const {

@@ -51,7 +51,7 @@ PlayerObject& SwampAutumScene::create_player_object(Scene& scene, const std::str
 
 RoundController& SwampAutumScene::add_multiplayer_round_controller(Scene& scene) {
     GameObject& wrapper = scene.add_game_object("RoundControllerWrapper");
-    auto& comp = wrapper.add_component<BehaviorScript>(std::make_unique<RoundController>(DEFAULT_MULTIPLAYER_RESPAWN_POSITION));
+    auto& comp = wrapper.add_component<BehaviorScript>(std::make_unique<RoundController>(std::vector<Vector3>{DEFAULT_MULTIPLAYER_RESPAWN_POSITION}));
     return *dynamic_cast<RoundController*>(&comp.behavior());
 }
 
