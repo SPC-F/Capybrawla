@@ -258,6 +258,9 @@ void Game::initialize() {
         {"./resources/sounds/enemy_approaching.wav", "enemy_approaching", SoundType::SDL_MIXER},
         {"./resources/sounds/btn_hover.wav", "btn_hover", SoundType::SDL_MIXER},
         {"./resources/sounds/player_move.wav", "player_move", SoundType::SDL_MIXER},
+        {"./resources/sounds/player_hit.wav", "player_hit", SoundType::SDL_MIXER},
+        {"./resources/sounds/player_punch.wav", "player_punch", SoundType::SDL_MIXER},
+        {"./resources/sounds/player_jump.wav", "player_jump", SoundType::SDL_MIXER},
     };
     Assets::register_audio(audios);
 

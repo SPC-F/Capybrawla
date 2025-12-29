@@ -20,6 +20,7 @@ private:
   std::optional<std::reference_wrapper<BoxCollider2D>> box_collider_opt_;
   std::optional<std::reference_wrapper<AudioService>> audio_service_;
   std::optional<std::reference_wrapper<SoundInstance>> move_sound_opt_;
+  std::optional<std::reference_wrapper<SoundInstance>> jump_sound_opt_;
 
   float latest_dt_;
 

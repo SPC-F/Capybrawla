@@ -11,6 +11,12 @@
 #include <engine/input/input_manager.h>
 #include <engine/network/multiplayer_service.h>
 
+namespace {
+void apply_move_sound() {
+
+}
+}
+
 PlayerMovementBehavior::PlayerMovementBehavior()
     : PlayerMovementBehavior(32.0f, 18.0f, {}, {}) {}
 
@@ -80,6 +86,9 @@ void PlayerMovementBehavior::on_start() {
 
   move_sound_opt_ = audio_service_->get().play_sound("player_move", 0.25f, true);
   move_sound_opt_->get().pause();
+
+  jump_sound_opt_ = audio_service_->get().play_sound("player_jump", 0.25f, true);
+  jump_sound_opt_->get().pause();
 }
 
 bool PlayerMovementBehavior::player_has_required_components() const {
@@ -244,12 +253,17 @@ void PlayerMovementBehavior::apply_animation() {
 }
 
 void PlayerMovementBehavior::apply_sounds() {
-  if (!is_walking()) {
-    move_sound_opt_->get().pause();
-    return;
+  if (jump_ || is_double_jumping_) {
+    if (is_double_jumping_ || !jump_sound_opt_->get().is_playing()) {
+      jump_sound_opt_->get().play();
+    }
+  } else if (is_grounded_) {
+    jump_sound_opt_->get().pause();
   }
 
-  if (!move_sound_opt_->get().is_playing()) {
+  if (!is_walking()) {
+    move_sound_opt_->get().pause();
+  } else if (!move_sound_opt_->get().is_playing()) {
     move_sound_opt_->get().play();
   }
 }
