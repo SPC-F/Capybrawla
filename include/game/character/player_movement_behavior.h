@@ -1,5 +1,7 @@
 #pragma once
 
+#include <engine/audio/audio_service.h>
+
 #include <game/character/player_movement_types.h>
 
 #include <engine/public/behavior.h>
@@ -16,6 +18,8 @@ private:
   std::optional<std::reference_wrapper<Animator>> animator_opt_;
   std::optional<std::reference_wrapper<Sprite>> sprite_opt_;
   std::optional<std::reference_wrapper<BoxCollider2D>> box_collider_opt_;
+  std::optional<std::reference_wrapper<AudioService>> audio_service_;
+  std::optional<std::reference_wrapper<SoundInstance>> move_sound_opt_;
 
   float latest_dt_;
 
@@ -82,6 +86,7 @@ public:
   
   void apply_physics();
   void apply_animation();
+  void apply_sounds();
 
   void send_movement_if_needed(const std::vector<PlayerMovementTypes>& movement);
 
