@@ -15,13 +15,15 @@ public:
     void on_update(float dt) override;
 
 private: 
-    bool player_left_ = false;
-    float time_before_disappear_ = 2.0f;
-    float accumulated_time_ = 0.0f;
-    float float_timer_ = 0.0f;
+    bool player_left_{false};
+    float time_before_disappear_{2.0f};
+    float accumulated_time_{0.0f};
+    float float_timer_{0.0f};
 
-    bool disappearing_ = false;
-    float disappear_timer_ = 0.0f;
+    bool disappearing_{false};
+    float disappear_timer_{0.0f};
+    float disappear_duration_{0.5f};
+    float disappear_speed_{600.0f};
 
     std::optional<std::reference_wrapper<BoxCollider2D>> box_collider_;
 };

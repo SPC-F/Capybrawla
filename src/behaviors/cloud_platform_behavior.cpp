@@ -22,14 +22,28 @@ void CloudPlatformBehavior::on_start() {
             }
         }
     });
+
+    disappearing_ = false;
+    disappear_timer_ = 0.0f;
 }
 
 void CloudPlatformBehavior::on_update(float dt) {
+    if (disappearing_) {
+        auto pos = game_object().transform().position();
+        pos.y -= disappear_speed_ * dt;
+        game_object().transform().position(pos);
+  
+        disappear_timer_ += dt;
+        if (disappear_timer_ >= disappear_duration_) game_object().mark_for_deletion();
+        return;
+    }
+
     if (!player_left_) return;
 
     accumulated_time_ += dt;
 
     if (accumulated_time_ >= time_before_disappear_) {
-        game_object().mark_for_deletion();
+        disappearing_ = true;
+        disappear_timer_ = 0.0f;
     }
 }
