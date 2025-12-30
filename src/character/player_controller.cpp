@@ -1,12 +1,16 @@
 
-#include <engine/util/uuid.h>
 #include <game/character/player_controller.h>
+#include <game/character/playerConstants.h>
+#include <game/prefabs/character/dying_capybara_object.h>
+
+#include <engine/public/scene.h>
+#include <engine/public/components/sprite.h>
+#include <engine/public/components/animator.h>
+#include <engine/util/uuid.h>
 
 PlayerController::PlayerController(): PlayerController(100, 100) {}
 PlayerController::PlayerController(const int max_health, const int start_health): max_health_(max_health), health_ { start_health }, lives_(3) {}
 
-void PlayerController::on_awake() {}
-void PlayerController::on_start() {}
 void PlayerController::on_update(float dt) {}
 
 int PlayerController::health() const {
@@ -82,6 +86,17 @@ bool PlayerController::is_hard_dead() const {
 
 bool PlayerController::is_soft_dead() const {
   return lives_ >= 1 && health_ <= 0;
+}
+
+void PlayerController::hit(int damage) {
+  auto animator = get_component<Animator>();
+  
+  if (animator) {
+    animator->get().is_non_interruptible(true);
+    animator->get().play(PlayerConstants::HIT_ANIMATION, false);
+  }
+
+  this->damage(damage);
 }
 
 void PlayerController::on_destroy() {

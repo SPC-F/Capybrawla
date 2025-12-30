@@ -206,6 +206,8 @@ void PlayerMovementBehavior::apply_animation() {
   auto& animator = animator_opt_->get();
   auto& sprite   = sprite_opt_->get();
 
+  if (animator.is_non_interruptible()) return;
+
   if (crouch_) {
     sprite.texture(PlayerConstants::CROUCHING_TEXTURE);
     return;

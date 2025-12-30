@@ -15,13 +15,19 @@ class RoundController final : public Behavior {
 private:
   std::mt19937 gen_{std::random_device{}()};
   size_t last_spawn_index_ = 0;
+  Vector3 spawn_position_;
 
   std::vector<round_end_callback_t> round_end_callbacks;
   std::vector<std::reference_wrapper<PlayerObject>> players;
   std::map<std::string, lib::Subscription> on_player_health_changed_subscriptions;
   std::vector<Vector3> spawn_positions_;
-
+  
+  void generate_new_spawn_position();
   void on_player_death(const PlayerObject &player);
+
+  void spawn_dead_player(const PlayerObject &player, Vector3 spawn_position);
+  void spawn_respawn_platform(const Vector3 &position, Vector3 spawn_position);
+
   void round_end() const;
 
 public:
