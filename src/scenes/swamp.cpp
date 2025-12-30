@@ -43,8 +43,8 @@ void SwampScene::load_players(Scene& scene, RoundController& controller, float s
     auto& ai_player = scene.add_game_object<PlayerObject>(scene, Vector3{start_x + 40.0f, 100.0f, 0}, false);
     ai_player.user_name("AI Player");
 
-    controller.add_player(player, scene);
-    controller.add_player(ai_player, scene);
+    controller.add_player(player);
+    controller.add_player(ai_player);
 }
 
 RoundController& SwampScene::add_round_controller(Scene& scene) {

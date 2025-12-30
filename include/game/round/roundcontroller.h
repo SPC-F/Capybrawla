@@ -32,7 +32,7 @@ public:
   void on_awake() override;
   void on_update(float dt) override;
 
-  void add_player(PlayerObject& player, Scene& scene);
+  void add_player(PlayerObject& player);
   void remove_player(PlayerObject &player);
 
   bool is_player_registered(const PlayerObject& player) const;

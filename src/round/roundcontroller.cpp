@@ -15,7 +15,7 @@ RoundController::RoundController(std::vector<Vector3> spawn_positions): Behavior
 void RoundController::on_awake() {}
 void RoundController::on_update(float dt) {}
 
-void RoundController::add_player(PlayerObject &player, Scene &scene) {
+void RoundController::add_player(PlayerObject &player) {
   for (auto behavior : player.get_components<BehaviorScript>()) {
     if (auto pc = dynamic_cast<PlayerController *>(&behavior.get().behavior())) {
 
@@ -30,7 +30,7 @@ void RoundController::add_player(PlayerObject &player, Scene &scene) {
 
   players.push_back(player);
 
-  GameObject& player_info_comp = PlayerInfoComponent::create_and_add(scene, player);
+  GameObject& player_info_comp = PlayerInfoComponent::create_and_add(player.scene(), player);
   player_info_components.emplace(player.id(), std::ref(player_info_comp));
 
   realign_player_info_positions();

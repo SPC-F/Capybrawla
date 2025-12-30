@@ -8,6 +8,7 @@
 #include <game/character/player_object.h>
 #include <game/round/roundcontroller.h>
 #include <game/scenes/level.h>
+#include <game/network/message_types.h>
 
 class SwampAutumScene : public Level {
 public:
@@ -24,7 +25,12 @@ private:
     float map_height_ = 1080.0f;
     ConnectionState connection_state_ = ConnectionState::NONE;
 
-    PlayerObject& create_player_object(Scene& scene, const std::string& name);
-    RoundController& add_multiplayer_round_controller(Scene& scene);
-    MultiplayerController& add_multiplayer_controller(Scene& scene);
+    PlayerObject& create_player_object(const std::string& name);
+    RoundController& add_multiplayer_round_controller();
+    MultiplayerController& add_multiplayer_controller();
+
+    void handle_player_movement_update(const MsgUserMove& data);
+    void handle_player_attack(const MsgUserAttack& data);
+
+    std::optional<std::reference_wrapper<PlayerObject>> get_network_player_object(const std::string& uuid);
 };
