@@ -6,6 +6,7 @@
 
 #include <engine/public/scene.h>
 #include <engine/public/components/rigidbody_2d.h>
+#include <game/prefabs/character/dying_capybara_object.h>
 
 constexpr float RESPAWN_PLATFORM_X_OFFSET = 0.0f;
 constexpr float RESPAWN_PLATFORM_Y_OFFSET = 80.0f;
@@ -14,6 +15,20 @@ RoundController::RoundController(std::vector<Vector3> spawn_positions): Behavior
 
 void RoundController::on_awake() {}
 void RoundController::on_update(float dt) {}
+
+void RoundController::generate_new_spawn_position() {
+  std::uniform_int_distribution<size_t> distr(0, spawn_positions_.size() - 1);
+  size_t spawn_index = distr(gen_);
+
+  if (spawn_positions_.size() > 1) {
+    while (spawn_index == last_spawn_index_) {
+      spawn_index = distr(gen_);
+    }
+  }
+  last_spawn_index_ = spawn_index;
+
+  spawn_position_ = spawn_positions_[spawn_index];
+}
 
 void RoundController::add_player(PlayerObject &player) {
   for (auto behavior : player.get_components<BehaviorScript>()) {
@@ -37,40 +52,41 @@ void RoundController::add_player(PlayerObject &player) {
 }
 
 void RoundController::on_player_death(const PlayerObject &player) {
+  std::optional<std::reference_wrapper<PlayerController>> controller_opt;
+
   for (auto behavior : player.get_components<BehaviorScript>()) {
-    const auto controller = dynamic_cast<PlayerController *>(&behavior.get().behavior());
-    if (!controller) {
-      continue;
-    }
-
-    controller->lives(controller->lives() - 1);
-
-    if (controller->lives() < 1) {
-      return;
-    }
-
-    if (const auto& rigid_body_opt = player.get_component<Rigidbody2D>(); rigid_body_opt.has_value()) {
-      std::uniform_int_distribution<size_t> distr(0, spawn_positions_.size() - 1);
-      size_t spawn_index = distr(gen_);
-
-      if (spawn_positions_.size() > 1) {
-        while (spawn_index == last_spawn_index_) {
-          spawn_index = distr(gen_);
-        }
-      }
-      last_spawn_index_ = spawn_index;
-
-      Vector3 spawn_position = spawn_positions_[spawn_index];
-      Vector3 platform_position = spawn_position + Vector3{RESPAWN_PLATFORM_X_OFFSET, RESPAWN_PLATFORM_Y_OFFSET, 0};
-      game_object().scene().add_game_object<CloudPlatformObject>(game_object().scene(), platform_position);
-
-      auto& rigid_body = rigid_body_opt->get();
-      rigid_body.teleport(spawn_position);
-      rigid_body.velocity({0, 0, 0});
-      
-      controller->health(controller->max_health());
+    if (auto pc = dynamic_cast<PlayerController *>(&behavior.get().behavior())) {
+      controller_opt = *pc;
     }
   }
+
+  if (!controller_opt.has_value()) return;
+  auto controller = &controller_opt->get();
+
+  controller->lives(controller->lives() - 1);
+  if (controller->lives() < 1) return;
+
+  if (const auto& rigid_body_opt = player.get_component<Rigidbody2D>(); rigid_body_opt.has_value()) {
+    generate_new_spawn_position();
+    
+    spawn_dead_player(player, spawn_position_);
+    spawn_respawn_platform(player.transform().position(), spawn_position_);
+   
+    auto& rigid_body = rigid_body_opt->get();
+    rigid_body.velocity({0, 0, 0});
+    rigid_body.teleport(spawn_position_);
+    
+    controller->health(controller->max_health());
+  }
+}
+
+void RoundController::spawn_dead_player(const PlayerObject &player, Vector3 spawn_position) {
+  game_object().scene().add_game_object<DyingCapybaraObject>(game_object().scene(), player.transform().position(), 2.0f);  
+}
+
+void RoundController::spawn_respawn_platform(const Vector3 &position, Vector3 spawn_position) {
+  Vector3 platform_position = spawn_position + Vector3{RESPAWN_PLATFORM_X_OFFSET, RESPAWN_PLATFORM_Y_OFFSET, 0};
+  game_object().scene().add_game_object<CloudPlatformObject>(game_object().scene(), platform_position);
 }
 
 void RoundController::remove_player(PlayerObject &player) {

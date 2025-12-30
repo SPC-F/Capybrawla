@@ -206,6 +206,8 @@ void PlayerMovementBehavior::apply_animation() {
   auto& animator = animator_opt_->get();
   auto& sprite   = sprite_opt_->get();
 
+  if (animator.is_non_interruptible()) return;
+
   if (crouch_) {
     sprite.texture(PlayerConstants::CROUCHING_TEXTURE);
     return;
@@ -275,4 +277,8 @@ bool PlayerMovementBehavior::is_walking() const { return is_walking_; }
 void PlayerMovementBehavior::apply_knockback(const Point& force) {
   knockback_velocity_.x += force.x;
   knockback_velocity_.y += force.y;
+}
+
+void PlayerMovementBehavior::reset_knockback() {
+  knockback_velocity_ = {0.f, 0.f, 0.f};
 }

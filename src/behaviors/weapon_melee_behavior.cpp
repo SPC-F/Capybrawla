@@ -69,18 +69,32 @@ void WeaponMeleeBehavior::on_awake() {
                 auto& other_gameobject = other_parent_opt->get();
                 if (other_gameobject.tag() != "Player" || other_gameobject.id() == player_component_->get().id()) return;
 
+                std::optional<std::reference_wrapper<PlayerController>> controller_opt;
+                std::optional<std::reference_wrapper<PlayerMovementBehavior>> movement_opt;
+
                 auto behaviors = other_gameobject.get_components<BehaviorScript>();
                 for (auto& behavior_ref : behaviors) {
                     auto& behavior = behavior_ref.get().behavior();
                     
-                    if (auto ctrl = dynamic_cast<PlayerController*>(&behavior); ctrl != nullptr) {
-                        ctrl->damage(damage_);
+                    if (auto ctrl = dynamic_cast<PlayerController*>(&behavior); ctrl != nullptr) controller_opt = *ctrl;
+                    if (auto movement = dynamic_cast<PlayerMovementBehavior*>(&behavior); movement != nullptr) movement_opt = *movement;
+                }
+
+                bool should_reset_knockback = false;
+
+                if (controller_opt.has_value()) {
+                    should_reset_knockback = controller_opt->get().health() - damage_ <= 0;
+                    controller_opt->get().hit(damage_);
+                }
+
+                if (movement_opt.has_value()) {
+                    if (should_reset_knockback) {
+                        movement_opt->get().reset_knockback();
+                        return;
                     }
-                    
-                    if (auto movement = dynamic_cast<PlayerMovementBehavior*>(&behavior); movement != nullptr) {
-                        Point knockback = facing_right_ ? knockback_force_ : Point{-knockback_force_.x, knockback_force_.y};
-                        movement->apply_knockback(knockback);
-                    }
+
+                    Point knockback = facing_right_ ? knockback_force_ : Point{-knockback_force_.x, knockback_force_.y};
+                    movement_opt->get().apply_knockback(knockback);
                 }
             }
         });

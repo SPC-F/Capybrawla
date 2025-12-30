@@ -48,6 +48,8 @@ void Game::initialize() {
         {"character/capybara_default_jump.png", "capybara_default_jump", 1, 1},
         {"character/capybara_default_death.png", "capybara_default_death", 1, 1},
         {"character/capybara_default_hit.png", "capybara_default_hit", 1, 1},
+        {"character/capybara_default_hit_anim.png", "capybara_default_hit_anim_sheet", 1, 8},
+        {"character/capybara_default_death_anim.png", "capybara_default_death_anim_sheet", 1, 8},
         {"character/capybara_default_walk_anim.png", "capybara_default_walk_anim_sheet", 1, 8},
         {"character/capybara_default_idle_anim.png", "capybara_default_idle_anim_sheet", 1, 7},
         {"character/capybara_default_jump_anim.png", "capybara_default_jump_anim_sheet", 1, 7},
@@ -244,6 +246,8 @@ void Game::initialize() {
         {"capybara_default_idle_anim_sheet", "capybara_default_idle_anim", 0, 7},
         {"capybara_default_jump_anim_sheet", "capybara_default_jump_anim", 0, 7},
         {"capybara_default_duck_anim_sheet", "capybara_default_duck_anim", 0, 7},
+        {"capybara_default_death_anim_sheet", "capybara_default_death_anim", 0, 7},
+        {"capybara_default_hit_anim_sheet", "capybara_default_hit_anim", 0, 7},
 
         // Opponents
         {"drone_idle_anim_sheet", "drone_idle_anim", 0, 7},
