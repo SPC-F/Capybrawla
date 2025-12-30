@@ -2,6 +2,7 @@
 
 #include <game/character/player_controller.h>
 #include <game/character/player_movement_behavior.h>
+#include <game/network/message_types.h>
 
 #include <engine/core/engine.h>
 #include <engine/input/input_system.h>
@@ -123,6 +124,15 @@ void WeaponMeleeBehavior::on_update(float dt) {
     /// Set all the right positions and activate hitbox
     if (provider.is_mouse_pressed(MouseButton::left) && !animator.is_playing()) {
         attack();
+
+        MultiplayerService& multiplayer_service =
+            Engine::instance().services->get_service<MultiplayerService>().get();
+
+        MsgUserAttack body{};
+        std::strncpy(body.uuid, multiplayer_service.get_uuid().c_str(), sizeof(body.uuid) - 1);
+
+        Message msg = serialize_message(body, CustomMessageTypes::USER_ATTACK);
+        multiplayer_service.send(msg);
     }
 }
 

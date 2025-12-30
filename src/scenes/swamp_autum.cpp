@@ -19,6 +19,7 @@
 #include <game/prefabs/weapons/weapon_sword_player_object.h>
 #include <game/behaviors/multiplayer/multiplayer_controller.h>
 #include <game/network/message_types.h>
+#include <game/behaviors/weapon_melee_behavior.h>
 
 #include <iostream>
 
@@ -61,30 +62,57 @@ MultiplayerController& SwampAutumScene::add_multiplayer_controller(Scene& scene)
     return *dynamic_cast<MultiplayerController*>(&comp.behavior());
 }
 
-void handle_player_movement_update(Scene& scene, const MsgUserMove& data) {
+std::optional<std::reference_wrapper<PlayerObject>> get_network_player_object(Scene& scene, const std::string& uuid)
+{
     for (auto& game_object_ref : scene.game_objects()) {
         auto& game_object = game_object_ref.get();
+
         auto network_id_opt = game_object.get_component<NetworkIdentity>();
+        if (!network_id_opt)
+            continue;
 
-        if (network_id_opt.has_value()) {
-            auto& network_identity = network_id_opt.value().get();
+        if (network_id_opt->get().uuid() == uuid) {
+            if (auto* player = dynamic_cast<PlayerObject*>(&game_object)) {
+                return *player;
+            }
+        }
+    }
 
-            if (network_identity.uuid() == data.uuid) {
-                auto& player = dynamic_cast<PlayerObject&>(game_object);
+    return std::nullopt;
+}
 
-                auto behaviors = player.get_components<BehaviorScript>();
-                for (auto& behavior_ref : behaviors) {
-                    auto& behavior = behavior_ref.get().behavior();
+void handle_player_movement_update(Scene& scene, const MsgUserMove& data) {
+    auto player_opt = get_network_player_object(scene, data.uuid);
+    if (!player_opt.has_value()) return;
 
-                    if (auto movement_behavior = dynamic_cast<PlayerMovementBehavior*>(&behavior); movement_behavior != nullptr) {
-                        std::vector<PlayerMovementTypes> movement;
-                        for (int i = 0; i < data.size; ++i) {
-                            movement.emplace_back(static_cast<PlayerMovementTypes>(data.movement[i]));
-                        }
-                        movement_behavior->handle_movement(movement);
-                    }
-                }
-                break;
+    auto& player = player_opt.value().get();
+
+    auto behaviors = player.get_components<BehaviorScript>();
+    for (auto& behavior_ref : behaviors) {
+        auto& behavior = behavior_ref.get().behavior();
+
+        if (auto movement_behavior = dynamic_cast<PlayerMovementBehavior*>(&behavior); movement_behavior != nullptr) {
+            std::vector<PlayerMovementTypes> movement;
+            for (int i = 0; i < data.size; ++i) {
+                movement.emplace_back(static_cast<PlayerMovementTypes>(data.movement[i]));
+            }
+            movement_behavior->handle_movement(movement);
+        }
+    }
+}
+
+void handle_player_attack(Scene& scene, const MsgUserAttack& data) {
+    auto player_opt = get_network_player_object(scene, data.uuid);
+    if (!player_opt.has_value()) return;
+
+    auto& player = player_opt.value().get();
+
+    for (auto& child : player.children()) {
+        auto behaviors = child.get().get_components<BehaviorScript>();
+        for (auto& behavior_ref : behaviors) {
+            auto& behavior = behavior_ref.get().behavior();
+            if (auto weapon_behavior = dynamic_cast<WeaponMeleeBehavior*>(&behavior); weapon_behavior != nullptr) {
+                weapon_behavior->attack();
             }
         }
     }
@@ -139,6 +167,16 @@ void SwampAutumScene::load(Scene& scene) {
             handle_player_movement_update(scene, data);
         });
 
+        multiplayer_service.register_handler(CustomMessageTypes::USER_ATTACK, [&multiplayer_service, &scene](const Message& message) {
+            MsgUserAttack data{};
+            std::memcpy(&data, message.payload.data(), sizeof(data));
+
+            Message msg = serialize_message(data, CustomMessageTypes::USER_ATTACK);
+            multiplayer_service.send(msg);
+
+            handle_player_attack(scene, data);
+        });
+
         auto& player = *dynamic_cast<PlayerObject*>(&prefab_service.instantiate("PlayerObject", scene, multiplayer_service.get_uuid().c_str()).get());
         player.set_local_player();
         player.set_controllable();
@@ -186,6 +224,15 @@ void SwampAutumScene::load(Scene& scene) {
             if (multiplayer_service.get_uuid() == data.uuid) return;
 
             handle_player_movement_update(scene, data);
+        });
+
+        multiplayer_service.register_handler(CustomMessageTypes::USER_ATTACK, [&multiplayer_service, &scene](const Message& message) {
+            MsgUserAttack data{};
+            std::memcpy(&data, message.payload.data(), sizeof(data));
+
+            if (multiplayer_service.get_uuid() == data.uuid) return;
+
+            handle_player_attack(scene, data);
         });
     }
 }
