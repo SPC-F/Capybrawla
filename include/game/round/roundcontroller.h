@@ -31,6 +31,8 @@ public:
   void add_player(PlayerObject& player, Scene& scene);
   void remove_player(PlayerObject &player);
 
+  bool is_player_registered(const PlayerObject& player) const;
+
   void on_round_end(const round_end_callback_t &callback);
 
   [[nodiscard]] Vector3 respawn_position() const;

@@ -78,6 +78,15 @@ void RoundController::respawn_position(Vector3 position) {
   respawn_position_ = position;
 }
 
+bool RoundController::is_player_registered(const PlayerObject& player) const {
+  for (const auto& registered_player : players) {
+    if (registered_player.get().id() == player.id()) {
+      return true;
+    }
+  }
+  return false;
+}
+
 void RoundController::realign_player_info_positions() {
   int num_players = player_info_components.size();
   if (num_players == 0) {

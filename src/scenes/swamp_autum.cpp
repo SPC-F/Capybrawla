@@ -144,7 +144,7 @@ void SwampAutumScene::load(Scene& scene) {
         player.set_controllable();
         controller.add_player(player, scene);
     } else {
-        multiplayer_controller.on_connection_state_change([&scene, &multiplayer_service](ConnectionState old_state, ConnectionState new_state) {
+        multiplayer_controller.on_connection_state_change([&scene, &multiplayer_service, &controller](ConnectionState old_state, ConnectionState new_state) {
             if (new_state == ConnectionState::CONNECTED) {
                 std::cout << "Connected with UUID " << multiplayer_service.get_uuid() << std::endl;
 
@@ -153,6 +153,16 @@ void SwampAutumScene::load(Scene& scene) {
 
                 Message msg = serialize_message(data, CustomMessageTypes::USER_JOIN);
                 multiplayer_service.send(msg);
+
+                // Sync unregistered player objects
+                for (auto& game_object_ref : scene.game_objects()) {
+                    auto& game_object = game_object_ref.get();
+                    if (auto player = dynamic_cast<PlayerObject*>(&game_object)) {
+                        if (!controller.is_player_registered(*player)) {
+                            controller.add_player(*player, scene);
+                        }
+                    }
+                }
             }
         });
 
