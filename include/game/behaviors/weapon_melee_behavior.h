@@ -49,5 +49,6 @@ private:
     std::optional<std::reference_wrapper<BoxCollider2D>> hitbox_component_;
     std::optional<std::reference_wrapper<GameObject>> player_component_;
 
-    bool is_multiplayer_and_local();
+    bool is_multiplayer();
+    bool is_local();
 };

@@ -1,5 +1,7 @@
 
 #include <engine/util/uuid.h>
+#include <engine/network/snapshot.h>
+#include <engine/public/components/network_identity.h>
 #include <game/character/player_controller.h>
 
 PlayerController::PlayerController(): PlayerController(100, 100) {}
@@ -21,16 +23,24 @@ void PlayerController::health(const int health) {
 void PlayerController::damage(const int dmg) {
   const int old_health = health_;
   health_ -= dmg;
+
+  mark_network_dirty();
+
   notify_health_changed(old_health);
 }
 void PlayerController::heal(const int hp) {
   const int old_health = health_;
   health_ += hp;
+
+  mark_network_dirty();
+
   notify_health_changed(old_health);
 }
 int PlayerController::max_health() const { return max_health_; }
 void PlayerController::max_health(const int max_health) {
   max_health_ = max_health;
+
+  mark_network_dirty();
 }
 lib::Subscription PlayerController::on_health_changed(
     const health_changed_callback_t &callback) {
@@ -55,6 +65,9 @@ int PlayerController::lives() const { return lives_; }
 void PlayerController::lives(const int lives) {
   const int old_lives = lives_;
   lives_ = lives;
+
+  mark_network_dirty();
+
   notify_lives_changed(old_lives);
 }
 lib::Subscription PlayerController::on_lives_changed(
@@ -88,3 +101,30 @@ void PlayerController::on_destroy() {
   health_changed_signals_.clear();
   lives_changed_signals_.clear();
 }
+
+void PlayerController::mark_network_dirty() noexcept {
+  auto& parent = game_object();
+    if (auto network_id = parent.get_component<NetworkIdentity>()) {
+      network_id.value().get().mark_dirty();
+    }
+}
+
+void PlayerController::on_serialize(std::vector<uint8_t>& out) const {
+  snapshot::write_bytes(out, &max_health_, sizeof(int));
+  snapshot::write_bytes(out, &health_, sizeof(int));
+  snapshot::write_bytes(out, &lives_, sizeof(int));
+};
+
+void PlayerController::on_deserialize(const std::vector<uint8_t>& data, size_t& offset) {
+  int old_health = health_;
+  int old_lives = lives_;
+  if (!snapshot::read_bytes(data, offset, &max_health_, sizeof(float))) return;
+  if (!snapshot::read_bytes(data, offset, &health_, sizeof(float))) return;
+  if (!snapshot::read_bytes(data, offset, &lives_, sizeof(float))) return;
+
+  if (old_health != health_)
+    notify_health_changed(old_health);
+
+  if (old_lives != lives_)
+    notify_lives_changed(old_lives);
+};

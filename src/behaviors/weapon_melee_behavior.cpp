@@ -2,6 +2,7 @@
 
 #include <game/character/player_controller.h>
 #include <game/character/player_movement_behavior.h>
+#include <game/network/message_types.h>
 
 #include <engine/core/engine.h>
 #include <engine/input/input_system.h>
@@ -113,20 +114,39 @@ void WeaponMeleeBehavior::on_update(float dt) {
     if (!animator.is_playing() || new_flipped) {
         animator.reset();
         sprite_component_->get().texture(original_texture_name_);
-        
+
         hitbox_component_->get().active(false);
         hitbox_gameobject_.get().transform().local_position({0.0f, -100.0f, 0.0f});
     }
 
-    if (!is_multiplayer_and_local()) return;
-    
+    if (!is_local()) return;
+
     /// Set all the right positions and activate hitbox
     if (provider.is_mouse_pressed(MouseButton::left) && !animator.is_playing()) {
         attack();
+
+        if (!is_multiplayer()) return;
+
+        MultiplayerService& multiplayer_service =
+            Engine::instance().services->get_service<MultiplayerService>().get();
+
+        MsgUserAttack body{};
+        std::strncpy(body.uuid, multiplayer_service.get_uuid().c_str(), sizeof(body.uuid) - 1);
+
+        Message msg = serialize_message(body, CustomMessageTypes::USER_ATTACK);
+        multiplayer_service.send(msg);
     }
 }
 
-bool WeaponMeleeBehavior::is_multiplayer_and_local() {
+bool WeaponMeleeBehavior::is_multiplayer() {
+    auto network_identity = game_object().parent()->get().get_component<NetworkIdentity>();
+    if (network_identity.has_value())
+        return true;
+
+    return false;
+}
+
+bool WeaponMeleeBehavior::is_local() {
     auto network_identity = game_object().parent()->get().get_component<NetworkIdentity>();
     if (network_identity.has_value() && !network_identity->get().uuid().empty()) {
         auto uuid = network_identity->get().uuid();
