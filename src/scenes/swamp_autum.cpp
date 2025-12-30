@@ -126,7 +126,7 @@ void SwampAutumScene::load(Scene& scene) {
             multiplayer_service.send(msg);
 
             auto& player = *dynamic_cast<PlayerObject*>(&prefab_service.instantiate("PlayerObject", scene, data.uuid).get());
-            controller.add_player(player);
+            controller.add_player(player, scene);
         });
 
         multiplayer_service.register_handler(CustomMessageTypes::USER_MOVE, [&multiplayer_service, &scene](const Message& message) {
@@ -142,7 +142,7 @@ void SwampAutumScene::load(Scene& scene) {
         auto& player = *dynamic_cast<PlayerObject*>(&prefab_service.instantiate("PlayerObject", scene, multiplayer_service.get_uuid().c_str()).get());
         player.set_local_player();
         player.set_controllable();
-        controller.add_player(player);
+        controller.add_player(player, scene);
     } else {
         multiplayer_controller.on_connection_state_change([&scene, &multiplayer_service](ConnectionState old_state, ConnectionState new_state) {
             if (new_state == ConnectionState::CONNECTED) {
@@ -163,7 +163,7 @@ void SwampAutumScene::load(Scene& scene) {
             std::cout << "New user joined with UUID " << data.uuid << std::endl;
 
             auto& player = *dynamic_cast<PlayerObject*>(&prefab_service.instantiate("PlayerObject", scene, data.uuid).get());
-            controller.add_player(player);
+            controller.add_player(player, scene);
             if (data.uuid == multiplayer_service.get_uuid())
                 player.set_local_player();
                 player.set_controllable();
