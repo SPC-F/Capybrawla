@@ -188,7 +188,7 @@ void PlayerMovementBehavior::apply_physics() {
     }
   }
   
-  velocity.y += knockback_velocity_.y;
+  velocity.y += knockback_velocity_.y * latest_dt_;
 
   if (crouch_) {
     velocity.y += dropping_speed_ * latest_dt_;
