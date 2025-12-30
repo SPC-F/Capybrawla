@@ -22,8 +22,6 @@
 
 #include <iostream>
 
-const Vector3 DEFAULT_MULTIPLAYER_RESPAWN_POSITION = {600, 0, 0};
-
 SwampAutumScene::SwampAutumScene() : Level("Level_SwampAutumScene") {}
 
 PlayerObject& SwampAutumScene::create_player_object(Scene& scene, const std::string& name) {
@@ -50,8 +48,14 @@ PlayerObject& SwampAutumScene::create_player_object(Scene& scene, const std::str
 }
 
 RoundController& SwampAutumScene::add_multiplayer_round_controller(Scene& scene) {
+    std::vector<Vector3> respawn_positions = {
+        Vector3{200.0f, 100.0f, 0.0f},
+        Vector3{1160.0f, 100.0f, 0.0f},
+        Vector3{1600.0f, 100.0f, 0.0f},
+    };
+
     GameObject& wrapper = scene.add_game_object("RoundControllerWrapper");
-    auto& comp = wrapper.add_component<BehaviorScript>(std::make_unique<RoundController>(DEFAULT_MULTIPLAYER_RESPAWN_POSITION));
+    auto& comp = wrapper.add_component<BehaviorScript>(std::make_unique<RoundController>(respawn_positions));
     return *dynamic_cast<RoundController*>(&comp.behavior());
 }
 
