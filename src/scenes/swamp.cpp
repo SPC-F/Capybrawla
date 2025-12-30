@@ -38,11 +38,10 @@ void SwampScene::load_players(Scene& scene, RoundController& controller, float s
     auto& weapon_boxing_gloves = scene.add_game_object<WeaponBoxingGlovesPlayerObject>(scene, player);
     player.layer(Layers::Foreground);
     player.set_controllable();
-
-    GameObject& player_info_comp = PlayerInfoComponent::create_and_add(scene, player);
-    player_info_comp.transform().position({50, 950, 0});
+    player.user_name("Real player");
 
     auto& ai_player = scene.add_game_object<PlayerObject>(scene, Vector3{start_x + 40.0f, 100.0f, 0}, false);
+    ai_player.user_name("AI Player");
 
     controller.add_player(player);
     controller.add_player(ai_player);

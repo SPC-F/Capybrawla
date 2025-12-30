@@ -13,5 +13,9 @@ public:
   void set_local_player() noexcept;
   void set_controllable() noexcept;
 
+  void user_name(std::string user_name);
+  const std::string& user_name() const;
+
 private:
+  std::string user_name_;
 };

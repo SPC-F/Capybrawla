@@ -45,4 +45,9 @@ public:
   void hit(int damage);
 
   void on_destroy() override;
+
+  void mark_network_dirty() noexcept;
+
+  void on_serialize(std::vector<uint8_t>& out) const override;
+  void on_deserialize(const std::vector<uint8_t>& data, size_t& offset) override;
 };

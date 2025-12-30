@@ -11,7 +11,7 @@
 #include "game/character/player_outofbounds_behavior.h"
 
 PlayerObject::PlayerObject(Scene &scene, const Vector3 initial_pos, bool is_local_player)
-    : GameObject(scene) {
+    : GameObject(scene), user_name_{"PLACEHOLDER"} {
   this->name("PlayerObject");
   this->tag("Player");
   this->transform().position(initial_pos);
@@ -56,4 +56,12 @@ void PlayerObject::set_controllable() noexcept {
         movement->set_controllable();
       }
   }
+}
+
+void PlayerObject::user_name(std::string user_name) {
+  user_name_ = user_name;
+}
+
+const std::string& PlayerObject::user_name() const {
+  return user_name_;
 }
