@@ -278,3 +278,7 @@ void PlayerMovementBehavior::apply_knockback(const Point& force) {
   knockback_velocity_.x += force.x;
   knockback_velocity_.y += force.y;
 }
+
+void PlayerMovementBehavior::reset_knockback() {
+  knockback_velocity_ = {0.f, 0.f, 0.f};
+}

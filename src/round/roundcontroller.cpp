@@ -52,30 +52,31 @@ void RoundController::add_player(PlayerObject &player) {
 }
 
 void RoundController::on_player_death(const PlayerObject &player) {
+  std::optional<std::reference_wrapper<PlayerController>> controller_opt;
+
   for (auto behavior : player.get_components<BehaviorScript>()) {
-    const auto controller = dynamic_cast<PlayerController *>(&behavior.get().behavior());
-    if (!controller) {
-      continue;
+    if (auto pc = dynamic_cast<PlayerController *>(&behavior.get().behavior())) {
+      controller_opt = *pc;
     }
+  }
 
-    controller->lives(controller->lives() - 1);
+  if (!controller_opt.has_value()) return;
+  auto controller = &controller_opt->get();
 
-    if (controller->lives() < 1) {
-      return;
-    }
+  controller->lives(controller->lives() - 1);
+  if (controller->lives() < 1) return;
 
-    if (const auto& rigid_body_opt = player.get_component<Rigidbody2D>(); rigid_body_opt.has_value()) {
-      generate_new_spawn_position();
-      
-      spawn_dead_player(player, spawn_position_);
-      spawn_respawn_platform(player.transform().position(), spawn_position_);
-
-      auto& rigid_body = rigid_body_opt->get();
-      rigid_body.velocity({0, 0, 0});
-      rigid_body.teleport(spawn_position_);
-      
-      controller->health(controller->max_health());
-    }
+  if (const auto& rigid_body_opt = player.get_component<Rigidbody2D>(); rigid_body_opt.has_value()) {
+    generate_new_spawn_position();
+    
+    spawn_dead_player(player, spawn_position_);
+    spawn_respawn_platform(player.transform().position(), spawn_position_);
+   
+    auto& rigid_body = rigid_body_opt->get();
+    rigid_body.velocity({0, 0, 0});
+    rigid_body.teleport(spawn_position_);
+    
+    controller->health(controller->max_health());
   }
 }
 

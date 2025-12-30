@@ -103,4 +103,5 @@ public:
   void double_jump_force(const float speed);
 
   void apply_knockback(const Point& force);
+  void reset_knockback();
 };
