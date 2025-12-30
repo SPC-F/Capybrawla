@@ -212,9 +212,10 @@ void SwampAutumScene::load(Scene& scene) {
 
             auto& player = *dynamic_cast<PlayerObject*>(&prefab_service.instantiate("PlayerObject", scene, data.uuid).get());
             controller.add_player(player, scene);
-            if (data.uuid == multiplayer_service.get_uuid())
+            if (data.uuid == multiplayer_service.get_uuid()) {
                 player.set_local_player();
                 player.set_controllable();
+            }
         });
 
         multiplayer_service.register_handler(CustomMessageTypes::USER_MOVE, [&multiplayer_service, &scene](const Message& message) {
