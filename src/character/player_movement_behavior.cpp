@@ -72,11 +72,11 @@ void PlayerMovementBehavior::on_start() {
       is_double_jumping_ = false;
     });
 
-  collider.add_on_collision_exit(
-    [&](Collider2D& self, Collider2D& other) {
-      if (other.parent()->get().tag() == "Ground")
-        is_grounded_ = false;
-    });
+  // collider.add_on_collision_exit(
+  //   [&](Collider2D& self, Collider2D& other) {
+  //     if (other.parent()->get().tag() == "Ground")
+  //       is_grounded_ = false;
+  //   });
 
   move_sound_opt_ = audio_service_->get().play_sound("player_move", 0.1f, true);
   move_sound_opt_->get().pause();
@@ -117,8 +117,9 @@ void PlayerMovementBehavior::handle_movement(
   apply_physics();
   apply_animation();
   apply_sounds();
-}
 
+  jump_ = false;
+}
 
 void PlayerMovementBehavior::gather_input(
   std::vector<PlayerMovementTypes>& movement
@@ -177,8 +178,8 @@ void PlayerMovementBehavior::apply_physics() {
 
   is_walking_ = (input_x != 0.0f && is_grounded_);
 
-  /// Crouching
-  if (crouch_ && is_grounded_) {
+  // --- Crouching: always apply collider change if crouch is pressed, even in air or multiplayer ---
+  if (crouch_) {
     if (!is_crouching_) {
       col.height(default_crouching_height_);
       col.offset(default_crouching_offset_);
@@ -197,14 +198,15 @@ void PlayerMovementBehavior::apply_physics() {
     if (is_grounded_) {
       velocity.y = -jumping_force_;
       is_grounded_ = false;
+      is_jumping_ = true;
       is_double_jumping_ = false;
     }
-    else if (!is_double_jumping_) {
+    else if (is_jumping_ && !is_double_jumping_) {
       velocity.y = -double_jump_force_;
       is_double_jumping_ = true;
     }
   }
-  
+
   velocity.y += knockback_velocity_.y * latest_dt_;
 
   if (crouch_) {
@@ -223,6 +225,9 @@ void PlayerMovementBehavior::apply_animation() {
   auto& animator = animator_opt_->get();
   auto& sprite   = sprite_opt_->get();
 
+  if (move_left_)  sprite.flip_x(true);
+  if (move_right_) sprite.flip_x(false);
+  
   if (animator.is_non_interruptible()) return;
 
   if (crouch_) {
@@ -243,9 +248,6 @@ void PlayerMovementBehavior::apply_animation() {
     animator.pause();
     sprite.texture(PlayerConstants::IDLE_TEXTURE);
   }
-
-  if (move_left_)  sprite.flip_x(true);
-  if (move_right_) sprite.flip_x(false);
 }
 
 void PlayerMovementBehavior::apply_sounds() {
