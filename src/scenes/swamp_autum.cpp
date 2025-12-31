@@ -13,6 +13,7 @@
 #include <engine/public/gameObject.h>
 #include <engine/public/components/sprite.h>
 #include "engine/public/components/network_identity.h"
+#include <engine/util/uuid.h>
 #include <game/round/roundcontroller.h>
 #include <game/prefabs/weapons/weapon_bat_player_object.h>
 #include <game/prefabs/weapons/weapon_axe_player_object.h>
@@ -31,11 +32,7 @@ void SwampAutumScene::load_interactables(Scene& scene) {
     positions.emplace_back(350, 432);
 
     for (auto pos : positions) {
-        auto& obj = scene.add_game_object("interactable_spawner");
-        obj.add_component<BehaviorScript>(std::make_unique<ItemDropper>());
-        obj.add_component<Sprite>("item_dropper", Color(), 0, 0, 0, 0);
-        obj.add_component<Animator>("item_dropper_idle", 128).play(true);
-        obj.transform().scale({2, 2, 2});
+        auto& obj = create_interactable_dropper(uuid::generate_uuid_v4());
         obj.transform().position({pos.first, pos.second, 0});
     }
 }
@@ -59,6 +56,22 @@ PlayerObject& SwampAutumScene::create_player_object(const std::string& name) {
     auto& weapon_axe = scene().add_game_object<WeaponAxePlayerObject>(scene(), obj);
 
     obj.layer(Layers::Foreground);
+
+    return obj;
+}
+
+GameObject& SwampAutumScene::create_interactable_dropper(const std::string& name) {
+    auto& obj = scene().add_game_object("interactable_spawner");
+    obj.prefab_type_id("InteractableDropper");
+
+    obj.add_component<BehaviorScript>(std::make_unique<ItemDropper>());
+    obj.add_component<Sprite>("item_dropper", Color(), 0, 0, 0, 0);
+    obj.add_component<Animator>("item_dropper_idle", 128).play(true);
+    obj.transform().scale({2, 2, 2});
+
+    Engine& engine = Engine::instance();
+    auto& multiplayer_service = engine.services->get_service<MultiplayerService>().get();
+    obj.add_component<NetworkIdentity>(name.c_str());
 
     return obj;
 }
@@ -146,12 +159,14 @@ void SwampAutumScene::setup(Scene& scene) {
     prefab_service.register_prefab("PlayerObject", [this](Scene& scene, const std::string& name) -> GameObject& {
         return create_player_object(name);
     });
+    prefab_service.register_prefab("InteractableDropper", [this](Scene& scene, const std::string name) -> GameObject& {
+        return create_interactable_dropper(name);
+    });
 }
 
 void SwampAutumScene::load(Scene& scene) {
     SwampAutumScene::load_camera();
     SwampAutumScene::load_map(std::string(Assets::MAP_SWAMP_AUTUM));
-    SwampAutumScene::load_interactables(scene);
 
     Engine& engine = Engine::instance();
     auto& multiplayer_service = engine.services->get_service<MultiplayerService>().get();
@@ -200,6 +215,8 @@ void SwampAutumScene::load(Scene& scene) {
         player.set_local_player();
         player.set_controllable();
         controller.add_player(player);
+
+        SwampAutumScene::load_interactables(scene);
     } else {
         multiplayer_controller.on_connection_state_change([&scene, &multiplayer_service, &controller](ConnectionState old_state, ConnectionState new_state) {
             if (new_state == ConnectionState::CONNECTED) {
