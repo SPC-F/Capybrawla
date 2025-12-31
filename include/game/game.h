@@ -11,6 +11,10 @@
 class Game {
 public:
     void initialize();
+    
+    void set_fullscreen();
+    void set_resizable(float width, float height);
+    
     void run();
     void shutdown();
 private:
