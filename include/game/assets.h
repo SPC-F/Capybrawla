@@ -4,7 +4,7 @@
 #include <vector>
 #include <engine/audio/sound/sound_type.h>
 
-struct LoadResource {
+struct LoadResourceData {
     std::string file;
     std::string name;
     int rows;
@@ -40,7 +40,7 @@ public:
     static constexpr const char* SWAMP_AUTUM_COMPACT = "swamp_autum_compact.png";
     static constexpr const char* MAP_SWAMP_AUTUM = "resources/maps/map_swamp_autum.json";
 
-    static void load_resources(const std::vector<LoadResource>& resources);
+    static void load_resources(const std::vector<LoadResourceData>& resources);
     static void register_textures(const std::vector<LoadTexture>& textures);
     static void register_sprite_sheets(const std::vector<LoadAnimation>& animations);
     static void register_audio(const std::vector<LoadAudio>& audio);

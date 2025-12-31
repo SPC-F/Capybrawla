@@ -1,11 +1,36 @@
 #pragma once
 
-#include "../assets.h"
+#include <game/assets.h>
 
 #include <engine/public/scene.h>
+#include <engine/network/multiplayer_service.h>
+#include <game/behaviors/multiplayer/multiplayer_controller.h>
+#include <game/character/player_object.h>
+#include <game/round/roundcontroller.h>
+#include <game/scenes/level.h>
+#include <game/network/message_types.h>
 
-class SwampAutumScene {
+class SwampAutumScene : public Level {
 public:
-    static constexpr const char* SCENE_NAME = "Level_SwampAutumScene";
-    static Scene& setup();
+    SwampAutumScene();
+    virtual ~SwampAutumScene() = default;
+
+    virtual void setup(Scene& scene) override;
+    virtual void load(Scene& scene) override;
+    
+private:
+    float out_of_bounds_margin_x_ = 480.0f;
+    float out_of_bounds_margin_y_ = 270.0f;
+    float map_width_ = 1920.0f;
+    float map_height_ = 1080.0f;
+    ConnectionState connection_state_ = ConnectionState::NONE;
+
+    PlayerObject& create_player_object(const std::string& name);
+    RoundController& add_multiplayer_round_controller();
+    MultiplayerController& add_multiplayer_controller();
+
+    void handle_player_movement_update(const MsgUserMove& data);
+    void handle_player_attack(const MsgUserAttack& data);
+
+    std::optional<std::reference_wrapper<PlayerObject>> get_network_player_object(const std::string& uuid);
 };

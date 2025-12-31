@@ -5,6 +5,7 @@
 #include <map>
 #include <functional>
 
+#include <game/scenes/level.h>
 #include <engine/public/scene.h>
 #include <engine/public/gameObject.h>
 #include <engine/public/ui/interactable/ui_button.h>
@@ -15,32 +16,31 @@ using join_callback_t = std::function<void(const std::string& address)>;
 using create_callback_t = std::function<void()>;
 using training_callback_t = std::function<void()>;
 
-class MainMenuScene {
+class MainMenuScene : public Level {
 public:
-    static constexpr const char* SCENE_NAME = "MainMenuScene";
-    
-    Scene& setup(
-        create_callback_t create_callback,
-        join_callback_t join_callback,
-        training_callback_t training_callback
+    MainMenuScene(
+        create_callback_t&& create_callback,
+        join_callback_t&& join_callback,
+        training_callback_t&& training_callback
     );
+    virtual ~MainMenuScene() = default;
+
+    virtual void setup(Scene& scene) override;
+    virtual void load(Scene& scene) override;
 
     void setup_main_menu(
         Scene& scene,
-        GameObject& parent,
-        training_callback_t training_callback
+        GameObject& parent
     );
 
     void setup_create_game(
         Scene& scene, 
-        GameObject& parent,
-        create_callback_t create_callback
+        GameObject& parent
     );
 
     void setup_join_game(
         Scene& scene,
-        GameObject& parent,
-        join_callback_t join_callback
+        GameObject& parent
     );
 
     void setup_settings(Scene& scene, GameObject& parent);
@@ -49,6 +49,10 @@ public:
 
 private:
     std::map<std::string, GameObject&> parents_;
+
+    join_callback_t join_callback_;
+    create_callback_t create_callback_;
+    training_callback_t training_callback_;
 
     void toggle_parent_visibility(const std::string& parent_name);
 

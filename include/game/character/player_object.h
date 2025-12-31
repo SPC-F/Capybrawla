@@ -1,12 +1,21 @@
 #pragma once
 #include "engine/public/gameObject.h"
 #include "engine/public/util/vector3.h"
+#include "engine/public/util/point.h"
+#include "engine/public/components/behaviorscript.h"
+#include "game/character/player_movement_behavior.h"
 
 class PlayerObject final : public GameObject {
 public:
   explicit PlayerObject(Scene& scene, Vector3 initial_pos, bool is_local_player = true);
   ~PlayerObject() override = default;
 
+  void set_local_player() noexcept;
+  void set_controllable() noexcept;
+
+  void user_name(std::string user_name);
+  const std::string& user_name() const;
+
 private:
-  bool is_local_player;
+  std::string user_name_;
 };

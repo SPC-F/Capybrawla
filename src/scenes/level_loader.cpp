@@ -196,6 +196,7 @@ void LevelLoader::create_tile_colliders(Scene& scene, const json& tiles_json) {
                     "MergedCollider_G" + std::to_string(group) +
                     "_Y" + std::to_string(row)
                 );
+                collider_obj.tag("Ground");
                 collider_obj.transform().position({
                     first.world_x,
                     first.world_y,
@@ -208,7 +209,7 @@ void LevelLoader::create_tile_colliders(Scene& scene, const json& tiles_json) {
                     1.0f
                 );
                 collider_obj.add_component<BoxCollider2D>(
-                    0.5f,
+                    0.f,
                     0.0f,
                     merged_width,
                     first.height,

@@ -1,10 +1,15 @@
 #include <game/behaviors/weapon_melee_behavior.h>
 
+#include <game/character/player_controller.h>
+#include <game/character/player_movement_behavior.h>
+#include <game/network/message_types.h>
+
 #include <engine/core/engine.h>
 #include <engine/input/input_system.h>
 #include <engine/input/input_manager.h>
-#include <game/character/player_controller.h>
+#include <engine/network/multiplayer_service.h>
 #include <engine/public/components/animator.h>
+#include <engine/public/components/network_identity.h>
 
 WeaponMeleeBehavior::WeaponMeleeBehavior(
     const std::string& attack_animation_name,
@@ -62,20 +67,35 @@ void WeaponMeleeBehavior::on_awake() {
             auto other_parent_opt = other.parent();
             if (other_parent_opt.has_value()) {
                 auto& other_gameobject = other_parent_opt->get();
-                if (other_gameobject.tag() != "Player") return;
+                if (other_gameobject.tag() != "Player" || other_gameobject.id() == player_component_->get().id()) return;
+
+                std::optional<std::reference_wrapper<PlayerController>> controller_opt;
+                std::optional<std::reference_wrapper<PlayerMovementBehavior>> movement_opt;
 
                 auto behaviors = other_gameobject.get_components<BehaviorScript>();
                 for (auto& behavior_ref : behaviors) {
                     auto& behavior = behavior_ref.get().behavior();
-
-                    if (auto ctrl = dynamic_cast<PlayerControllerBehavior*>(&behavior); ctrl != nullptr) {
-                        ctrl->damage(damage_);
-                    }
+                    
+                    if (auto ctrl = dynamic_cast<PlayerController*>(&behavior); ctrl != nullptr) controller_opt = *ctrl;
+                    if (auto movement = dynamic_cast<PlayerMovementBehavior*>(&behavior); movement != nullptr) movement_opt = *movement;
                 }
 
-                auto& rb = other_gameobject.get_component<Rigidbody2D>()->get();
-                Point knockback = facing_right_ ? knockback_force_delta_ : Point{-knockback_force_delta_.x, -knockback_force_delta_.y};
-                rb.apply_impulse(Vector3{knockback.x, knockback.y, 0.0f});
+                bool should_reset_knockback = false;
+
+                if (controller_opt.has_value()) {
+                    should_reset_knockback = controller_opt->get().health() - damage_ <= 0;
+                    controller_opt->get().hit(damage_);
+                }
+
+                if (movement_opt.has_value()) {
+                    if (should_reset_knockback) {
+                        movement_opt->get().reset_knockback();
+                        return;
+                    }
+
+                    Point knockback = facing_right_ ? knockback_force_ : Point{-knockback_force_.x, knockback_force_.y};
+                    movement_opt->get().apply_knockback(knockback);
+                }
             }
         });
 }
@@ -87,51 +107,90 @@ void WeaponMeleeBehavior::on_update(float dt) {
     auto& rb = game_object().parent()->get().get_component<Rigidbody2D>()->get();
     auto& animator = sprite_gameobject_.get().get_component<Animator>()->get();
 
-    /// Update knockback delta
-    knockback_force_delta_ = {knockback_force_.x * dt * 1000, knockback_force_.y * dt * 1000};
+    bool flipped = sprite_component_->get().flip_x();
 
-    if (rb.velocity().x > 0) facing_right_ = true;
-    else if (rb.velocity().x < 0) facing_right_ = false;
+    if (rb.velocity().x > 0)        facing_right_ = true;
+    else if (rb.velocity().x < 0)   facing_right_ = false;
+
     sprite_component_->get().flip_x(!facing_right_);
+    bool new_flipped = flipped != sprite_component_->get().flip_x();
 
     /// Set sprite position based on direction
     /// Only if not attacking due to animation offset
-    if (!animator.is_playing()) {
+    if (!animator.is_playing() || new_flipped) {
         Point offset = facing_right_ ? sprite_offset_right_ : sprite_offset_left_;
         sprite_gameobject_.get()
             .transform()
             .local_position({ offset.x, offset.y, 0.0f });
     }
 
-    /// Set all the right positions and activate hitbox
-    if (provider.is_mouse_pressed(MouseButton::left) && !animator.is_playing()) {
-        if (sprite_component_) {
-            animator.set_animation(attack_animation_name_);
-
-
-            Point animator_offset = facing_right_ ? animator_offset_right_ : animator_offset_left_;
-            sprite_gameobject_.get()
-                .transform()
-                .local_position({ animator_offset.x, animator_offset.y, 0.0f });
-
-            animator.play(false);
-            hitbox_component_->get().active(true);
-
-            float pos_x = hitbox_offset_.x;
-            if (!facing_right_) {
-                pos_x = -static_cast<float>(range_);
-            }
-
-            hitbox_gameobject_.get().transform().local_position({ pos_x, 0.0f, 0.0f });
-        }
-    }
-
-    /// Reset after attack animation is done
-    if (!animator.is_playing()) {
+    /// Reset after attack animation is done, or if direction changed mid-attack
+    if (!animator.is_playing() || new_flipped) {
         animator.reset();
         sprite_component_->get().texture(original_texture_name_);
-        
+
         hitbox_component_->get().active(false);
-        hitbox_gameobject_.get().transform().local_position({0.0f, 0.0f, 0.0f});
+        hitbox_gameobject_.get().transform().local_position({0.0f, -100.0f, 0.0f});
+    }
+
+    if (!is_local()) return;
+
+    /// Set all the right positions and activate hitbox
+    if (provider.is_mouse_pressed(MouseButton::left) && !animator.is_playing()) {
+        attack();
+
+        if (!is_multiplayer()) return;
+
+        MultiplayerService& multiplayer_service =
+            Engine::instance().services->get_service<MultiplayerService>().get();
+
+        MsgUserAttack body{};
+        std::strncpy(body.uuid, multiplayer_service.get_uuid().c_str(), sizeof(body.uuid) - 1);
+
+        Message msg = serialize_message(body, CustomMessageTypes::USER_ATTACK);
+        multiplayer_service.send(msg);
+    }
+}
+
+bool WeaponMeleeBehavior::is_multiplayer() {
+    auto network_identity = game_object().parent()->get().get_component<NetworkIdentity>();
+    if (network_identity.has_value())
+        return true;
+
+    return false;
+}
+
+bool WeaponMeleeBehavior::is_local() {
+    auto network_identity = game_object().parent()->get().get_component<NetworkIdentity>();
+    if (network_identity.has_value() && !network_identity->get().uuid().empty()) {
+        auto uuid = network_identity->get().uuid();
+        auto multiplayer_uuid = Engine::instance().services->get_service<MultiplayerService>().get().get_uuid();
+
+        return multiplayer_uuid == uuid;
+    }
+
+    return true;
+}
+
+void WeaponMeleeBehavior::attack() {
+    auto& animator = sprite_gameobject_.get().get_component<Animator>()->get();
+
+    if (sprite_component_) {
+        animator.set_animation(attack_animation_name_);
+
+        Point animator_offset = facing_right_ ? animator_offset_right_ : animator_offset_left_;
+        sprite_gameobject_.get()
+            .transform()
+            .local_position({ animator_offset.x, animator_offset.y, 0.0f });
+
+        animator.play(false);
+        hitbox_component_->get().active(true);
+
+        float pos_x = hitbox_offset_.x;
+        if (!facing_right_) {
+            pos_x = -static_cast<float>(range_);
+        }
+
+        hitbox_gameobject_.get().transform().local_position({ pos_x, 0.0f, 0.0f });
     }
 }

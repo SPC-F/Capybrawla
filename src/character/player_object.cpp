@@ -11,13 +11,12 @@
 #include "game/character/player_outofbounds_behavior.h"
 
 PlayerObject::PlayerObject(Scene &scene, const Vector3 initial_pos, bool is_local_player)
-    : GameObject(scene) {
+    : GameObject(scene), user_name_{"PLACEHOLDER"} {
   this->name("PlayerObject");
   this->tag("Player");
   this->transform().position(initial_pos);
 
   constexpr float scale_factor = 2.0f;
-
   this->transform().scale({scale_factor, scale_factor, 1.0f});
 
   // how we look
@@ -29,17 +28,40 @@ PlayerObject::PlayerObject(Scene &scene, const Vector3 initial_pos, bool is_loca
   constexpr float default_x_offset = 6 * scale_factor;
   const Point default_offset = {default_x_offset, 4 * scale_factor};
 
-  this->add_component<Rigidbody2D>(BodyType2D::Type::Dynamic, 35.0f);
-  this->add_component<BoxCollider2D>(0.1f, 0.2f, 20 * scale_factor,
+  this->add_component<Rigidbody2D>(BodyType2D::Type::Dynamic, 35.0f, true, 3.0f);
+  this->add_component<BoxCollider2D>(0.6f, .0f, 20 * scale_factor,
                                      default_height, default_offset);
 
-  // how we behave
-    this->is_local_player = is_local_player;
-  if (is_local_player) {
-    this->add_component<BehaviorScript>(std::make_unique<PlayerMovementBehavior>(
-        default_height, default_height / 2.0f, default_offset,
-        Point{default_x_offset, default_height / 2.4 * scale_factor}));
-  }
+  this->add_component<BehaviorScript>(std::make_unique<PlayerController>(100, 100));
+  this->add_component<BehaviorScript>(std::make_unique<PlayerMovementBehavior>(
+      default_height, default_height / 2.0f, default_offset,
+      Point{default_x_offset, default_height / 3.2f * scale_factor}));
+}
 
-  this->add_component<BehaviorScript>(std::make_unique<PlayerControllerBehavior>(100));
+void PlayerObject::set_local_player() noexcept {
+  for (auto& behavior_ref : get_components<BehaviorScript>()) {
+      auto& behavior = behavior_ref.get().behavior();
+
+      if (auto movement = dynamic_cast<PlayerMovementBehavior*>(&behavior); movement != nullptr) {
+        movement->set_local_player();
+      }
+  }
+};
+
+void PlayerObject::set_controllable() noexcept {
+  for (auto& behavior_ref : get_components<BehaviorScript>()) {
+      auto& behavior = behavior_ref.get().behavior();
+
+      if (auto movement = dynamic_cast<PlayerMovementBehavior*>(&behavior); movement != nullptr) {
+        movement->set_controllable();
+      }
+  }
+}
+
+void PlayerObject::user_name(std::string user_name) {
+  user_name_ = user_name;
+}
+
+const std::string& PlayerObject::user_name() const {
+  return user_name_;
 }
