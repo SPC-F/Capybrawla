@@ -12,6 +12,7 @@ private:
 
 public:
     [[nodiscard]] GameObject& random_drop();
+    void spawn_obj(GameObject& obj);
     void on_start() override;
     void on_update(float dt) override;
 };

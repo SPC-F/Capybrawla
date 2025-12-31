@@ -18,6 +18,7 @@
 #include <game/prefabs/weapons/weapon_bat_player_object.h>
 #include <game/prefabs/weapons/weapon_axe_player_object.h>
 #include <game/prefabs/weapons/weapon_sword_player_object.h>
+#include <game/prefabs/interactables/health_pack.h>
 #include <game/behaviors/multiplayer/multiplayer_controller.h>
 #include <game/behaviors/weapon_melee_behavior.h>
 #include <game/behaviors/interactable/ItemDropper.h>
@@ -162,6 +163,13 @@ void SwampAutumScene::setup(Scene& scene) {
     prefab_service.register_prefab("InteractableDropper", [this](Scene& scene, const std::string name) -> GameObject& {
         return create_interactable_dropper(name);
     });
+    prefab_service.register_prefab("HealthPack", [this](Scene& scene, const std::string& name) -> GameObject& {
+        auto& obj = scene.add_game_object<HealthPackPrefab>(scene);
+        obj.add_component<NetworkIdentity>(name.c_str());
+        obj.prefab_type_id("HealthPack");
+
+        return obj;
+    });
 }
 
 void SwampAutumScene::load(Scene& scene) {
@@ -270,6 +278,27 @@ void SwampAutumScene::load(Scene& scene) {
             if (multiplayer_service.get_uuid() == data.uuid) return;
 
             handle_player_attack(data);
+        });
+
+        multiplayer_service.register_handler(CustomMessageTypes::DROP_SPAWN, [this, &prefab_service, &scene](const Message& message) {
+            MsgDropSpawn data{};
+            std::memcpy(&data, message.payload.data(), sizeof(data));
+
+            auto& drop_obj = prefab_service.instantiate(data.drop_type, scene, data.drop_uuid).get();
+
+            for (auto& obj : scene.game_objects()) {
+                auto comp_opt = obj.get().get_component<NetworkIdentity>();
+                if (!comp_opt.has_value()) continue;
+
+                auto& comp = comp_opt.value().get();
+                if (comp.uuid() != data.spawner_uuid) continue;
+
+                for (auto& behavior : obj.get().get_components<BehaviorScript>()) {
+                    if (auto *dropper_comp = dynamic_cast<ItemDropper*>(&behavior.get().behavior())) {
+                        dropper_comp->spawn_obj(drop_obj);
+                    }
+                }
+            }
         });
     }
 }
