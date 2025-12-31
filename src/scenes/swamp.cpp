@@ -79,12 +79,18 @@ void SwampScene::load_timer(Scene& scene) {
 }
 
 void SwampScene::load_interactables(Scene& scene) {
-    auto& obj = scene.add_game_object("interactable_spawner");
-    obj.add_component<BehaviorScript>(std::make_unique<ItemDropper>());
-    obj.add_component<Sprite>("item_dropper", Color(), 0, 0, 0, 0);
-    obj.add_component<Animator>("item_dropper_idle", 128).play(true);
-    obj.transform().scale({2, 2, 2});
-    obj.transform().position({1368, 480, 0});
+    std::vector<std::pair<float, float>> positions;
+    positions.emplace_back(1368, 480);
+    positions.emplace_back(350, 432);
+
+    for (auto pos : positions) {
+        auto& obj = scene.add_game_object("interactable_spawner");
+        obj.add_component<BehaviorScript>(std::make_unique<ItemDropper>());
+        obj.add_component<Sprite>("item_dropper", Color(), 0, 0, 0, 0);
+        obj.add_component<Animator>("item_dropper_idle", 128).play(true);
+        obj.transform().scale({2, 2, 2});
+        obj.transform().position({pos.first, pos.second, 0});
+    }
 }
 
 void SwampScene::setup(Scene& scene) {
