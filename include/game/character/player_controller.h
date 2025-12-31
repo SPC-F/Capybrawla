@@ -23,8 +23,6 @@ public:
   explicit PlayerController(int max_health, int start_health);
   ~PlayerController() override = default;
 
-  void on_awake() override;
-  void on_start() override;
   void on_update(float dt) override;
 
   [[nodiscard]] int health() const;
@@ -44,5 +42,12 @@ public:
   [[nodiscard]] bool is_soft_dead() const;
   [[nodiscard]] bool is_hard_dead() const;
 
+  void hit(int damage);
+
   void on_destroy() override;
+
+  void mark_network_dirty() noexcept;
+
+  void on_serialize(std::vector<uint8_t>& out) const override;
+  void on_deserialize(const std::vector<uint8_t>& data, size_t& offset) override;
 };

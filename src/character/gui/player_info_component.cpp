@@ -57,7 +57,7 @@ namespace PlayerInfoComponent {
     UIText &player_name(Scene &scene, const PlayerObject &player) {
         UIText &player_name = scene.add_game_object<UIText>(
             scene,
-            player.name(),
+            player.user_name(),
             "ByteBounce",
             "resources/fonts/bytebounce/ByteBounce.ttf",
             right_col_width,

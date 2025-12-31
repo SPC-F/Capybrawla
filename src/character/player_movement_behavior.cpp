@@ -11,12 +11,6 @@
 #include <engine/input/input_manager.h>
 #include <engine/network/multiplayer_service.h>
 
-namespace {
-void apply_move_sound() {
-
-}
-}
-
 PlayerMovementBehavior::PlayerMovementBehavior()
     : PlayerMovementBehavior(32.0f, 18.0f, {}, {}) {}
 
@@ -211,7 +205,7 @@ void PlayerMovementBehavior::apply_physics() {
     }
   }
   
-  velocity.y += knockback_velocity_.y;
+  velocity.y += knockback_velocity_.y * latest_dt_;
 
   if (crouch_) {
     velocity.y += dropping_speed_ * latest_dt_;
@@ -228,6 +222,8 @@ void PlayerMovementBehavior::apply_physics() {
 void PlayerMovementBehavior::apply_animation() {
   auto& animator = animator_opt_->get();
   auto& sprite   = sprite_opt_->get();
+
+  if (animator.is_non_interruptible()) return;
 
   if (crouch_) {
     sprite.texture(PlayerConstants::CROUCHING_TEXTURE);
@@ -313,4 +309,8 @@ bool PlayerMovementBehavior::is_walking() const { return is_walking_; }
 void PlayerMovementBehavior::apply_knockback(const Point& force) {
   knockback_velocity_.x += force.x;
   knockback_velocity_.y += force.y;
+}
+
+void PlayerMovementBehavior::reset_knockback() {
+  knockback_velocity_ = {0.f, 0.f, 0.f};
 }

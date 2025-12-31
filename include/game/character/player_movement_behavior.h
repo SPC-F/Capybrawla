@@ -39,10 +39,10 @@ private:
   bool is_walking_;
 
   // Used when updating the player objects of peers during which we don't want to reset these states.
-  bool crouch_;
-  bool jump_;
-  bool move_left_;
-  bool move_right_;
+  bool crouch_{false};
+  bool jump_{false};
+  bool move_left_{false};
+  bool move_right_{false};
 
   bool send_empty_message_; // First message sent after no movement has been detected to clean animation states on peers
 
@@ -109,4 +109,5 @@ public:
   void double_jump_force(const float speed);
 
   void apply_knockback(const Point& force);
+  void reset_knockback();
 };

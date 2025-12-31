@@ -22,8 +22,7 @@
 #include <game/scenes/level_loader.h>
 #include <game/scenes/swamp.h>
 #include <game/scripts/timer/RoundTimer.h>
-
-const Vector3 DEFAULT_RESPAWN_POSITION = {600, 0, 0};
+#include <game/prefabs/cloud_platform_object.h>
 
 SwampScene::SwampScene() : Level("Level_SwampScene") {}
 
@@ -39,19 +38,24 @@ void SwampScene::load_players(Scene& scene, RoundController& controller, float s
     auto& weapon_boxing_gloves = scene.add_game_object<WeaponBoxingGlovesPlayerObject>(scene, player);
     player.layer(Layers::Foreground);
     player.set_controllable();
-
-    GameObject& player_info_comp = PlayerInfoComponent::create_and_add(scene, player);
-    player_info_comp.transform().position({50, 950, 0});
+    player.user_name("Real player");
 
     auto& ai_player = scene.add_game_object<PlayerObject>(scene, Vector3{start_x + 40.0f, 100.0f, 0}, false);
+    ai_player.user_name("AI Player");
 
     controller.add_player(player);
     controller.add_player(ai_player);
 }
 
 RoundController& SwampScene::add_round_controller(Scene& scene) {
+    std::vector<Vector3> respawn_positions = {
+        Vector3{200.0f, 100.0f, 0.0f},
+        Vector3{1160.0f, 100.0f, 0.0f},
+        Vector3{1600.0f, 100.0f, 0.0f},
+    };
+
     GameObject& wrapper = scene.add_game_object("RoundControllerWrapper");
-    auto& comp = wrapper.add_component<BehaviorScript>(std::make_unique<RoundController>(DEFAULT_RESPAWN_POSITION));
+    auto& comp = wrapper.add_component<BehaviorScript>(std::make_unique<RoundController>(respawn_positions));
     return *dynamic_cast<RoundController*>(&comp.behavior());
 }
 
@@ -89,7 +93,7 @@ void SwampScene::load(Scene& scene) {
     SwampScene::load_map(std::string(Assets::MAP_SWAMP));
 
     load_timer(scene);
-
+    
     RoundController& controller = add_round_controller(scene);
     load_players(scene, controller, 1000.0f, 500.0f);
     load_ai_agent(scene);

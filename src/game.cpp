@@ -40,12 +40,16 @@ void Game::initialize() {
         {"background/swamp_autum/swamp_autum_background.png", "swamp_autum_bg", 1, 1},
         {"tilemaps/swamp_autum_compact.png", "swamp_autum_tiles", 9, 12},
 
+        {"tilemaps/clouds.png", "cloud_tiles", 4, 2},
+
         // Characters
         {"character/capybara_default_idle.png", "capybara_default_idle", 1, 1},
         {"character/capybara_default_duck.png", "capybara_default_duck", 1, 1},
         {"character/capybara_default_jump.png", "capybara_default_jump", 1, 1},
         {"character/capybara_default_death.png", "capybara_default_death", 1, 1},
         {"character/capybara_default_hit.png", "capybara_default_hit", 1, 1},
+        {"character/capybara_default_hit_anim.png", "capybara_default_hit_anim_sheet", 1, 8},
+        {"character/capybara_default_death_anim.png", "capybara_default_death_anim_sheet", 1, 8},
         {"character/capybara_default_walk_anim.png", "capybara_default_walk_anim_sheet", 1, 8},
         {"character/capybara_default_idle_anim.png", "capybara_default_idle_anim_sheet", 1, 7},
         {"character/capybara_default_jump_anim.png", "capybara_default_jump_anim_sheet", 1, 7},
@@ -219,6 +223,8 @@ void Game::initialize() {
         {"swamp_autum_tiles", "rock_small", 77},
         {"swamp_autum_tiles", "rock_large", 76},
 
+        {"cloud_tiles", "cloud_platform", 0},
+
         // Weapons
         {"bat_sheet", "bat", 0},
         {"bat_sheet", "bat_swing", 1},
@@ -240,6 +246,8 @@ void Game::initialize() {
         {"capybara_default_idle_anim_sheet", "capybara_default_idle_anim", 0, 7},
         {"capybara_default_jump_anim_sheet", "capybara_default_jump_anim", 0, 7},
         {"capybara_default_duck_anim_sheet", "capybara_default_duck_anim", 0, 7},
+        {"capybara_default_death_anim_sheet", "capybara_default_death_anim", 0, 7},
+        {"capybara_default_hit_anim_sheet", "capybara_default_hit_anim", 0, 7},
 
         // Opponents
         {"drone_idle_anim_sheet", "drone_idle_anim", 0, 7},
