@@ -115,8 +115,18 @@ void WeaponMeleeBehavior::on_update(float dt) {
     sprite_component_->get().flip_x(!facing_right_);
     bool new_flipped = flipped != sprite_component_->get().flip_x();
 
-    /// Set sprite position based on direction
-    /// Only if not attacking due to animation offset
+    /// Always set the hitbox position during update
+    float hitbox_pos_x = hitbox_offset_.x;
+    if (!facing_right_) hitbox_pos_x = -static_cast<float>(range_);
+
+    if (animator.is_playing()) {
+        hitbox_gameobject_.get().transform().local_position({ hitbox_pos_x, 0.0f, 0.0f });
+        hitbox_component_->get().active(true);
+    } else {
+        hitbox_component_->get().active(false);
+        hitbox_gameobject_.get().transform().local_position({0.0f, -100.0f, 0.0f});
+    }
+
     if (!animator.is_playing() || new_flipped) {
         Point offset = facing_right_ ? sprite_offset_right_ : sprite_offset_left_;
         sprite_gameobject_.get()
@@ -128,14 +138,11 @@ void WeaponMeleeBehavior::on_update(float dt) {
     if (!animator.is_playing() || new_flipped) {
         animator.reset();
         sprite_component_->get().texture(original_texture_name_);
-
-        hitbox_component_->get().active(false);
-        hitbox_gameobject_.get().transform().local_position({0.0f, -100.0f, 0.0f});
     }
 
     if (!is_local()) return;
 
-    /// Set all the right positions and activate hitbox
+    // Attack input
     if (provider.is_mouse_pressed(MouseButton::left) && !animator.is_playing()) {
         attack();
 
@@ -184,13 +191,5 @@ void WeaponMeleeBehavior::attack() {
             .local_position({ animator_offset.x, animator_offset.y, 0.0f });
 
         animator.play(false);
-        hitbox_component_->get().active(true);
-
-        float pos_x = hitbox_offset_.x;
-        if (!facing_right_) {
-            pos_x = -static_cast<float>(range_);
-        }
-
-        hitbox_gameobject_.get().transform().local_position({ pos_x, 0.0f, 0.0f });
     }
 }
