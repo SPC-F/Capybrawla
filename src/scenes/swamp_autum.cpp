@@ -19,10 +19,26 @@
 #include <game/prefabs/weapons/weapon_sword_player_object.h>
 #include <game/behaviors/multiplayer/multiplayer_controller.h>
 #include <game/behaviors/weapon_melee_behavior.h>
+#include <game/behaviors/interactable/ItemDropper.h>
 
 #include <iostream>
 
 SwampAutumScene::SwampAutumScene() : Level("Level_SwampAutumScene") {}
+
+void SwampAutumScene::load_interactables(Scene& scene) {
+    std::vector<std::pair<float, float>> positions;
+    positions.emplace_back(1368, 480);
+    positions.emplace_back(350, 432);
+
+    for (auto pos : positions) {
+        auto& obj = scene.add_game_object("interactable_spawner");
+        obj.add_component<BehaviorScript>(std::make_unique<ItemDropper>());
+        obj.add_component<Sprite>("item_dropper", Color(), 0, 0, 0, 0);
+        obj.add_component<Animator>("item_dropper_idle", 128).play(true);
+        obj.transform().scale({2, 2, 2});
+        obj.transform().position({pos.first, pos.second, 0});
+    }
+}
 
 PlayerObject& SwampAutumScene::create_player_object(const std::string& name) {
     float start_x = 1000.0f;
@@ -135,6 +151,7 @@ void SwampAutumScene::setup(Scene& scene) {
 void SwampAutumScene::load(Scene& scene) {
     SwampAutumScene::load_camera();
     SwampAutumScene::load_map(std::string(Assets::MAP_SWAMP_AUTUM));
+    SwampAutumScene::load_interactables(scene);
 
     Engine& engine = Engine::instance();
     auto& multiplayer_service = engine.services->get_service<MultiplayerService>().get();
