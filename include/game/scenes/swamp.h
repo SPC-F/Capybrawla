@@ -19,6 +19,7 @@ private:
     RoundController& add_round_controller(Scene& scene);
     void load_ai_agent(Scene& scene);
     void load_timer(Scene& scene);
+    void load_interactables(Scene& scene);
 
     float out_of_bounds_margin_x_ = 480.0f;
     float out_of_bounds_margin_y_ = 270.0f;

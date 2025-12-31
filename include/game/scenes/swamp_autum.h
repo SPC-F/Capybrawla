@@ -25,7 +25,9 @@ private:
     float map_height_ = 1080.0f;
     ConnectionState connection_state_ = ConnectionState::NONE;
 
+    void load_interactables(Scene& scene);
     PlayerObject& create_player_object(const std::string& name);
+    GameObject& create_interactable_dropper(const std::string& name);
     RoundController& add_multiplayer_round_controller();
     MultiplayerController& add_multiplayer_controller();
 

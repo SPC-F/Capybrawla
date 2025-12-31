@@ -13,16 +13,30 @@
 #include <engine/public/gameObject.h>
 #include <engine/public/components/sprite.h>
 #include "engine/public/components/network_identity.h"
+#include <engine/util/uuid.h>
 #include <game/round/roundcontroller.h>
 #include <game/prefabs/weapons/weapon_bat_player_object.h>
 #include <game/prefabs/weapons/weapon_axe_player_object.h>
 #include <game/prefabs/weapons/weapon_sword_player_object.h>
+#include <game/prefabs/interactables/health_pack.h>
 #include <game/behaviors/multiplayer/multiplayer_controller.h>
 #include <game/behaviors/weapon_melee_behavior.h>
+#include <game/behaviors/interactable/ItemDropper.h>
 
 #include <iostream>
 
 SwampAutumScene::SwampAutumScene() : Level("Level_SwampAutumScene") {}
+
+void SwampAutumScene::load_interactables(Scene& scene) {
+    std::vector<std::pair<float, float>> positions;
+    positions.emplace_back(1368, 480);
+    positions.emplace_back(350, 432);
+
+    for (auto pos : positions) {
+        auto& obj = create_interactable_dropper(uuid::generate_uuid_v4());
+        obj.transform().position({pos.first, pos.second, 0});
+    }
+}
 
 PlayerObject& SwampAutumScene::create_player_object(const std::string& name) {
     float start_x = 1000.0f;
@@ -43,6 +57,22 @@ PlayerObject& SwampAutumScene::create_player_object(const std::string& name) {
     auto& weapon_axe = scene().add_game_object<WeaponAxePlayerObject>(scene(), obj);
 
     obj.layer(Layers::Foreground);
+
+    return obj;
+}
+
+GameObject& SwampAutumScene::create_interactable_dropper(const std::string& name) {
+    auto& obj = scene().add_game_object("interactable_spawner");
+    obj.prefab_type_id("InteractableDropper");
+
+    obj.add_component<BehaviorScript>(std::make_unique<ItemDropper>());
+    obj.add_component<Sprite>("item_dropper", Color(), 0, 0, 0, 0);
+    obj.add_component<Animator>("item_dropper_idle", 128).play(true);
+    obj.transform().scale({2, 2, 2});
+
+    Engine& engine = Engine::instance();
+    auto& multiplayer_service = engine.services->get_service<MultiplayerService>().get();
+    obj.add_component<NetworkIdentity>(name.c_str());
 
     return obj;
 }
@@ -130,6 +160,16 @@ void SwampAutumScene::setup(Scene& scene) {
     prefab_service.register_prefab("PlayerObject", [this](Scene& scene, const std::string& name) -> GameObject& {
         return create_player_object(name);
     });
+    prefab_service.register_prefab("InteractableDropper", [this](Scene& scene, const std::string name) -> GameObject& {
+        return create_interactable_dropper(name);
+    });
+    prefab_service.register_prefab("HealthPack", [this](Scene& scene, const std::string& name) -> GameObject& {
+        auto& obj = scene.add_game_object<HealthPackPrefab>(scene);
+        obj.add_component<NetworkIdentity>(name.c_str());
+        obj.prefab_type_id("HealthPack");
+
+        return obj;
+    });
 }
 
 void SwampAutumScene::load(Scene& scene) {
@@ -183,6 +223,8 @@ void SwampAutumScene::load(Scene& scene) {
         player.set_local_player();
         player.set_controllable();
         controller.add_player(player);
+
+        SwampAutumScene::load_interactables(scene);
     } else {
         multiplayer_controller.on_connection_state_change([&scene, &multiplayer_service, &controller](ConnectionState old_state, ConnectionState new_state) {
             if (new_state == ConnectionState::CONNECTED) {
@@ -236,6 +278,27 @@ void SwampAutumScene::load(Scene& scene) {
             if (multiplayer_service.get_uuid() == data.uuid) return;
 
             handle_player_attack(data);
+        });
+
+        multiplayer_service.register_handler(CustomMessageTypes::DROP_SPAWN, [this, &prefab_service, &scene](const Message& message) {
+            MsgDropSpawn data{};
+            std::memcpy(&data, message.payload.data(), sizeof(data));
+
+            auto& drop_obj = prefab_service.instantiate(data.drop_type, scene, data.drop_uuid).get();
+
+            for (auto& obj : scene.game_objects()) {
+                auto comp_opt = obj.get().get_component<NetworkIdentity>();
+                if (!comp_opt.has_value()) continue;
+
+                auto& comp = comp_opt.value().get();
+                if (comp.uuid() != data.spawner_uuid) continue;
+
+                for (auto& behavior : obj.get().get_components<BehaviorScript>()) {
+                    if (auto *dropper_comp = dynamic_cast<ItemDropper*>(&behavior.get().behavior())) {
+                        dropper_comp->spawn_obj(drop_obj);
+                    }
+                }
+            }
         });
     }
 }
