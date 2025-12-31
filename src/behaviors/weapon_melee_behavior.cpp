@@ -142,7 +142,7 @@ void WeaponMeleeBehavior::on_update(float dt) {
 
     if (!is_local()) return;
 
-    // Attack input
+    /// Set all the right positions and activate hitbox
     if (provider.is_mouse_pressed(MouseButton::left) && !animator.is_playing()) {
         attack();
 
