@@ -192,4 +192,7 @@ void WeaponMeleeBehavior::attack() {
 
         animator.play(false);
     }
+
+    auto& audio_controller = Engine::instance().services->get_service<AudioService>().get();
+    audio_controller.play_sound("player_punch", 0.1f, false);
 }

@@ -1,6 +1,9 @@
 #include <game/character/player_movement_behavior.h>
-#include <game/network/message_types.h>
+
+#include <engine/audio/audio_service.h>
+
 #include <game/character/playerConstants.h>
+#include <game/network/message_types.h>
 
 #include <engine/core/engine.h>
 #include <engine/core/rendering/assetService.h>
@@ -51,6 +54,7 @@ void PlayerMovementBehavior::on_start() {
   animator_opt_     = get_component<Animator>();
   sprite_opt_       = get_component<Sprite>();
   box_collider_opt_ = get_component<BoxCollider2D>();
+  audio_service_ = Engine::instance().services->get_service<AudioService>().get();
 
   if (!player_has_required_components()) {
     throw std::runtime_error("PlayerMovementBehavior missing components");
@@ -67,6 +71,18 @@ void PlayerMovementBehavior::on_start() {
       is_jumping_ = false;
       is_double_jumping_ = false;
     });
+
+  collider.add_on_collision_exit(
+    [&](Collider2D& self, Collider2D& other) {
+      if (other.parent()->get().tag() == "Ground")
+        is_grounded_ = false;
+    });
+
+  move_sound_opt_ = audio_service_->get().play_sound("player_move", 0.1f, true);
+  move_sound_opt_->get().pause();
+
+  jump_sound_opt_ = audio_service_->get().play_sound("player_jump", 0.35f, true);
+  jump_sound_opt_->get().pause();
 }
 
 bool PlayerMovementBehavior::player_has_required_components() const {
@@ -100,6 +116,7 @@ void PlayerMovementBehavior::handle_movement(
   set_movement_flags(movement);
   apply_physics();
   apply_animation();
+  apply_sounds();
 }
 
 
@@ -231,6 +248,21 @@ void PlayerMovementBehavior::apply_animation() {
   if (move_right_) sprite.flip_x(false);
 }
 
+void PlayerMovementBehavior::apply_sounds() {
+  if (jump_ || is_double_jumping_) {
+    if (is_double_jumping_ || !jump_sound_opt_->get().is_playing()) {
+      jump_sound_opt_->get().play();
+    }
+  } else if (is_grounded_) {
+    jump_sound_opt_->get().pause();
+  }
+
+  if (!is_walking()) {
+    move_sound_opt_->get().pause();
+  } else if (!move_sound_opt_->get().is_playing()) {
+    move_sound_opt_->get().play();
+  }
+}
 
 void PlayerMovementBehavior::send_movement_if_needed(const std::vector<PlayerMovementTypes>& movement) {
   // If we're not detecting any input, send one final message stating that we are no longer moving.

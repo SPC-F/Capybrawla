@@ -414,6 +414,11 @@ UIButton& MainMenuScene::create_button(
     button.font_size(BUTTON_FONT_SIZE);
     button.layer(Layers::UI);
 
+    button.add_on_hover([] (UIInteractable&) {
+      auto& audio_service = Engine::instance().services->get_service<AudioService>().get();
+      audio_service.play_sound("btn_hover", 0.1f);
+    });
+
     return button;
 }
 
