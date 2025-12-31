@@ -34,7 +34,11 @@ void PlayerController::damage(const int dmg) {
 }
 void PlayerController::heal(const int hp) {
   const int old_health = health_;
-  health_ += hp;
+  if (health_ + hp > max_health_) {
+    health_ = max_health_;
+  } else {
+    health_ += hp;
+  }
 
   mark_network_dirty();
 
