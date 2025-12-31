@@ -72,12 +72,6 @@ void PlayerMovementBehavior::on_start() {
       is_double_jumping_ = false;
     });
 
-  // collider.add_on_collision_exit(
-  //   [&](Collider2D& self, Collider2D& other) {
-  //     if (other.parent()->get().tag() == "Ground")
-  //       is_grounded_ = false;
-  //   });
-
   move_sound_opt_ = audio_service_->get().play_sound("player_move", 0.1f, true);
   move_sound_opt_->get().pause();
 
