@@ -14,7 +14,7 @@ GameObject& ItemDropper::random_drop() const {
     auto& prefab_service = Engine::instance().services->get_service<PrefabService>().get();
     Scene& scene = Engine::instance().services->get_service<SceneService>().get().current_scene().value();
 
-    return prefab_service.instantiate(uuid::generate_uuid_v4(), scene, drops_[random_index]);
+    return prefab_service.instantiate(drops_[random_index], scene, uuid::generate_uuid_v4());
 }
 
 void ItemDropper::on_start() {

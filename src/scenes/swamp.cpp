@@ -13,6 +13,7 @@
 
 #include <game/character/player_outofbounds_behavior.h>
 #include <game/character/player_object.h>
+#include <game/behaviors/interactable/ItemDropper.h>
 #include <game/prefabs/ai_drone_agent_object.h>
 #include <game/prefabs/weapons/weapon_bat_player_object.h>
 #include <game/prefabs/weapons/weapon_axe_player_object.h>
@@ -77,6 +78,15 @@ void SwampScene::load_timer(Scene& scene) {
     round_timer_obj.add_component<BehaviorScript>(std::move(round_timer));
 }
 
+void SwampScene::load_interactables(Scene& scene) {
+    auto& obj = scene.add_game_object("interactable_spawner");
+    obj.add_component<BehaviorScript>(std::make_unique<ItemDropper>());
+    obj.add_component<Sprite>("item_dropper", Color(), 0, 0, 0, 0);
+    obj.add_component<Animator>("item_dropper_idle", 128).play(true);
+    obj.transform().scale({2, 2, 2});
+    obj.transform().position({1368, 480, 0});
+}
+
 void SwampScene::setup(Scene& scene) {
     AudioService &audio_service = Engine::instance().services->get_service<AudioService>().get();
     scene.on_run([&audio_service](Scene& scene) {
@@ -93,8 +103,9 @@ void SwampScene::load(Scene& scene) {
     SwampScene::load_map(std::string(Assets::MAP_SWAMP));
 
     load_timer(scene);
-    
+
     RoundController& controller = add_round_controller(scene);
     load_players(scene, controller, 1000.0f, 500.0f);
     load_ai_agent(scene);
+    load_interactables(scene);
 }
