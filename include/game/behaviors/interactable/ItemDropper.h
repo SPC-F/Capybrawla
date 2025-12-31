@@ -8,7 +8,7 @@ private:
     std::vector<std::string> drops_;
     std::string latest_obj_;
     constexpr static double default_drop_duration_secs = 15.0;
-    double remaining_time_before_drop = default_drop_duration_secs;
+    double remaining_time_before_drop = 0;
 
 public:
     [[nodiscard]] GameObject& random_drop();
