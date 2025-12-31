@@ -278,12 +278,14 @@ void Game::initialize() {
         {"./resources/sounds/start_menu.wav", "start_menu", SoundType::SDL_MIXER},
         {"./resources/sounds/spear_of_justice.wav", "spear_of_justice", SoundType::SDL_MIXER},
         {"./resources/sounds/enemy_approaching.wav", "enemy_approaching", SoundType::SDL_MIXER},
+        {"./resources/sounds/btn_hover.wav", "btn_hover", SoundType::SDL_MIXER},
+        {"./resources/sounds/player_move.wav", "player_move", SoundType::SDL_MIXER},
+        {"./resources/sounds/player_hit.wav", "player_hit", SoundType::SDL_MIXER},
+        {"./resources/sounds/player_punch.wav", "player_punch", SoundType::SDL_MIXER},
+        {"./resources/sounds/player_jump.wav", "player_jump", SoundType::SDL_MIXER},
     };
     Assets::register_audio(audios);
-
-    auto& window_controller = engine.services->get_service<RenderingService>().get().window();
-    window_controller.set_window_fullscreen();
-
+    
     settings::apply_current_settings();
 
     levels_.emplace_back(std::make_unique<SwampScene>());
@@ -292,6 +294,18 @@ void Game::initialize() {
     for (auto& level : levels_) {
         level->init();
     }
+}
+
+void Game::set_fullscreen() {
+    auto& window_controller = Engine::instance().services->get_service<RenderingService>().get().window();
+    window_controller.set_window_fullscreen();
+}
+
+void Game::set_resizable(float width, float height) {
+    auto& window_controller = Engine::instance().services->get_service<RenderingService>().get().window();
+    window_controller.set_window_resizable();
+    window_controller.set_window_width(static_cast<unsigned>(width));
+    window_controller.set_window_height(static_cast<unsigned>(height));
 }
 
 void Game::run() {

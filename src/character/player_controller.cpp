@@ -10,6 +10,9 @@
 #include <engine/public/scene.h>
 #include <engine/util/uuid.h>
 
+#include <engine/audio/audio_service.h>
+#include <engine/core/engine.h>
+
 PlayerController::PlayerController(): PlayerController(100, 100) {}
 PlayerController::PlayerController(const int max_health, const int start_health): max_health_(max_health), health_ { start_health }, lives_(3) {}
 
@@ -31,6 +34,9 @@ void PlayerController::damage(const int dmg) {
   mark_network_dirty();
 
   notify_health_changed(old_health);
+
+  auto& audio_controller = Engine::instance().services->get_service<AudioService>().get();
+  audio_controller.play_sound("player_hit", 0.15f, false);
 }
 void PlayerController::heal(const int hp) {
   const int old_health = health_;
