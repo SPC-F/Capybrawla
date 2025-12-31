@@ -24,7 +24,7 @@ HealthPackPrefab::HealthPackPrefab(Scene& scene)
     box_coll.add_on_trigger_enter([this](Collider2D&, Collider2D& other) {
         for (auto& behavior_script : other.parent()->get().get_components<BehaviorScript>())
         {
-            if (auto* behavior = dynamic_cast<PlayerControllerBehavior*>(&behavior_script.get().behavior()))
+            if (auto* behavior = dynamic_cast<PlayerController*>(&behavior_script.get().behavior()))
             {
                 behavior->heal(health_amount_);
                 mark_for_deletion();
