@@ -1,6 +1,9 @@
 #include <game/character/player_movement_behavior.h>
-#include <game/network/message_types.h>
+
+#include <engine/audio/audio_service.h>
+
 #include <game/character/playerConstants.h>
+#include <game/network/message_types.h>
 
 #include <engine/core/engine.h>
 #include <engine/core/rendering/assetService.h>
@@ -51,6 +54,7 @@ void PlayerMovementBehavior::on_start() {
   animator_opt_     = get_component<Animator>();
   sprite_opt_       = get_component<Sprite>();
   box_collider_opt_ = get_component<BoxCollider2D>();
+  audio_service_ = Engine::instance().services->get_service<AudioService>().get();
 
   if (!player_has_required_components()) {
     throw std::runtime_error("PlayerMovementBehavior missing components");
@@ -67,6 +71,12 @@ void PlayerMovementBehavior::on_start() {
       is_jumping_ = false;
       is_double_jumping_ = false;
     });
+
+  move_sound_opt_ = audio_service_->get().play_sound("player_move", 0.1f, true);
+  move_sound_opt_->get().pause();
+
+  jump_sound_opt_ = audio_service_->get().play_sound("player_jump", 0.35f, true);
+  jump_sound_opt_->get().pause();
 }
 
 bool PlayerMovementBehavior::player_has_required_components() const {
@@ -100,8 +110,10 @@ void PlayerMovementBehavior::handle_movement(
   set_movement_flags(movement);
   apply_physics();
   apply_animation();
-}
+  apply_sounds();
 
+  jump_ = false;
+}
 
 void PlayerMovementBehavior::gather_input(
   std::vector<PlayerMovementTypes>& movement
@@ -160,8 +172,8 @@ void PlayerMovementBehavior::apply_physics() {
 
   is_walking_ = (input_x != 0.0f && is_grounded_);
 
-  /// Crouching
-  if (crouch_ && is_grounded_) {
+  // --- Crouching: always apply collider change if crouch is pressed, even in air or multiplayer ---
+  if (crouch_) {
     if (!is_crouching_) {
       col.height(default_crouching_height_);
       col.offset(default_crouching_offset_);
@@ -180,15 +192,16 @@ void PlayerMovementBehavior::apply_physics() {
     if (is_grounded_) {
       velocity.y = -jumping_force_;
       is_grounded_ = false;
+      is_jumping_ = true;
       is_double_jumping_ = false;
     }
-    else if (!is_double_jumping_) {
+    else if (is_jumping_ && !is_double_jumping_) {
       velocity.y = -double_jump_force_;
       is_double_jumping_ = true;
     }
   }
-  
-  velocity.y += knockback_velocity_.y;
+
+  velocity.y += knockback_velocity_.y * latest_dt_;
 
   if (crouch_) {
     velocity.y += dropping_speed_ * latest_dt_;
@@ -205,6 +218,11 @@ void PlayerMovementBehavior::apply_physics() {
 void PlayerMovementBehavior::apply_animation() {
   auto& animator = animator_opt_->get();
   auto& sprite   = sprite_opt_->get();
+
+  if (move_left_)  sprite.flip_x(true);
+  if (move_right_) sprite.flip_x(false);
+  
+  if (animator.is_non_interruptible()) return;
 
   if (crouch_) {
     sprite.texture(PlayerConstants::CROUCHING_TEXTURE);
@@ -224,11 +242,23 @@ void PlayerMovementBehavior::apply_animation() {
     animator.pause();
     sprite.texture(PlayerConstants::IDLE_TEXTURE);
   }
-
-  if (move_left_)  sprite.flip_x(true);
-  if (move_right_) sprite.flip_x(false);
 }
 
+void PlayerMovementBehavior::apply_sounds() {
+  if (jump_ || is_double_jumping_) {
+    if (is_double_jumping_ || !jump_sound_opt_->get().is_playing()) {
+      jump_sound_opt_->get().play();
+    }
+  } else if (is_grounded_) {
+    jump_sound_opt_->get().pause();
+  }
+
+  if (!is_walking()) {
+    move_sound_opt_->get().pause();
+  } else if (!move_sound_opt_->get().is_playing()) {
+    move_sound_opt_->get().play();
+  }
+}
 
 void PlayerMovementBehavior::send_movement_if_needed(const std::vector<PlayerMovementTypes>& movement) {
   // If we're not detecting any input, send one final message stating that we are no longer moving.
@@ -275,4 +305,8 @@ bool PlayerMovementBehavior::is_walking() const { return is_walking_; }
 void PlayerMovementBehavior::apply_knockback(const Point& force) {
   knockback_velocity_.x += force.x;
   knockback_velocity_.y += force.y;
+}
+
+void PlayerMovementBehavior::reset_knockback() {
+  knockback_velocity_ = {0.f, 0.f, 0.f};
 }

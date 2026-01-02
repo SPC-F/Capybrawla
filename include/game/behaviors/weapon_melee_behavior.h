@@ -48,4 +48,7 @@ private:
     std::optional<std::reference_wrapper<Sprite>> sprite_component_;
     std::optional<std::reference_wrapper<BoxCollider2D>> hitbox_component_;
     std::optional<std::reference_wrapper<GameObject>> player_component_;
+
+    bool is_multiplayer();
+    bool is_local();
 };

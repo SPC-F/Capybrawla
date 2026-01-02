@@ -1,5 +1,7 @@
 #pragma once
 
+#include <engine/audio/audio_service.h>
+
 #include <game/character/player_movement_types.h>
 
 #include <engine/public/behavior.h>
@@ -16,6 +18,9 @@ private:
   std::optional<std::reference_wrapper<Animator>> animator_opt_;
   std::optional<std::reference_wrapper<Sprite>> sprite_opt_;
   std::optional<std::reference_wrapper<BoxCollider2D>> box_collider_opt_;
+  std::optional<std::reference_wrapper<AudioService>> audio_service_;
+  std::optional<std::reference_wrapper<SoundInstance>> move_sound_opt_;
+  std::optional<std::reference_wrapper<SoundInstance>> jump_sound_opt_;
 
   float latest_dt_;
 
@@ -34,10 +39,10 @@ private:
   bool is_walking_;
 
   // Used when updating the player objects of peers during which we don't want to reset these states.
-  bool crouch_;
-  bool jump_;
-  bool move_left_;
-  bool move_right_;
+  bool crouch_{false};
+  bool jump_{false};
+  bool move_left_{false};
+  bool move_right_{false};
 
   bool send_empty_message_; // First message sent after no movement has been detected to clean animation states on peers
 
@@ -82,6 +87,7 @@ public:
   
   void apply_physics();
   void apply_animation();
+  void apply_sounds();
 
   void send_movement_if_needed(const std::vector<PlayerMovementTypes>& movement);
 
@@ -103,4 +109,5 @@ public:
   void double_jump_force(const float speed);
 
   void apply_knockback(const Point& force);
+  void reset_knockback();
 };

@@ -19,7 +19,7 @@
 #include <engine/network/multiplayer_service.h>
 
 PlayerObject::PlayerObject(Scene &scene, const Vector3 initial_pos, bool is_local_player)
-    : GameObject(scene) {
+    : GameObject(scene), user_name_{"PLACEHOLDER"} {
   this->name("PlayerObject");
   this->tag("Player");
   this->transform().position(initial_pos);
@@ -73,15 +73,10 @@ void PlayerObject::set_controllable() noexcept {
   }
 }
 
-bool PlayerObject::is_multiplayer_and_local(GameObject& obj) {
-    auto network_identity = obj.get_component<NetworkIdentity>();
+void PlayerObject::user_name(std::string user_name) {
+  user_name_ = user_name;
+}
 
-    if (network_identity.has_value() && !network_identity->get().uuid().empty()) {
-        auto uuid = network_identity->get().uuid();
-        auto multiplayer_uuid = Engine::instance().services->get_service<MultiplayerService>().get().get_uuid();
-
-        return multiplayer_uuid == uuid;
-    }
-
-    return true;
+const std::string& PlayerObject::user_name() const {
+  return user_name_;
 }

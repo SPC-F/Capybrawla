@@ -48,6 +48,8 @@ void Game::initialize() {
         {"character/capybara_default_jump.png", "capybara_default_jump", 1, 1},
         {"character/capybara_default_death.png", "capybara_default_death", 1, 1},
         {"character/capybara_default_hit.png", "capybara_default_hit", 1, 1},
+        {"character/capybara_default_hit_anim.png", "capybara_default_hit_anim_sheet", 1, 8},
+        {"character/capybara_default_death_anim.png", "capybara_default_death_anim_sheet", 1, 8},
         {"character/capybara_default_walk_anim.png", "capybara_default_walk_anim_sheet", 1, 8},
         {"character/capybara_default_idle_anim.png", "capybara_default_idle_anim_sheet", 1, 7},
         {"character/capybara_default_jump_anim.png", "capybara_default_jump_anim_sheet", 1, 7},
@@ -75,6 +77,12 @@ void Game::initialize() {
 
         {"weapons/boxing_gloves.png", "boxing_gloves_sheet", 1, 1},
         {"weapons/boxing_gloves_swing_anim.png", "boxing_gloves_swing_anim_sheet", 1, 4},
+
+        // Interactables
+        {"interactables/teleporter_purple.png", "item_dropper", 1, 1},
+        {"interactables/teleporter_purple_anim.png", "item_dropper_anim_sheet", 1, 9},
+        {"interactables/health.png", "health_pack", 1, 1},
+        {"interactables/health_anim.png", "health_pack_anim_sheet", 1, 9},
     };
     Assets::load_resources(resources);
 
@@ -234,6 +242,10 @@ void Game::initialize() {
         {"sword_sheet", "sword_swing", 1},
 
         {"boxing_gloves_sheet", "boxing_gloves", 0},
+
+        // Interactables
+        {"item_dropper", "item_dropper", 0},
+        {"health_pack", "health_pack", 0},
     };
 
     Assets::register_textures(textures);
@@ -244,6 +256,8 @@ void Game::initialize() {
         {"capybara_default_idle_anim_sheet", "capybara_default_idle_anim", 0, 7},
         {"capybara_default_jump_anim_sheet", "capybara_default_jump_anim", 0, 7},
         {"capybara_default_duck_anim_sheet", "capybara_default_duck_anim", 0, 7},
+        {"capybara_default_death_anim_sheet", "capybara_default_death_anim", 0, 7},
+        {"capybara_default_hit_anim_sheet", "capybara_default_hit_anim", 0, 7},
 
         // Opponents
         {"drone_idle_anim_sheet", "drone_idle_anim", 0, 7},
@@ -253,6 +267,10 @@ void Game::initialize() {
         {"axe_swing_anim_sheet", "axe_swing_anim", 0, 4},
         {"sword_swing_anim_sheet", "sword_swing_anim", 0, 4},
         {"boxing_gloves_swing_anim_sheet", "boxing_gloves_swing_anim", 0, 4},
+
+        // Interactables
+        {"item_dropper_anim_sheet", "item_dropper_idle", 0, 9},
+        {"health_pack_anim_sheet", "health_pack_idle", 0, 9},
     };
     Assets::register_sprite_sheets(sprite_sheets);
 
@@ -260,12 +278,14 @@ void Game::initialize() {
         {"./resources/sounds/start_menu.wav", "start_menu", SoundType::SDL_MIXER},
         {"./resources/sounds/spear_of_justice.wav", "spear_of_justice", SoundType::SDL_MIXER},
         {"./resources/sounds/enemy_approaching.wav", "enemy_approaching", SoundType::SDL_MIXER},
+        {"./resources/sounds/btn_hover.wav", "btn_hover", SoundType::SDL_MIXER},
+        {"./resources/sounds/player_move.wav", "player_move", SoundType::SDL_MIXER},
+        {"./resources/sounds/player_hit.wav", "player_hit", SoundType::SDL_MIXER},
+        {"./resources/sounds/player_punch.wav", "player_punch", SoundType::SDL_MIXER},
+        {"./resources/sounds/player_jump.wav", "player_jump", SoundType::SDL_MIXER},
     };
     Assets::register_audio(audios);
-
-    auto& window_controller = engine.services->get_service<RenderingService>().get().window();
-    window_controller.set_window_fullscreen();
-
+    
     settings::apply_current_settings();
 
     levels_.emplace_back(std::make_unique<SwampScene>());
@@ -274,6 +294,18 @@ void Game::initialize() {
     for (auto& level : levels_) {
         level->init();
     }
+}
+
+void Game::set_fullscreen() {
+    auto& window_controller = Engine::instance().services->get_service<RenderingService>().get().window();
+    window_controller.set_window_fullscreen();
+}
+
+void Game::set_resizable(float width, float height) {
+    auto& window_controller = Engine::instance().services->get_service<RenderingService>().get().window();
+    window_controller.set_window_resizable();
+    window_controller.set_window_width(static_cast<unsigned>(width));
+    window_controller.set_window_height(static_cast<unsigned>(height));
 }
 
 void Game::run() {
