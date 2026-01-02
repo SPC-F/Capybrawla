@@ -4,11 +4,10 @@
 #include <game/behaviors/multiplayer/multiplayer_controller.h>
 #include <game/behaviors/weapon_melee_behavior.h>
 #include <game/character/player_outofbounds_behavior.h>
-#include <game/prefabs/weapons/weapon_bat_player_object.h>
-#include <game/prefabs/weapons/weapon_axe_player_object.h>
-#include <game/prefabs/weapons/weapon_sword_player_object.h>
+#include <game/prefabs/interactables/config/weapon_bat_config.h>
+#include <game/prefabs/interactables/config/weapon_sword_config.h>
+#include <game/prefabs/interactables/config/weapon_axe_config.h>
 #include <game/prefabs/interactables/config/health_pack_config.h>
-#include <game/prefabs/interactables/health_pack.h>
 #include <game/round/roundcontroller.h>
 #include <game/scenes/swamp_autum.h>
 #include <game/scenes/level_loader.h>
@@ -65,7 +64,7 @@ GameObject& SwampAutumScene::create_interactable_dropper(const std::string& name
     obj.prefab_type_id("InteractableDropper");
 
     std::vector<std::unique_ptr<PrefabRegistrable>> drops;
-    drops.emplace_back(std::make_unique<HealthPackConfig>(scene()));
+    drops.emplace_back(std::make_unique<WeaponAxeConfig>());
         
     obj.add_component<BehaviorScript>(std::make_unique<ItemDropper>(std::move(drops)));
     obj.add_component<Sprite>("item_dropper", Color(), 0, 0, 0, 0);
@@ -165,13 +164,17 @@ void SwampAutumScene::setup(Scene& scene) {
     prefab_service.register_prefab("InteractableDropper", [this](Scene& scene, const std::string name) -> GameObject& {
         return create_interactable_dropper(name);
     });
-    prefab_service.register_prefab("HealthPack", [this](Scene& scene, const std::string& name) -> GameObject& {
-        auto& obj = scene.add_game_object<HealthPackPrefab>(scene);
-        obj.add_component<NetworkIdentity>(name.c_str());
-        obj.prefab_type_id("HealthPack");
 
-        return obj;
-    });
+    std::unique_ptr<PrefabRegistrable> registrables[] = {
+        std::make_unique<HealthPackConfig>(),
+        std::make_unique<WeaponAxeConfig>(),
+        std::make_unique<WeaponBatConfig>(),
+        std::make_unique<WeaponSwordConfig>()
+    };
+
+    for (auto& registrable : registrables) {
+        registrable->register_prefab(scene);
+    }
 }
 
 void SwampAutumScene::load(Scene& scene) {

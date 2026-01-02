@@ -4,7 +4,7 @@
 
 class WeaponAxeConfig final : public PrefabRegistrable {
 public:
-    explicit WeaponAxeConfig(Scene& scene);
+    explicit WeaponAxeConfig();
     ~WeaponAxeConfig() override = default;
 
     void register_prefab(Scene& scene) override;

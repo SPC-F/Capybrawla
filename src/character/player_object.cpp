@@ -48,7 +48,6 @@ PlayerObject::PlayerObject(Scene &scene, const Vector3 initial_pos, bool is_loca
   // Default weapons
   if (is_local_player) {
     auto& weapon = scene.add_game_object<WeaponBoxingGlovesPlayerObject>(scene, *this);
-    scene.add_game_object<WeaponAxePlayerObject>(scene, *this);
     this->add_component<BehaviorScript>(std::make_unique<PlayerWeaponController>(weapon));
   }
 }

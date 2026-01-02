@@ -33,7 +33,7 @@ void PlayerWeaponController::on_update(float dt) {
     const auto& provider =
         Engine::instance().services->get_service<InputManager>().get().provider();
 
-    if (!PlayerObject::is_multiplayer_and_local(this->game_object())) return;
+    if (PlayerObject::is_multiplayer_and_local(this->game_object())) return;
 
     if (provider.is_key_pressed(KeyCode::q)) {
         drop_found_weapon();

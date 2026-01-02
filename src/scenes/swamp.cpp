@@ -7,6 +7,8 @@
 #include <game/prefabs/ai_drone_agent_object.h>
 #include <game/prefabs/cloud_platform_object.h>
 #include <game/prefabs/interactables/config/health_pack_config.h>
+#include <game/prefabs/interactables/config/weapon_bat_config.h>
+#include <game/prefabs/interactables/config/weapon_sword_config.h>
 #include <game/prefabs/interactables/config/weapon_axe_config.h>
 #include <game/round/roundcontroller.h>
 #include <game/scenes/swamp.h>
@@ -78,9 +80,13 @@ void SwampScene::load_interactables(Scene& scene) {
     positions.emplace_back(350, 432);
 
     for (auto pos : positions) {
+        // Create a fresh drops vector for each spawner
         std::vector<std::unique_ptr<PrefabRegistrable>> drops;
-        drops.emplace_back(std::make_unique<WeaponAxeConfig>(scene));
-        
+        drops.emplace_back(std::make_unique<HealthPackConfig>());
+        drops.emplace_back(std::make_unique<WeaponAxeConfig>());
+        drops.emplace_back(std::make_unique<WeaponBatConfig>());
+        drops.emplace_back(std::make_unique<WeaponSwordConfig>());
+
         auto& obj = scene.add_game_object("interactable_spawner");
         obj.add_component<BehaviorScript>(std::make_unique<ItemDropper>(std::move(drops)));
         obj.add_component<Sprite>("item_dropper", Color(), 0, 0, 0, 0);

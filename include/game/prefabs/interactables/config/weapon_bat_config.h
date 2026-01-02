@@ -2,10 +2,10 @@
 
 #include <game/prefabs/prefab_registrable.h>
 
-class HealthPackConfig final : public PrefabRegistrable {
+class WeaponBatConfig final : public PrefabRegistrable {
 public:
-    explicit HealthPackConfig();
-    ~HealthPackConfig() override = default;
+    explicit WeaponBatConfig();
+    ~WeaponBatConfig() override = default;
 
     void register_prefab(Scene& scene) override;
     

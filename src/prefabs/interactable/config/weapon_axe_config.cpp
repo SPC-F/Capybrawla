@@ -6,7 +6,7 @@
 #include <engine/public/gameObject.h>
 #include <engine/public/prefab_service.h>
 
-WeaponAxeConfig::WeaponAxeConfig(Scene& scene)
+WeaponAxeConfig::WeaponAxeConfig()
     : PrefabRegistrable("WeaponAxe", "WeaponAxe", 128.0f, 128.0f, 16.0f, 8.0f) {}
 
 void WeaponAxeConfig::register_prefab(Scene& scene) {
@@ -14,10 +14,14 @@ void WeaponAxeConfig::register_prefab(Scene& scene) {
 
     if (prefab_service.has_prefab(prefab_name_)) return;
 
-    prefab_service.register_prefab(prefab_name_, [this](Scene& scene, const std::string& name) -> GameObject& {
+    /// Capture prefab_id_ and prefab_name_ by value to use inside the lambda
+    auto prefab_id = prefab_id_;
+    auto prefab_name = prefab_name_;
+
+    prefab_service.register_prefab(prefab_name, [prefab_id](Scene& scene, const std::string& name) -> GameObject& {
         auto& obj = scene.add_game_object<WeaponAxePrefab>(scene);
         
-        obj.prefab_type_id(prefab_id_);
+        obj.prefab_type_id(prefab_id);
         obj.add_component<NetworkIdentity>(name.c_str());
 
         return obj;

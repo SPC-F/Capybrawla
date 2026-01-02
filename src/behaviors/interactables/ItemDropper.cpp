@@ -16,6 +16,9 @@ ItemDropper::ItemDropper(std::vector<std::unique_ptr<PrefabRegistrable>> registr
     : registrable_drops_(std::move(registrable_drops)) {}
 
 GameObject& ItemDropper::random_drop() {
+    if (drops_.empty()) {
+        throw std::runtime_error("ItemDropper::random_drop() called with empty drops_ vector");
+    }
     const int random_index = std::rand() % drops_.size();
     auto& prefab_service = Engine::instance().services->get_service<PrefabService>().get();
     Scene& scene = Engine::instance().services->get_service<SceneService>().get().current_scene().value();
