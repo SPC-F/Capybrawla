@@ -1,6 +1,6 @@
 
-#include <game/prefabs/interactables/health_pack.h>
-#include <game/prefabs/interactables/config/health_pack_config.h>
+#include <game/prefabs/interactables/weapon_axe.h>
+#include <game/prefabs/interactables/config/weapon_axe_config.h>
 #include <game/character/player_controller.h>
 
 #include <engine/core/engine.h>
@@ -14,14 +14,13 @@
 #include <engine/public/util/layers.h>
 #include <engine/public/prefab_service.h>
 
-HealthPackPrefab::HealthPackPrefab(Scene& scene)
+WeaponAxePrefab::WeaponAxePrefab(Scene& scene)
     : GameObject(scene)
 {
-    this->name("Health Pack Prefab");
+    this->name("Weapon Axe Prefab");
 
-    transform().scale({3, 3, 3});
-    add_component<Sprite>("health_pack", Color(), 0, 0, 0, 0);
-    add_component<Animator>("health_pack_idle", 128).play(true);
+    transform().scale({1, 1, 1});
+    add_component<Sprite>("axe", Color(), 0, 0, 0, 0);
     add_component<Rigidbody2D>(BodyType2D::Static, 0.0f, false, 0.0f);
 
     auto& box_coll = add_component<BoxCollider2D>(0, 0, 32, 32, Point{0, 0}, true);
@@ -30,10 +29,11 @@ HealthPackPrefab::HealthPackPrefab(Scene& scene)
         {
             if (auto* behavior = dynamic_cast<PlayerController*>(&behavior_script.get().behavior()))
             {
-                behavior->heal(HealthPackConfig::health_amount);
+                // behavior->heal(WeaponAxeConfig::health_amount);
                 mark_for_deletion();
             }
         }
     });
+
     layer(Layers::Foreground + 2);
 }

@@ -20,6 +20,7 @@ GameObject& ItemDropper::random_drop() {
     auto& prefab_service = Engine::instance().services->get_service<PrefabService>().get();
     Scene& scene = Engine::instance().services->get_service<SceneService>().get().current_scene().value();
 
+    current_drop_ = drops_[random_index];
     latest_obj_ = uuid::generate_uuid_v4();
     std::string drop = drops_[random_index];
 
@@ -63,7 +64,11 @@ void ItemDropper::on_update(float dt)
         if(remaining_time_before_drop <= 0) {
             auto& drop = random_drop();
             const auto position = game_object().transform().position();
-            const auto half_position = position - Vector3{16, 16, 0};
+            
+            auto& current_registrable = get_registrable_drop(current_drop_);
+
+            // const auto half_position = position - Vector3{16, 16, 0};
+            const auto half_position = position + Vector3{current_registrable.get()->offset_x(), current_registrable.get()->offset_y(), 0};
             drop.get_component<Rigidbody2D>()->get().teleport(half_position);
 
             remaining_time_before_drop = default_drop_duration_secs;
@@ -76,6 +81,21 @@ void ItemDropper::spawn_obj(GameObject& obj) {
     latest_obj_ = comp.uuid();
 
     const auto position = game_object().transform().position();
-    const auto half_position = position - Vector3{16, 16, 0};
+
+    auto& current_registrable = get_registrable_drop(current_drop_);
+
+
+    // const auto half_position = position - Vector3{16, 16, 0};
+    const auto half_position = position + Vector3{current_registrable.get()->offset_x(), current_registrable.get()->offset_y(), 0};
     obj.get_component<Rigidbody2D>()->get().teleport(half_position);
+}
+
+std::unique_ptr<PrefabRegistrable>& ItemDropper::get_registrable_drop(const std::string& prefab_name) {
+    for (auto& registrable : registrable_drops_) {
+        if (registrable->prefab_name() == prefab_name) {
+            return registrable;
+        }
+    }
+
+    throw std::runtime_error("No registrable found for drop: " + prefab_name);
 }

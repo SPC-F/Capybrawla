@@ -1,26 +1,24 @@
 #include <game/scenes/swamp.h>
-#include <game/character/gui/player_info_component.h>
 
-#include <engine/core/engine.h>
-#include <engine/core/rendering/renderingService.h>
+#include <game/character/gui/player_info_component.h>
+#include <game/behaviors/interactable/ItemDropper.h>
+#include <game/character/player_outofbounds_behavior.h>
+#include <game/character/player_object.h>
+#include <game/prefabs/ai_drone_agent_object.h>
+#include <game/prefabs/cloud_platform_object.h>
+#include <game/prefabs/interactables/config/health_pack_config.h>
+#include <game/prefabs/interactables/config/weapon_axe_config.h>
+#include <game/round/roundcontroller.h>
+#include <game/scenes/swamp.h>
+#include <game/scripts/timer/RoundTimer.h>
+
 #include <engine/audio/audio_service.h>
-#include <engine/public/scene_service.h>
+#include <engine/core/engine.h>
 #include <engine/public/components/sprite.h>
 #include <engine/public/gameObject.h>
 #include <engine/public/util/layers.h>
 #include <engine/public/components/behaviorscript.h>
 #include <engine/public/components/animator.h>
-
-#include <game/character/player_outofbounds_behavior.h>
-#include <game/character/player_object.h>
-#include <game/behaviors/interactable/ItemDropper.h>
-#include <game/prefabs/ai_drone_agent_object.h>
-#include <game/round/roundcontroller.h>
-#include <game/scenes/level_loader.h>
-#include <game/scenes/swamp.h>
-#include <game/scripts/timer/RoundTimer.h>
-#include <game/prefabs/cloud_platform_object.h>
-#include <game/prefabs/interactables/config/health_pack_config.h>
 
 SwampScene::SwampScene() : Level("Level_SwampScene") {}
 
@@ -81,7 +79,7 @@ void SwampScene::load_interactables(Scene& scene) {
 
     for (auto pos : positions) {
         std::vector<std::unique_ptr<PrefabRegistrable>> drops;
-        drops.emplace_back(std::make_unique<HealthPackConfig>(scene));
+        drops.emplace_back(std::make_unique<WeaponAxeConfig>(scene));
         
         auto& obj = scene.add_game_object("interactable_spawner");
         obj.add_component<BehaviorScript>(std::make_unique<ItemDropper>(std::move(drops)));
