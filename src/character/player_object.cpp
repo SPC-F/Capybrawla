@@ -73,6 +73,18 @@ void PlayerObject::set_controllable() noexcept {
   }
 }
 
+bool PlayerObject::is_multiplayer_and_local(GameObject& obj) {
+    auto network_identity = obj.get_component<NetworkIdentity>();
+    if (network_identity.has_value() && !network_identity->get().uuid().empty()) {
+        auto uuid = network_identity->get().uuid();
+        auto multiplayer_uuid = Engine::instance().services->get_service<MultiplayerService>().get().get_uuid();
+
+        return multiplayer_uuid == uuid;
+    }
+
+    return false;
+}
+
 void PlayerObject::user_name(std::string user_name) {
   user_name_ = user_name;
 }

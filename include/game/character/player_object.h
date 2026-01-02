@@ -13,6 +13,8 @@ public:
   void set_local_player() noexcept;
   void set_controllable() noexcept;
 
+  static bool is_multiplayer_and_local(GameObject& obj);
+
   void user_name(std::string user_name);
   const std::string& user_name() const;
 
