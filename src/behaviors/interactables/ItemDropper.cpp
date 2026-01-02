@@ -21,13 +21,16 @@ GameObject& ItemDropper::random_drop() {
 
     auto& multiplayer_service = Engine::instance().services->get_service<MultiplayerService>().get();
     if (multiplayer_service.get_peer_type() == PeerType::HOST) {
-        MsgDropSpawn body{};
-        std::strncpy(body.spawner_uuid, game_object().get_component<NetworkIdentity>().value().get().uuid().c_str(), sizeof(body.spawner_uuid) - 1);
-        std::strncpy(body.drop_uuid, latest_obj_.c_str(), sizeof(body.drop_uuid) - 1);
-        std::strncpy(body.drop_type, drop.c_str(), sizeof(body.drop_type) - 1);
+        auto network_id_opt = game_object().get_component<NetworkIdentity>();
+        if (network_id_opt.has_value()) {
+            MsgDropSpawn body{};
+            std::strncpy(body.spawner_uuid, network_id_opt.value().get().uuid().c_str(), sizeof(body.spawner_uuid) - 1);
+            std::strncpy(body.drop_uuid, latest_obj_.c_str(), sizeof(body.drop_uuid) - 1);
+            std::strncpy(body.drop_type, drop.c_str(), sizeof(body.drop_type) - 1);
 
-        Message msg = serialize_message(body, CustomMessageTypes::DROP_SPAWN);
-        multiplayer_service.send(msg);
+            Message msg = serialize_message(body, CustomMessageTypes::DROP_SPAWN);
+            multiplayer_service.send(msg);
+        }
     }
 
     return prefab_service.instantiate(drop, scene, latest_obj_);
