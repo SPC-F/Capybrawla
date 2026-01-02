@@ -65,7 +65,10 @@ GameObject& SwampAutumScene::create_interactable_dropper(const std::string& name
     obj.prefab_type_id("InteractableDropper");
 
     std::vector<std::unique_ptr<PrefabRegistrable>> drops;
+    drops.emplace_back(std::make_unique<HealthPackConfig>());
     drops.emplace_back(std::make_unique<WeaponAxeConfig>());
+    drops.emplace_back(std::make_unique<WeaponBatConfig>());
+    drops.emplace_back(std::make_unique<WeaponSwordConfig>());
         
     obj.add_component<BehaviorScript>(std::make_unique<ItemDropper>(std::move(drops)));
     obj.add_component<Sprite>("item_dropper", Color(), 0, 0, 0, 0);
@@ -144,7 +147,7 @@ void SwampAutumScene::handle_player_attack(const MsgUserAttack& data) {
     for (auto& child : player.children()) {
         if (child.get().tag() != "Weapon" || !child.get().is_active()) continue;
         auto melee_behavior_opt = child.get().get_script<BehaviorScript, WeaponMeleeBehavior>();
-        
+
         if (melee_behavior_opt.has_value()) {
             melee_behavior_opt->get().attack();
             return;

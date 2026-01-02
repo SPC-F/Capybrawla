@@ -12,8 +12,6 @@
 #include <engine/public/components/animator.h>
 #include <engine/public/components/network_identity.h>
 
-#include <iostream>
-
 WeaponMeleeBehavior::WeaponMeleeBehavior(
     const std::string& attack_animation_name,
     const std::string& original_texture_name,
@@ -174,8 +172,6 @@ void WeaponMeleeBehavior::attack() {
 
         animator.play(false);
     }
-
-    std::cout << "Attack with " << attack_animation_name_ << " username: " << game_object().parent()->get().id() << "\n";
 
     auto& audio_controller = Engine::instance().services->get_service<AudioService>().get();
     audio_controller.play_sound("player_punch", 0.1f, false);
