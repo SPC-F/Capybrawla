@@ -16,9 +16,6 @@ ItemDropper::ItemDropper(std::vector<std::unique_ptr<PrefabRegistrable>> registr
     : registrable_drops_(std::move(registrable_drops)) {}
 
 GameObject& ItemDropper::random_drop() {
-    if (drops_.empty()) {
-        throw std::runtime_error("ItemDropper::random_drop() called with empty drops_ vector");
-    }
     const int random_index = std::rand() % drops_.size();
     auto& prefab_service = Engine::instance().services->get_service<PrefabService>().get();
     Scene& scene = Engine::instance().services->get_service<SceneService>().get().current_scene().value();
@@ -48,8 +45,7 @@ void ItemDropper::on_start() {
     }
 }
 
-void ItemDropper::on_update(float dt)
-{
+void ItemDropper::on_update(float dt) {
     auto& multiplayer_service = Engine::instance().services->get_service<MultiplayerService>().get();
     if (multiplayer_service.get_peer_type() == PeerType::CLIENT) return;
 
@@ -66,13 +62,7 @@ void ItemDropper::on_update(float dt)
         remaining_time_before_drop -= dt;
         if(remaining_time_before_drop <= 0) {
             auto& drop = random_drop();
-            const auto position = game_object().transform().position();
-            
-            auto& current_registrable = get_registrable_drop(current_drop_);
-
-            // const auto half_position = position - Vector3{16, 16, 0};
-            const auto half_position = position + Vector3{current_registrable.get()->offset_x(), current_registrable.get()->offset_y(), 0};
-            drop.get_component<Rigidbody2D>()->get().teleport(half_position);
+            spawn_obj(drop);
 
             remaining_time_before_drop = default_drop_duration_secs;
         }
@@ -82,13 +72,11 @@ void ItemDropper::on_update(float dt)
 void ItemDropper::spawn_obj(GameObject& obj) {
     auto& comp = obj.get_component<NetworkIdentity>().value().get();
     latest_obj_ = comp.uuid();
+    current_drop_ = obj.prefab_type_id();
 
     const auto position = game_object().transform().position();
-
     auto& current_registrable = get_registrable_drop(current_drop_);
 
-
-    // const auto half_position = position - Vector3{16, 16, 0};
     const auto half_position = position + Vector3{current_registrable.get()->offset_x(), current_registrable.get()->offset_y(), 0};
     obj.get_component<Rigidbody2D>()->get().teleport(half_position);
 }

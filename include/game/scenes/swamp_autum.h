@@ -1,14 +1,15 @@
 #pragma once
 
 #include <game/assets.h>
+#include <game/behaviors/multiplayer/multiplayer_controller.h>
+#include <game/character/player_object.h>
+#include <game/network/message_types.h>
+#include <game/round/roundcontroller.h>
+#include <game/scenes/level.h>
 
 #include <engine/public/scene.h>
 #include <engine/network/multiplayer_service.h>
-#include <game/behaviors/multiplayer/multiplayer_controller.h>
-#include <game/character/player_object.h>
-#include <game/round/roundcontroller.h>
-#include <game/scenes/level.h>
-#include <game/network/message_types.h>
+#include <engine/public/prefab_service.h>
 
 class SwampAutumScene : public Level {
 public:
@@ -33,6 +34,9 @@ private:
 
     void handle_player_movement_update(const MsgUserMove& data);
     void handle_player_attack(const MsgUserAttack& data);
+
+    void register_host_handlers(MultiplayerService& multiplayer_service, Scene& scene, PrefabService& prefab_service);
+    void register_client_handlers(MultiplayerService& multiplayer_service, Scene& scene, PrefabService& prefab_service);
 
     std::optional<std::reference_wrapper<PlayerObject>> get_network_player_object(const std::string& uuid);
 };

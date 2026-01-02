@@ -13,6 +13,7 @@ WeaponSwordPlayerObject::WeaponSwordPlayerObject(Scene& scene, GameObject& paren
     : GameObject(scene) 
 {
     this->name("Weapon_Sword_Player_Object");
+    this->tag("Weapon");
     this->parent(parent);
     
     const std::string attack_idle_name = "sword";

@@ -13,6 +13,7 @@ WeaponBoxingGlovesPlayerObject::WeaponBoxingGlovesPlayerObject(Scene& scene, Gam
     : GameObject(scene) 
 {
     this->name("Weapon_Boxing_Gloves_Player_Object");
+    this->tag("Weapon");
     this->parent(parent);
     
     const std::string attack_idle_name = "boxing_gloves";

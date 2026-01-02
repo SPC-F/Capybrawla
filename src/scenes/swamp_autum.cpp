@@ -24,6 +24,7 @@
 #include <engine/util/uuid.h>
 
 #include <iostream>
+#include <game/character/player_weapon_controller.h>
 
 SwampAutumScene::SwampAutumScene() : Level("Level_SwampAutumScene") {}
 
@@ -141,12 +142,12 @@ void SwampAutumScene::handle_player_attack(const MsgUserAttack& data) {
     auto& player = player_opt.value().get();
 
     for (auto& child : player.children()) {
-        auto behaviors = child.get().get_components<BehaviorScript>();
-        for (auto& behavior_ref : behaviors) {
-            auto& behavior = behavior_ref.get().behavior();
-            if (auto weapon_behavior = dynamic_cast<WeaponMeleeBehavior*>(&behavior); weapon_behavior != nullptr) {
-                weapon_behavior->attack();
-            }
+        if (child.get().tag() != "Weapon" || !child.get().is_active()) continue;
+        auto melee_behavior_opt = child.get().get_script<BehaviorScript, WeaponMeleeBehavior>();
+        
+        if (melee_behavior_opt.has_value()) {
+            melee_behavior_opt->get().attack();
+            return;
         }
     }
 }
@@ -204,25 +205,7 @@ void SwampAutumScene::load(Scene& scene) {
             controller.add_player(player);
         });
 
-        multiplayer_service.register_handler(CustomMessageTypes::USER_MOVE, [this, &multiplayer_service, &scene](const Message& message) {
-            MsgUserMove data{};
-            std::memcpy(&data, message.payload.data(), sizeof(data));
-
-            Message msg = serialize_message(data, CustomMessageTypes::USER_MOVE);
-            multiplayer_service.send(msg);
-
-            handle_player_movement_update(data);
-        });
-
-        multiplayer_service.register_handler(CustomMessageTypes::USER_ATTACK, [this, &multiplayer_service, &scene](const Message& message) {
-            MsgUserAttack data{};
-            std::memcpy(&data, message.payload.data(), sizeof(data));
-
-            Message msg = serialize_message(data, CustomMessageTypes::USER_ATTACK);
-            multiplayer_service.send(msg);
-
-            handle_player_attack(data);
-        });
+        register_host_handlers(multiplayer_service, scene, prefab_service);
 
         auto& player = *dynamic_cast<PlayerObject*>(&prefab_service.instantiate("PlayerObject", scene, multiplayer_service.get_uuid().c_str()).get());
         player.set_local_player();
@@ -267,43 +250,90 @@ void SwampAutumScene::load(Scene& scene) {
             }
         });
 
-        multiplayer_service.register_handler(CustomMessageTypes::USER_MOVE, [this, &multiplayer_service, &scene](const Message& message) {
-            MsgUserMove data{};
-            std::memcpy(&data, message.payload.data(), sizeof(data));
+        register_client_handlers(multiplayer_service, scene, prefab_service);
+    }
+}
 
-            if (multiplayer_service.get_uuid() == data.uuid) return;
+void SwampAutumScene::register_host_handlers(MultiplayerService& multiplayer_service, Scene& scene, PrefabService& prefab_service) {
+     multiplayer_service.register_handler(CustomMessageTypes::USER_MOVE, [this, &multiplayer_service, &scene](const Message& message) {
+        MsgUserMove data{};
+        std::memcpy(&data, message.payload.data(), sizeof(data));
 
-            handle_player_movement_update(data);
-        });
+        Message msg = serialize_message(data, CustomMessageTypes::USER_MOVE);
+        multiplayer_service.send(msg);
 
-        multiplayer_service.register_handler(CustomMessageTypes::USER_ATTACK, [this, &multiplayer_service, &scene](const Message& message) {
-            MsgUserAttack data{};
-            std::memcpy(&data, message.payload.data(), sizeof(data));
+        handle_player_movement_update(data);
+    });
 
-            if (multiplayer_service.get_uuid() == data.uuid) return;
+    multiplayer_service.register_handler(CustomMessageTypes::USER_ATTACK, [this, &multiplayer_service, &scene](const Message& message) {
+        MsgUserAttack data{};
+        std::memcpy(&data, message.payload.data(), sizeof(data));
 
-            handle_player_attack(data);
-        });
+        Message msg = serialize_message(data, CustomMessageTypes::USER_ATTACK);
+        multiplayer_service.send(msg);
 
-        multiplayer_service.register_handler(CustomMessageTypes::DROP_SPAWN, [this, &prefab_service, &scene](const Message& message) {
-            MsgDropSpawn data{};
-            std::memcpy(&data, message.payload.data(), sizeof(data));
+        handle_player_attack(data);
+    });
 
-            auto& drop_obj = prefab_service.instantiate(data.drop_type, scene, data.drop_uuid).get();
+    multiplayer_service.register_handler(CustomMessageTypes::USER_DROP_WEAPON, [this, &multiplayer_service, &scene](const Message& message) {
+        MsgUserDropWeapon data{};
+        std::memcpy(&data, message.payload.data(), sizeof(data));
 
-            for (auto& obj : scene.game_objects()) {
-                auto comp_opt = obj.get().get_component<NetworkIdentity>();
-                if (!comp_opt.has_value()) continue;
+        Message msg = serialize_message(data, CustomMessageTypes::USER_DROP_WEAPON);
+        multiplayer_service.send(msg);
 
-                auto& comp = comp_opt.value().get();
-                if (comp.uuid() != data.spawner_uuid) continue;
+        if (multiplayer_service.get_uuid() == data.uuid) return;
 
-                for (auto& behavior : obj.get().get_components<BehaviorScript>()) {
-                    if (auto *dropper_comp = dynamic_cast<ItemDropper*>(&behavior.get().behavior())) {
-                        dropper_comp->spawn_obj(drop_obj);
-                    }
+        auto player_opt = get_network_player_object(data.uuid);
+        if (!player_opt.has_value()) return;
+
+        auto& player = player_opt.value().get();
+
+        auto weapon_controller_opt = player.get_script<BehaviorScript, PlayerWeaponController>();
+        if (!weapon_controller_opt.has_value()) return;
+
+        auto& weapon_controller = weapon_controller_opt->get();
+        weapon_controller.drop_found_weapon();
+    });
+}
+
+void SwampAutumScene::register_client_handlers(MultiplayerService& multiplayer_service, Scene& scene, PrefabService& prefab_service) {
+    multiplayer_service.register_handler(CustomMessageTypes::USER_MOVE, [this, &multiplayer_service, &scene](const Message& message) {
+        MsgUserMove data{};
+        std::memcpy(&data, message.payload.data(), sizeof(data));
+
+        if (multiplayer_service.get_uuid() == data.uuid) return;
+
+        handle_player_movement_update(data);
+    });
+
+    multiplayer_service.register_handler(CustomMessageTypes::USER_ATTACK, [this, &multiplayer_service, &scene](const Message& message) {
+        MsgUserAttack data{};
+        std::memcpy(&data, message.payload.data(), sizeof(data));
+
+        if (multiplayer_service.get_uuid() == data.uuid) return;
+
+        handle_player_attack(data);
+    });
+
+    multiplayer_service.register_handler(CustomMessageTypes::DROP_SPAWN, [this, &prefab_service, &scene](const Message& message) {
+        MsgDropSpawn data{};
+        std::memcpy(&data, message.payload.data(), sizeof(data));
+
+        auto& drop_obj = prefab_service.instantiate(data.drop_type, scene, data.drop_uuid).get();
+
+        for (auto& obj : scene.game_objects()) {
+            auto comp_opt = obj.get().get_component<NetworkIdentity>();
+            if (!comp_opt.has_value()) continue;
+
+            auto& comp = comp_opt.value().get();
+            if (comp.uuid() != data.spawner_uuid) continue;
+
+            for (auto& behavior : obj.get().get_components<BehaviorScript>()) {
+                if (auto *dropper_comp = dynamic_cast<ItemDropper*>(&behavior.get().behavior())) {
+                    dropper_comp->spawn_obj(drop_obj);
                 }
             }
-        });
-    }
+        }
+    });
 }

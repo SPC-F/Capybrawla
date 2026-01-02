@@ -80,7 +80,6 @@ void SwampScene::load_interactables(Scene& scene) {
     positions.emplace_back(350, 432);
 
     for (auto pos : positions) {
-        // Create a fresh drops vector for each spawner
         std::vector<std::unique_ptr<PrefabRegistrable>> drops;
         drops.emplace_back(std::make_unique<HealthPackConfig>());
         drops.emplace_back(std::make_unique<WeaponAxeConfig>());

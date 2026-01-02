@@ -7,7 +7,7 @@
 #include <engine/public/prefab_service.h>
 
 WeaponBatConfig::WeaponBatConfig()
-    : PrefabRegistrable("WeaponBat", "WeaponBat", 128.0f, 128.0f, 16.0f, 8.0f) {}
+    : PrefabRegistrable("WeaponBat", "WeaponBat", 24.0f, 48.0f, 20.0f, 4.0f) {}
 
 void WeaponBatConfig::register_prefab(Scene& scene) {
     auto& prefab_service = Engine::instance().services->get_service<PrefabService>().get();

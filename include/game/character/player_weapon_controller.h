@@ -16,4 +16,6 @@ public:
 
   void switch_weapon(std::optional<std::reference_wrapper<GameObject>> new_weapon);
   void drop_found_weapon();
+
+  void send_drop_weapon_message();
 };

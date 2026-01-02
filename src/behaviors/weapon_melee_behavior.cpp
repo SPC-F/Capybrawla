@@ -12,6 +12,8 @@
 #include <engine/public/components/animator.h>
 #include <engine/public/components/network_identity.h>
 
+#include <iostream>
+
 WeaponMeleeBehavior::WeaponMeleeBehavior(
     const std::string& attack_animation_name,
     const std::string& original_texture_name,
@@ -140,13 +142,13 @@ void WeaponMeleeBehavior::on_update(float dt) {
         sprite_component_->get().texture(original_texture_name_);
     }
 
-    if (!is_local()) return;
+    if (!PlayerObject::is_local(this->game_object().parent()->get())) return;
 
     /// Set all the right positions and activate hitbox
     if (provider.is_mouse_pressed(MouseButton::left) && !animator.is_playing()) {
         attack();
 
-        if (!is_multiplayer()) return;
+        if (!PlayerObject::is_multiplayer(this->game_object().parent()->get())) return;
 
         MultiplayerService& multiplayer_service =
             Engine::instance().services->get_service<MultiplayerService>().get();
@@ -159,29 +161,9 @@ void WeaponMeleeBehavior::on_update(float dt) {
     }
 }
 
-bool WeaponMeleeBehavior::is_multiplayer() {
-    auto network_identity = game_object().parent()->get().get_component<NetworkIdentity>();
-    if (network_identity.has_value())
-        return true;
-
-    return false;
-}
-
-bool WeaponMeleeBehavior::is_local() {
-    auto network_identity = game_object().parent()->get().get_component<NetworkIdentity>();
-    if (network_identity.has_value() && !network_identity->get().uuid().empty()) {
-        auto uuid = network_identity->get().uuid();
-        auto multiplayer_uuid = Engine::instance().services->get_service<MultiplayerService>().get().get_uuid();
-
-        return multiplayer_uuid == uuid;
-    }
-
-    return true;
-}
-
 void WeaponMeleeBehavior::attack() {
     auto& animator = sprite_gameobject_.get().get_component<Animator>()->get();
-
+    
     if (sprite_component_) {
         animator.set_animation(attack_animation_name_);
 
@@ -192,6 +174,8 @@ void WeaponMeleeBehavior::attack() {
 
         animator.play(false);
     }
+
+    std::cout << "Attack with " << attack_animation_name_ << " username: " << game_object().parent()->get().id() << "\n";
 
     auto& audio_controller = Engine::instance().services->get_service<AudioService>().get();
     audio_controller.play_sound("player_punch", 0.1f, false);
