@@ -1,14 +1,18 @@
 
 #include <game/prefabs/interactables/health_pack.h>
+#include <game/prefabs/interactables/config/health_pack_config.h>
+#include <game/character/player_controller.h>
 
-#include "engine/physics/world/body/body_type_2d.h"
-#include "engine/public/components/animator.h"
-#include "engine/public/components/rigidbody_2d.h"
-#include "engine/public/components/sprite.h"
-#include "engine/public/components/colliders/box_collider_2d.h"
-#include "engine/public/util/color.h"
-#include "engine/public/util/layers.h"
-#include "game/character/player_controller.h"
+#include <engine/core/engine.h>
+#include <engine/physics/world/body/body_type_2d.h>
+#include <engine/public/components/animator.h>
+#include <engine/public/components/colliders/box_collider_2d.h>
+#include <engine/public/components/network_identity.h>
+#include <engine/public/components/rigidbody_2d.h>
+#include <engine/public/components/sprite.h>
+#include <engine/public/util/color.h>
+#include <engine/public/util/layers.h>
+#include <engine/public/prefab_service.h>
 
 HealthPackPrefab::HealthPackPrefab(Scene& scene)
     : GameObject(scene)
@@ -26,7 +30,7 @@ HealthPackPrefab::HealthPackPrefab(Scene& scene)
         {
             if (auto* behavior = dynamic_cast<PlayerController*>(&behavior_script.get().behavior()))
             {
-                behavior->heal(health_amount_);
+                behavior->heal(HealthPackConfig::health_amount);
                 mark_for_deletion();
             }
         }

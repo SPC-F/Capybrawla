@@ -1,15 +1,19 @@
+#include <game/behaviors/interactable/ItemDropper.h>
+#include <game/prefabs/interactables/health_pack.h>
+#include <game/prefabs/weapons/weapon_axe_player_object.h>
+#include <game/network/message_types.h>
+
 #include <engine/core/engine.h>
 #include <engine/public/scene_service.h>
 #include <engine/public/components/rigidbody_2d.h>
 #include <engine/public/prefab_service.h>
 #include <engine/public/components/network_identity.h>
-#include <engine/util/uuid.h>
 #include <engine/network/multiplayer_service.h>
+#include <engine/util/uuid.h>
 
-#include <game/behaviors/interactable/ItemDropper.h>
-#include <game/prefabs/interactables/health_pack.h>
-#include <game/prefabs/weapons/weapon_axe_player_object.h>
-#include <game/network/message_types.h>
+
+ItemDropper::ItemDropper(std::vector<std::unique_ptr<PrefabRegistrable>> registrable_drops) 
+    : registrable_drops_(std::move(registrable_drops)) {}
 
 GameObject& ItemDropper::random_drop() {
     const int random_index = std::rand() % drops_.size();
@@ -34,18 +38,10 @@ GameObject& ItemDropper::random_drop() {
 }
 
 void ItemDropper::on_start() {
-    auto& prefab_service = Engine::instance().services->get_service<PrefabService>().get();
-    if (!prefab_service.has_prefab("HealthPack")) {
-        prefab_service.register_prefab("HealthPack", [this](Scene& scene, const std::string& name) -> GameObject& {
-            auto& obj = scene.add_game_object<HealthPackPrefab>(scene);
-            obj.add_component<NetworkIdentity>(name.c_str());
-            obj.prefab_type_id("HealthPack");
-
-            return obj;
-        });
+    for (auto& drop : registrable_drops_) {
+        drop->register_prefab(game_object().scene());
+        drops_.emplace_back(drop->prefab_name());
     }
-
-    drops_.emplace_back("HealthPack");
 }
 
 void ItemDropper::on_update(float dt)

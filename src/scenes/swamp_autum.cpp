@@ -1,10 +1,19 @@
-#include <game/scenes/swamp_autum.h>
 #include <engine/public/components/behaviorscript.h>
 
-#include <game/scenes/level_loader.h>
-#include <engine/public/util/layers.h>
-
+#include <game/behaviors/interactable/ItemDropper.h>
+#include <game/behaviors/multiplayer/multiplayer_controller.h>
+#include <game/behaviors/weapon_melee_behavior.h>
 #include <game/character/player_outofbounds_behavior.h>
+#include <game/prefabs/weapons/weapon_bat_player_object.h>
+#include <game/prefabs/weapons/weapon_axe_player_object.h>
+#include <game/prefabs/weapons/weapon_sword_player_object.h>
+#include <game/prefabs/interactables/config/health_pack_config.h>
+#include <game/prefabs/interactables/health_pack.h>
+#include <game/round/roundcontroller.h>
+#include <game/scenes/swamp_autum.h>
+#include <game/scenes/level_loader.h>
+
+#include <engine/public/util/layers.h>
 #include <engine/core/engine.h>
 #include <engine/core/rendering/renderingService.h>
 #include <engine/public/prefab_service.h>
@@ -12,16 +21,8 @@
 #include <engine/public/scene_service.h>
 #include <engine/public/gameObject.h>
 #include <engine/public/components/sprite.h>
-#include "engine/public/components/network_identity.h"
+#include <engine/public/components/network_identity.h>
 #include <engine/util/uuid.h>
-#include <game/round/roundcontroller.h>
-#include <game/prefabs/weapons/weapon_bat_player_object.h>
-#include <game/prefabs/weapons/weapon_axe_player_object.h>
-#include <game/prefabs/weapons/weapon_sword_player_object.h>
-#include <game/prefabs/interactables/health_pack.h>
-#include <game/behaviors/multiplayer/multiplayer_controller.h>
-#include <game/behaviors/weapon_melee_behavior.h>
-#include <game/behaviors/interactable/ItemDropper.h>
 
 #include <iostream>
 
@@ -52,10 +53,8 @@ PlayerObject& SwampAutumScene::create_player_object(const std::string& name) {
 
     Engine& engine = Engine::instance();
     auto& multiplayer_service = engine.services->get_service<MultiplayerService>().get();
+    
     obj.add_component<NetworkIdentity>(name.c_str());
-
-    auto& weapon_axe = scene().add_game_object<WeaponAxePlayerObject>(scene(), obj);
-
     obj.layer(Layers::Foreground);
 
     return obj;
@@ -65,7 +64,10 @@ GameObject& SwampAutumScene::create_interactable_dropper(const std::string& name
     auto& obj = scene().add_game_object("interactable_spawner");
     obj.prefab_type_id("InteractableDropper");
 
-    obj.add_component<BehaviorScript>(std::make_unique<ItemDropper>());
+    std::vector<std::unique_ptr<PrefabRegistrable>> drops;
+    drops.emplace_back(std::make_unique<HealthPackConfig>(scene()));
+        
+    obj.add_component<BehaviorScript>(std::make_unique<ItemDropper>(std::move(drops)));
     obj.add_component<Sprite>("item_dropper", Color(), 0, 0, 0, 0);
     obj.add_component<Animator>("item_dropper_idle", 128).play(true);
     obj.transform().scale({2, 2, 2});

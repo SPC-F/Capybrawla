@@ -20,6 +20,7 @@
 #include <game/scenes/swamp.h>
 #include <game/scripts/timer/RoundTimer.h>
 #include <game/prefabs/cloud_platform_object.h>
+#include <game/prefabs/interactables/config/health_pack_config.h>
 
 SwampScene::SwampScene() : Level("Level_SwampScene") {}
 
@@ -79,8 +80,11 @@ void SwampScene::load_interactables(Scene& scene) {
     positions.emplace_back(350, 432);
 
     for (auto pos : positions) {
+        std::vector<std::unique_ptr<PrefabRegistrable>> drops;
+        drops.emplace_back(std::make_unique<HealthPackConfig>(scene));
+        
         auto& obj = scene.add_game_object("interactable_spawner");
-        obj.add_component<BehaviorScript>(std::make_unique<ItemDropper>());
+        obj.add_component<BehaviorScript>(std::make_unique<ItemDropper>(std::move(drops)));
         obj.add_component<Sprite>("item_dropper", Color(), 0, 0, 0, 0);
         obj.add_component<Animator>("item_dropper_idle", 128).play(true);
         obj.transform().scale({2, 2, 2});

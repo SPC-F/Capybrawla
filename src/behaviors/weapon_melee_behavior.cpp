@@ -107,14 +107,13 @@ void WeaponMeleeBehavior::on_update(float dt) {
 
     auto& rb = game_object().parent()->get().get_component<Rigidbody2D>()->get();
     auto& animator = sprite_gameobject_.get().get_component<Animator>()->get();
+    auto& player_sprite = game_object().parent()->get().get_component<Sprite>()->get();
 
-    bool flipped = sprite_component_->get().flip_x();
+    bool new_flipped = flipped_ != player_sprite.flip_x();
+    flipped_ = player_sprite.flip_x();
+    facing_right_ = !flipped_;
 
-    if (rb.velocity().x > 0)        facing_right_ = true;
-    else if (rb.velocity().x < 0)   facing_right_ = false;
-
-    sprite_component_->get().flip_x(!facing_right_);
-    bool new_flipped = flipped != sprite_component_->get().flip_x();
+    sprite_component_->get().flip_x(flipped_);
 
     /// Always set the hitbox position during update
     float hitbox_pos_x = hitbox_offset_.x;
