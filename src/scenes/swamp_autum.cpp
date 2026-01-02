@@ -4,10 +4,10 @@
 #include <game/behaviors/multiplayer/multiplayer_controller.h>
 #include <game/behaviors/weapon_melee_behavior.h>
 #include <game/character/player_outofbounds_behavior.h>
-#include <game/prefabs/interactables/config/weapon_bat_config.h>
-#include <game/prefabs/interactables/config/weapon_sword_config.h>
-#include <game/prefabs/interactables/config/weapon_axe_config.h>
-#include <game/prefabs/interactables/config/health_pack_config.h>
+#include <game/prefabs/config/weapon_bat_config.h>
+#include <game/prefabs/config/weapon_sword_config.h>
+#include <game/prefabs/config/weapon_axe_config.h>
+#include <game/prefabs/config/health_pack_config.h>
 #include <game/round/roundcontroller.h>
 #include <game/scenes/swamp_autum.h>
 #include <game/scenes/level_loader.h>

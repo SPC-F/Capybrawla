@@ -1,6 +1,6 @@
 
 #include <game/prefabs/interactables/weapon_bat.h>
-#include <game/prefabs/interactables/config/weapon_bat_config.h>
+#include <game/prefabs/config/weapon_bat_config.h>
 #include <game/character/player_controller.h>
 #include <game/character/player_weapon_controller.h>
 #include <game/prefabs/weapons/weapon_bat_player_object.h>

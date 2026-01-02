@@ -1,15 +1,15 @@
-#include <game/prefabs/interactables/config/weapon_bat_config.h>
-#include <game/prefabs/interactables/weapon_bat.h>
+#include <game/prefabs/config/weapon_sword_config.h>
+#include <game/prefabs/interactables/weapon_sword.h>
 
 #include <engine/core/engine.h>
 #include <engine/public/components/network_identity.h>
 #include <engine/public/gameObject.h>
 #include <engine/public/prefab_service.h>
 
-WeaponBatConfig::WeaponBatConfig()
-    : PrefabRegistrable("WeaponBat", "WeaponBat", 128.0f, 128.0f, 16.0f, 8.0f) {}
+WeaponSwordConfig::WeaponSwordConfig()
+    : PrefabRegistrable("WeaponSword", "WeaponSword", 128.0f, 128.0f, 16.0f, 8.0f) {}
 
-void WeaponBatConfig::register_prefab(Scene& scene) {
+void WeaponSwordConfig::register_prefab(Scene& scene) {
     auto& prefab_service = Engine::instance().services->get_service<PrefabService>().get();
 
     if (prefab_service.has_prefab(prefab_name_)) return;
@@ -19,7 +19,7 @@ void WeaponBatConfig::register_prefab(Scene& scene) {
     auto prefab_name = prefab_name_;
 
     prefab_service.register_prefab(prefab_name, [prefab_id](Scene& scene, const std::string& name) -> GameObject& {
-        auto& obj = scene.add_game_object<WeaponBatPrefab>(scene);
+        auto& obj = scene.add_game_object<WeaponSwordPrefab>(scene);
         
         obj.prefab_type_id(prefab_id);
         obj.add_component<NetworkIdentity>(name.c_str());

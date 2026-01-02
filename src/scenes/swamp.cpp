@@ -6,10 +6,10 @@
 #include <game/character/player_object.h>
 #include <game/prefabs/ai_drone_agent_object.h>
 #include <game/prefabs/cloud_platform_object.h>
-#include <game/prefabs/interactables/config/health_pack_config.h>
-#include <game/prefabs/interactables/config/weapon_bat_config.h>
-#include <game/prefabs/interactables/config/weapon_sword_config.h>
-#include <game/prefabs/interactables/config/weapon_axe_config.h>
+#include <game/prefabs/config/health_pack_config.h>
+#include <game/prefabs/config/weapon_bat_config.h>
+#include <game/prefabs/config/weapon_sword_config.h>
+#include <game/prefabs/config/weapon_axe_config.h>
 #include <game/round/roundcontroller.h>
 #include <game/scenes/swamp.h>
 #include <game/scripts/timer/RoundTimer.h>

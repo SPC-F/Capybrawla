@@ -1,6 +1,6 @@
 
 #include <game/prefabs/interactables/health_pack.h>
-#include <game/prefabs/interactables/config/health_pack_config.h>
+#include <game/prefabs/config/health_pack_config.h>
 #include <game/character/player_controller.h>
 
 #include <engine/core/engine.h>

@@ -1,6 +1,6 @@
 
 #include <game/prefabs/interactables/weapon_sword.h>
-#include <game/prefabs/interactables/config/weapon_sword_config.h>
+#include <game/prefabs/config/weapon_sword_config.h>
 #include <game/character/player_controller.h>
 #include <game/character/player_weapon_controller.h>
 #include <game/prefabs/weapons/weapon_sword_player_object.h>

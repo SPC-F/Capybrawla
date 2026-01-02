@@ -1,6 +1,6 @@
 
 #include <game/prefabs/interactables/weapon_axe.h>
-#include <game/prefabs/interactables/config/weapon_axe_config.h>
+#include <game/prefabs/config/weapon_axe_config.h>
 #include <game/character/player_controller.h>
 #include <game/character/player_weapon_controller.h>
 #include <game/prefabs/weapons/weapon_axe_player_object.h>

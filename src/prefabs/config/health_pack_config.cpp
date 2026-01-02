@@ -1,15 +1,15 @@
-#include <game/prefabs/interactables/config/weapon_axe_config.h>
-#include <game/prefabs/interactables/weapon_axe.h>
+#include <game/prefabs/config/health_pack_config.h>
+#include <game/prefabs/interactables/health_pack.h>
 
 #include <engine/core/engine.h>
 #include <engine/public/components/network_identity.h>
 #include <engine/public/gameObject.h>
 #include <engine/public/prefab_service.h>
 
-WeaponAxeConfig::WeaponAxeConfig()
-    : PrefabRegistrable("WeaponAxe", "WeaponAxe", 128.0f, 128.0f, 16.0f, 8.0f) {}
+HealthPackConfig::HealthPackConfig()
+    : PrefabRegistrable("HealthPack", "HealthPack", 32.0f, 32.0f, -16.0f, -16.0f) {}
 
-void WeaponAxeConfig::register_prefab(Scene& scene) {
+void HealthPackConfig::register_prefab(Scene& scene) {
     auto& prefab_service = Engine::instance().services->get_service<PrefabService>().get();
 
     if (prefab_service.has_prefab(prefab_name_)) return;
@@ -19,11 +19,9 @@ void WeaponAxeConfig::register_prefab(Scene& scene) {
     auto prefab_name = prefab_name_;
 
     prefab_service.register_prefab(prefab_name, [prefab_id](Scene& scene, const std::string& name) -> GameObject& {
-        auto& obj = scene.add_game_object<WeaponAxePrefab>(scene);
-        
+        auto& obj = scene.add_game_object<HealthPackPrefab>(scene);
         obj.prefab_type_id(prefab_id);
         obj.add_component<NetworkIdentity>(name.c_str());
-
         return obj;
     });
 }
