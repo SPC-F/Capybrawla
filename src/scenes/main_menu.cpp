@@ -38,7 +38,7 @@ MainMenuScene::MainMenuScene(
     create_callback_t&& create_callback,
     join_callback_t&& join_callback,
     training_callback_t&& training_callback
-) : 
+) :
     Level("MainMenuScene", false),
     create_callback_(create_callback),
     join_callback_(join_callback),
@@ -188,9 +188,7 @@ void MainMenuScene::setup_main_menu(Scene& scene, GameObject& parent) {
     );
     exit_button.parent(parent);
     exit_button.add_on_press([this, &scene_service](UIButton& /*btn*/) {
-        if (auto current_scene_opt = scene_service.current_scene(); current_scene_opt.has_value()) {
-            current_scene_opt->get().mark_for_stopping();
-        }
+        scene_service.stop();
     });
 }
 

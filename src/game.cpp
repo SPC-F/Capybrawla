@@ -285,7 +285,7 @@ void Game::initialize() {
         {"./resources/sounds/player_jump.wav", "player_jump", SoundType::SDL_MIXER},
     };
     Assets::register_audio(audios);
-    
+
     settings::apply_current_settings();
 
     levels_.emplace_back(std::make_unique<SwampScene>());
@@ -341,11 +341,13 @@ void Game::run() {
 
     bootstrap(main_menu.scene());
     scene_service.load_scene(main_menu.name());
+    scene_service.run_current();
 }
 
 void Game::shutdown() {
     Engine& engine = Engine::instance();
-    engine.quit();
+    engine.services->get_service<SceneService>().get().stop();
+    Engine::quit();
 }
 
 void Game::bootstrap(Scene& first_scene) {

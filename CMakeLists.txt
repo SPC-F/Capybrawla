@@ -28,7 +28,7 @@ endif()
 FetchContent_Declare(
     CapycoreEngine
     GIT_REPOSITORY https://github.com/SPC-F/CapycoreEngine.git
-    GIT_TAG development
+    GIT_TAG @fix/scene_loading
 )
 FetchContent_MakeAvailable(CapycoreEngine)
 

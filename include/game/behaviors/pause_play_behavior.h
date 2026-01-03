@@ -32,7 +32,7 @@ public:
     {
          if (input_.is_key_pressed(KeyCode::escape))
          {
-            if (!scene_service_.current_scene().value().get().name().starts_with("Level_")) return;
+            if (!scene_service_.current_scene().name().starts_with("Level_")) return;
 
              is_paused_ = !is_paused_;
              update_ui_state();

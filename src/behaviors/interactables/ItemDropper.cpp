@@ -18,7 +18,7 @@ ItemDropper::ItemDropper(std::vector<std::unique_ptr<PrefabRegistrable>> registr
 GameObject& ItemDropper::random_drop() {
     const int random_index = std::rand() % drops_.size();
     auto& prefab_service = Engine::instance().services->get_service<PrefabService>().get();
-    Scene& scene = Engine::instance().services->get_service<SceneService>().get().current_scene().value();
+    Scene& scene = Engine::instance().services->get_service<SceneService>().get().current_scene();
 
     current_drop_ = drops_[random_index];
     latest_obj_ = uuid::generate_uuid_v4();
