@@ -31,6 +31,7 @@ private:
     std::string attack_animation_name_;
     std::string original_texture_name_;
     bool facing_right_{true};
+    bool flipped_{false};
 
     int damage_;
     int range_;
