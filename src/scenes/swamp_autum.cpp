@@ -300,5 +300,14 @@ void SwampAutumScene::load(Scene& scene) {
                 }
             }
         });
+
+        multiplayer_service.register_handler(CustomMessageTypes::USER_RESPAWN, [this, &controller](const Message& message) {
+            MsgUserRespawn data{};
+            std::memcpy(&data, message.payload.data(), sizeof(data));
+
+            if (auto player_opt = get_network_player_object(data.uuid); player_opt.has_value()) {
+                controller.respawn_player(player_opt.value().get(), {data.x, data.y, data.z});
+            }
+        });
     }
 }

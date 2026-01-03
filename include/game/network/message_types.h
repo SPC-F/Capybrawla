@@ -8,6 +8,7 @@ enum class CustomMessageTypes : uint16_t {
 
     USER_MOVE,
     USER_ATTACK,
+    USER_RESPAWN,
     DROP_SPAWN,
 };
 
@@ -33,4 +34,11 @@ struct MsgDropSpawn {
     char spawner_uuid[37];
     char drop_uuid[37];
     char drop_type[255];
+};
+
+struct MsgUserRespawn {
+    char uuid[37];
+    float x;
+    float y;
+    float z; 
 };

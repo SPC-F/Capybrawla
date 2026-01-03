@@ -27,7 +27,7 @@ private:
   void generate_new_spawn_position();
   void on_player_death(const PlayerObject &player);
 
-  void spawn_dead_player(const PlayerObject &player, Vector3 spawn_position);
+  void spawn_dead_player(const PlayerObject &player);
   void spawn_respawn_platform(const Vector3 &position, Vector3 spawn_position);
 
   void round_end() const;
@@ -40,6 +40,8 @@ public:
 
   void add_player(PlayerObject& player);
   void remove_player(PlayerObject &player);
+
+  void respawn_player(PlayerObject &player, Vector3 pos);
 
   bool is_player_registered(const PlayerObject& player) const;
 
