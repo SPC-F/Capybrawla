@@ -41,7 +41,7 @@ public:
   void add_player(PlayerObject& player);
   void remove_player(PlayerObject &player);
 
-  void respawn_player(PlayerObject &player, Vector3 pos);
+  void respawn_player(const PlayerObject &player, Vector3 pos);
 
   bool is_player_registered(const PlayerObject& player) const;
 

@@ -56,21 +56,12 @@ void RoundController::add_player(PlayerObject &player) {
 }
 
 void RoundController::on_player_death(const PlayerObject &player) {
-  std::optional<std::reference_wrapper<PlayerController>> controller_opt;
+  if (auto controller_opt = player.get_script<BehaviorScript, PlayerController>(); controller_opt.has_value()) {
+    auto controller = &controller_opt->get();
 
-  for (auto behavior : player.get_components<BehaviorScript>()) {
-    if (auto pc = dynamic_cast<PlayerController *>(&behavior.get().behavior())) {
-      controller_opt = *pc;
-    }
-  }
+    controller->lives(controller->lives() - 1);
+    if (controller->lives() < 1) return;
 
-  if (!controller_opt.has_value()) return;
-  auto controller = &controller_opt->get();
-
-  controller->lives(controller->lives() - 1);
-  if (controller->lives() < 1) return;
-
-  if (const auto& rigid_body_opt = player.get_component<Rigidbody2D>(); rigid_body_opt.has_value()) {
     spawn_dead_player(player);
 
     auto& multiplayer_service = Engine::instance().services->get_service<MultiplayerService>().get();
@@ -90,13 +81,7 @@ void RoundController::on_player_death(const PlayerObject &player) {
       }
     }
 
-    spawn_respawn_platform(player.transform().position(), spawn_position_);
-   
-    auto& rigid_body = rigid_body_opt->get();
-    rigid_body.velocity({0, 0, 0});
-    rigid_body.teleport(spawn_position_);
-    
-    controller->health(controller->max_health());
+    respawn_player(player, spawn_position_);
   }
 }
 
@@ -137,14 +122,8 @@ void RoundController::spawn_positions(std::vector<Vector3> positions) {
   spawn_positions_ = std::move(positions);
 }
 
-void RoundController::respawn_player(PlayerObject& player, Vector3 pos) {
-  std::optional<std::reference_wrapper<PlayerController>> controller_opt;
-
-  for (auto behavior : player.get_components<BehaviorScript>()) {
-    if (auto pc = dynamic_cast<PlayerController *>(&behavior.get().behavior())) {
-      controller_opt = *pc;
-    }
-  }
+void RoundController::respawn_player(const PlayerObject& player, Vector3 pos) {
+  auto controller_opt = player.get_script<BehaviorScript, PlayerController>();
 
   if (!controller_opt.has_value()) return;
   auto controller = &controller_opt->get();
