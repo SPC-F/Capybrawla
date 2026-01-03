@@ -155,6 +155,19 @@ void SwampAutumScene::handle_player_attack(const MsgUserAttack& data) {
     }
 }
 
+void SwampAutumScene::handle_player_drop_weapon(const MsgUserDropWeapon& data) {
+    auto player_opt = get_network_player_object(data.uuid);
+    if (!player_opt.has_value()) return;
+
+    auto& player = player_opt.value().get();
+
+    auto weapon_controller_opt = player.get_script<BehaviorScript, PlayerWeaponController>();
+    if (!weapon_controller_opt.has_value()) return;
+
+    auto& weapon_controller = weapon_controller_opt->get();
+    weapon_controller.drop_found_weapon();
+}
+
 void SwampAutumScene::setup(Scene& scene) {
     add_on_stop_callback([](Scene& scene) {
         auto& multiplayer_service = Engine::instance().services->get_service<MultiplayerService>().get();
@@ -287,16 +300,7 @@ void SwampAutumScene::register_host_handlers(MultiplayerService& multiplayer_ser
 
         if (multiplayer_service.get_uuid() == data.uuid) return;
 
-        auto player_opt = get_network_player_object(data.uuid);
-        if (!player_opt.has_value()) return;
-
-        auto& player = player_opt.value().get();
-
-        auto weapon_controller_opt = player.get_script<BehaviorScript, PlayerWeaponController>();
-        if (!weapon_controller_opt.has_value()) return;
-
-        auto& weapon_controller = weapon_controller_opt->get();
-        weapon_controller.drop_found_weapon();
+        handle_player_drop_weapon(data);
     });
 }
 
@@ -338,5 +342,14 @@ void SwampAutumScene::register_client_handlers(MultiplayerService& multiplayer_s
                 }
             }
         }
+    });
+
+    multiplayer_service.register_handler(CustomMessageTypes::USER_DROP_WEAPON, [this, &multiplayer_service, &scene](const Message& message) {
+        MsgUserDropWeapon data{};
+        std::memcpy(&data, message.payload.data(), sizeof(data));
+
+        if (multiplayer_service.get_uuid() == data.uuid) return;
+
+        handle_player_drop_weapon(data);
     });
 }

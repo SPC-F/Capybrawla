@@ -34,6 +34,7 @@ private:
 
     void handle_player_movement_update(const MsgUserMove& data);
     void handle_player_attack(const MsgUserAttack& data);
+    void handle_player_drop_weapon(const MsgUserDropWeapon& data);
 
     void register_host_handlers(MultiplayerService& multiplayer_service, Scene& scene, PrefabService& prefab_service);
     void register_client_handlers(MultiplayerService& multiplayer_service, Scene& scene, PrefabService& prefab_service);
