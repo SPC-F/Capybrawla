@@ -13,6 +13,7 @@ WeaponBatPlayerObject::WeaponBatPlayerObject(Scene& scene, GameObject& parent)
     : GameObject(scene) 
 {
     this->name("Weapon_Bat_Player_Object");
+    this->tag("Weapon");
     this->parent(parent);
     
     const std::string attack_idle_name = "bat";

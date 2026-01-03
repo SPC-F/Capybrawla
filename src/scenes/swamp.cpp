@@ -1,29 +1,26 @@
 #include <game/scenes/swamp.h>
-#include <game/character/gui/player_info_component.h>
 
-#include <engine/core/engine.h>
-#include <engine/core/rendering/renderingService.h>
+#include <game/character/gui/player_info_component.h>
+#include <game/behaviors/interactable/ItemDropper.h>
+#include <game/character/player_outofbounds_behavior.h>
+#include <game/character/player_object.h>
+#include <game/prefabs/ai_drone_agent_object.h>
+#include <game/prefabs/cloud_platform_object.h>
+#include <game/prefabs/config/health_pack_config.h>
+#include <game/prefabs/config/weapon_bat_config.h>
+#include <game/prefabs/config/weapon_sword_config.h>
+#include <game/prefabs/config/weapon_axe_config.h>
+#include <game/round/roundcontroller.h>
+#include <game/scenes/swamp.h>
+#include <game/scripts/timer/RoundTimer.h>
+
 #include <engine/audio/audio_service.h>
-#include <engine/public/scene_service.h>
+#include <engine/core/engine.h>
 #include <engine/public/components/sprite.h>
 #include <engine/public/gameObject.h>
 #include <engine/public/util/layers.h>
 #include <engine/public/components/behaviorscript.h>
 #include <engine/public/components/animator.h>
-
-#include <game/character/player_outofbounds_behavior.h>
-#include <game/character/player_object.h>
-#include <game/behaviors/interactable/ItemDropper.h>
-#include <game/prefabs/ai_drone_agent_object.h>
-#include <game/prefabs/weapons/weapon_bat_player_object.h>
-#include <game/prefabs/weapons/weapon_axe_player_object.h>
-#include <game/prefabs/weapons/weapon_boxing_gloves_player_object.h>
-#include <game/prefabs/weapons/weapon_sword_player_object.h>
-#include <game/round/roundcontroller.h>
-#include <game/scenes/level_loader.h>
-#include <game/scenes/swamp.h>
-#include <game/scripts/timer/RoundTimer.h>
-#include <game/prefabs/cloud_platform_object.h>
 
 SwampScene::SwampScene() : Level("Level_SwampScene") {}
 
@@ -36,7 +33,6 @@ void SwampScene::load_players(Scene& scene, RoundController& controller, float s
       -out_of_bounds_margin_y_,
       map_height_ + out_of_bounds_margin_y_));
 
-    auto& weapon_boxing_gloves = scene.add_game_object<WeaponBoxingGlovesPlayerObject>(scene, player);
     player.layer(Layers::Foreground);
     player.set_controllable();
     player.user_name("Real player");
@@ -84,8 +80,14 @@ void SwampScene::load_interactables(Scene& scene) {
     positions.emplace_back(350, 432);
 
     for (auto pos : positions) {
+        std::vector<std::unique_ptr<PrefabRegistrable>> drops;
+        drops.emplace_back(std::make_unique<HealthPackConfig>());
+        drops.emplace_back(std::make_unique<WeaponAxeConfig>());
+        drops.emplace_back(std::make_unique<WeaponBatConfig>());
+        drops.emplace_back(std::make_unique<WeaponSwordConfig>());
+
         auto& obj = scene.add_game_object("interactable_spawner");
-        obj.add_component<BehaviorScript>(std::make_unique<ItemDropper>());
+        obj.add_component<BehaviorScript>(std::make_unique<ItemDropper>(std::move(drops)));
         obj.add_component<Sprite>("item_dropper", Color(), 0, 0, 0, 0);
         obj.add_component<Animator>("item_dropper_idle", 128).play(true);
         obj.transform().scale({2, 2, 2});

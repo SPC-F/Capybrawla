@@ -1,0 +1,29 @@
+#include <game/prefabs/config/weapon_bat_config.h>
+#include <game/prefabs/interactables/weapon_bat.h>
+
+#include <engine/core/engine.h>
+#include <engine/public/components/network_identity.h>
+#include <engine/public/gameObject.h>
+#include <engine/public/prefab_service.h>
+
+WeaponBatConfig::WeaponBatConfig()
+    : PrefabRegistrable("WeaponBat", "WeaponBat", 24.0f, 48.0f, 20.0f, 4.0f) {}
+
+void WeaponBatConfig::register_prefab(Scene& scene) {
+    auto& prefab_service = Engine::instance().services->get_service<PrefabService>().get();
+
+    if (prefab_service.has_prefab(prefab_name_)) return;
+
+    /// Capture prefab_id_ and prefab_name_ by value to use inside the lambda
+    auto prefab_id = prefab_id_;
+    auto prefab_name = prefab_name_;
+
+    prefab_service.register_prefab(prefab_name, [prefab_id](Scene& scene, const std::string& name) -> GameObject& {
+        auto& obj = scene.add_game_object<WeaponBatPrefab>(scene);
+        
+        obj.prefab_type_id(prefab_id);
+        obj.add_component<NetworkIdentity>(name.c_str());
+
+        return obj;
+    });
+}
