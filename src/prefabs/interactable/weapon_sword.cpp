@@ -10,15 +10,24 @@
 #include <engine/public/util/color.h>
 #include <engine/public/util/layers.h>
 
-WeaponSwordPrefab::WeaponSwordPrefab(Scene& scene)
+WeaponSwordPrefab::WeaponSwordPrefab(Scene& scene, bool is_dropped, Vector3 position)
     : GameObject(scene)
 {
     this->name("Weapon_Sword_Interactable_Prefab");
-
     this->transform().scale({1, 1, 1});
+    this->transform().position(position);
+    
     this->add_component<Sprite>("sword", Color(), 0, 0, 0, 0);
-    this->add_component<Rigidbody2D>(BodyType2D::Static, 0.0f, false, 0.0f);
-    this->add_component<BoxCollider2D>(0, 0, 32, 32, Point{0, 0}, true);
+    
+    if (is_dropped) {
+        this->add_component<Rigidbody2D>(BodyType2D::Dynamic, 20.0f, true);
+        this->add_component<NetworkIdentity>();
+    }
+    else {
+        this->add_component<Rigidbody2D>(BodyType2D::Static, 0.0f, false, 0.0f);
+    }
+
+    this->add_component<BoxCollider2D>(0, 0, 32, 32, Point{0, 0}, !is_dropped, !is_dropped);
     this->add_component<BehaviorScript>(std::make_unique<WeaponSwordInteractableBehavior>());
 
     layer(Layers::Foreground + 2);

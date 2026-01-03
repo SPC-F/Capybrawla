@@ -1,34 +1,28 @@
 #include <game/character/player_weapon_controller.h>
 
+#include <game/behaviors/interactable/weapon_axe.h>
 #include <game/behaviors/weapon_melee_behavior.h>
 #include <game/character/player_object.h>
 #include <game/network/message_types.h>
+#include <game/prefabs/interactables/weapon_axe.h>
+#include <game/prefabs/interactables/weapon_bat.h>
+#include <game/prefabs/interactables/weapon_sword.h>
+#include <game/prefabs/weapons/weapon_axe_player_object.h>
+#include <game/prefabs/weapons/weapon_bat_player_object.h>
+#include <game/prefabs/weapons/weapon_sword_player_object.h>
 
 #include <engine/core/engine.h>
 #include <engine/input/input_manager.h>
 #include <engine/input/input_system.h>
 #include <engine/network/multiplayer_service.h>
 #include <engine/public/components/network_identity.h>
+#include <engine/public/components/rigidbody_2d.h>
+
+constexpr float drop_weapon_offset_x = 32.0f;
+constexpr float drop_weapon_offset_y = 0.0f;
 
 PlayerWeaponController::PlayerWeaponController(GameObject& weapon)
     : Behavior(), default_weapon_(weapon), found_weapon_(std::nullopt) {}
-
-void PlayerWeaponController::on_start() {
-    auto& children = game_object().children();
-
-    for (auto& child_ref : children) {
-        auto& child = child_ref.get();
-        if (!child.get_component<BehaviorScript>()) continue;
-
-        auto& behavior = child.get_component<BehaviorScript>()->get().behavior();
-        if (!dynamic_cast<WeaponMeleeBehavior*>(&behavior)) continue;
-
-        if (child.id() != default_weapon_.get().id() && child.is_active()) {
-            switch_weapon(child);
-            break;
-        }
-    }
-}
 
 void PlayerWeaponController::on_update(float dt) {
     const auto& provider =
@@ -47,25 +41,25 @@ void PlayerWeaponController::on_update(float dt) {
 
 void PlayerWeaponController::drop_found_weapon() {
     if (!found_weapon_.has_value()) return;
-
     default_weapon_.get().set_active();
+
+    auto player_sprite = game_object().get_component<Sprite>();
+    if (!player_sprite.has_value()) throw std::runtime_error("PlayerWeaponController requires a Sprite component on the parent GameObject.");
+
+    bool facing_right = player_sprite->get().flip_x() == false;
+
+    float spawn_offset_x = facing_right ? drop_weapon_offset_x : -drop_weapon_offset_x;
+    Vector3 spawn_pos = game_object().transform().position() + Vector3{spawn_offset_x, drop_weapon_offset_y, 0.0f};
+
+    auto& scene = game_object().scene();
+    if (dynamic_cast<WeaponAxePlayerObject*>(&found_weapon_->get()))          scene.add_game_object<WeaponAxePrefab>(scene, true, spawn_pos);
+    else if (dynamic_cast<WeaponBatPlayerObject*>(&found_weapon_->get()))     scene.add_game_object<WeaponBatPrefab>(scene, true, spawn_pos);
+    else if (dynamic_cast<WeaponSwordPlayerObject*>(&found_weapon_->get()))   scene.add_game_object<WeaponSwordPrefab>(scene, true, spawn_pos);
 
     auto& weapon = found_weapon_->get();
     found_weapon_ = std::nullopt;
     weapon.set_inactive();
     weapon.mark_for_deletion();
-}
-
-void PlayerWeaponController::switch_weapon(std::optional<std::reference_wrapper<GameObject>> new_weapon) {    
-    if (!new_weapon.has_value()) return;
-
-    drop_found_weapon();
-
-    auto& weapon = new_weapon->get();
-    found_weapon_ = new_weapon;
-    weapon.set_active();
-    
-    default_weapon_.get().set_inactive();
 }
 
 void PlayerWeaponController::send_drop_weapon_message() {
@@ -77,4 +71,8 @@ void PlayerWeaponController::send_drop_weapon_message() {
 
     Message msg = serialize_message(body, CustomMessageTypes::USER_DROP_WEAPON);
     multiplayer_service.send(msg);
+}
+
+bool PlayerWeaponController::has_found_weapon() const {
+    return found_weapon_.has_value();
 }

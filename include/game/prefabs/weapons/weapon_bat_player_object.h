@@ -8,4 +8,6 @@ class WeaponBatPlayerObject final : public GameObject {
 public:
   explicit WeaponBatPlayerObject(Scene& scene, GameObject& parent);
   ~WeaponBatPlayerObject() override = default;
+
+  constexpr static int DAMAGE = 10;
 };
