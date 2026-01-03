@@ -1,16 +1,17 @@
 #include <game/character/player_controller.h>
-#include <game/character/gui/player_info_component.h>
 
-#include <game/round/roundcontroller.h>
+#include <game/character/gui/player_info_component.h>
+#include <game/character/player_weapon_controller.h>
 #include <game/prefabs/cloud_platform_object.h>
 #include <game/prefabs/character/dying_capybara_object.h>
 #include <game/network/message_types.h>
+#include <game/round/roundcontroller.h>
 
 #include <engine/core/engine.h>
 #include <engine/network/multiplayer_service.h>
 #include <engine/public/components/network_identity.h>
-#include <engine/public/scene.h>
 #include <engine/public/components/rigidbody_2d.h>
+#include <engine/public/scene.h>
 
 constexpr float RESPAWN_PLATFORM_X_OFFSET = 0.0f;
 constexpr float RESPAWN_PLATFORM_Y_OFFSET = 80.0f;
@@ -136,6 +137,11 @@ void RoundController::respawn_player(const PlayerObject& player, Vector3 pos) {
     rigid_body.teleport(pos);
     
     controller->health(controller->max_health());
+
+    auto weapon_controller_opt = player.get_script<BehaviorScript, PlayerWeaponController>();
+    if (weapon_controller_opt.has_value()) {
+      weapon_controller_opt->get().destroy_found_weapon();
+    }
   }
 }
 
