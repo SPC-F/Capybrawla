@@ -156,7 +156,7 @@ void RoundController::realign_player_info_positions() {
 
   const float screen_width = 1920.0f;
   const float component_width = 350.0f;
-  const float y_position = 950.0f;
+  const float y_position = 915.0f;
   const float z_position = 0.0f;
 
   // Calculate leftover space after placing all components
