@@ -323,6 +323,15 @@ void SwampAutumScene::register_client_handlers(MultiplayerService& multiplayer_s
         handle_player_attack(data);
     });
 
+    multiplayer_service.register_handler(CustomMessageTypes::USER_DROP_WEAPON, [this, &multiplayer_service, &scene](const Message& message) {
+        MsgUserDropWeapon data{};
+        std::memcpy(&data, message.payload.data(), sizeof(data));
+
+        if (multiplayer_service.get_uuid() == data.uuid) return;
+
+        handle_player_drop_weapon(data);
+    });
+
     multiplayer_service.register_handler(CustomMessageTypes::DROP_SPAWN, [this, &prefab_service, &scene](const Message& message) {
         MsgDropSpawn data{};
         std::memcpy(&data, message.payload.data(), sizeof(data));
@@ -342,14 +351,5 @@ void SwampAutumScene::register_client_handlers(MultiplayerService& multiplayer_s
                 }
             }
         }
-    });
-
-    multiplayer_service.register_handler(CustomMessageTypes::USER_DROP_WEAPON, [this, &multiplayer_service, &scene](const Message& message) {
-        MsgUserDropWeapon data{};
-        std::memcpy(&data, message.payload.data(), sizeof(data));
-
-        if (multiplayer_service.get_uuid() == data.uuid) return;
-
-        handle_player_drop_weapon(data);
     });
 }
