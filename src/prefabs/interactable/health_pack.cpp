@@ -20,7 +20,7 @@ HealthPackPrefab::HealthPackPrefab(Scene& scene)
     this->add_component<Sprite>("health_pack", Color(), 0, 0, 0, 0);
     this->add_component<Animator>("health_pack_idle", 128).play(true);
     this->add_component<Rigidbody2D>(BodyType2D::Static, 0.0f, false, 0.0f);
-    this->add_component<BoxCollider2D>(0, 0, 32, 32, Point{0, 0});
+    this->add_component<BoxCollider2D>(0, 0, 32, 32, Point{32, 32}, true);
     this->add_component<BehaviorScript>(std::make_unique<HealthPackInteractableBehavior>());
 
     this->layer(Layers::Foreground + 2);
