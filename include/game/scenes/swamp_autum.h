@@ -37,7 +37,7 @@ private:
     void handle_player_drop_weapon(const MsgUserDropWeapon& data);
 
     void register_host_handlers(MultiplayerService& multiplayer_service, Scene& scene, PrefabService& prefab_service);
-    void register_client_handlers(MultiplayerService& multiplayer_service, Scene& scene, PrefabService& prefab_service);
+    void register_client_handlers(MultiplayerService& multiplayer_service, Scene& scene, PrefabService& prefab_service, RoundController& controller);
 
     std::optional<std::reference_wrapper<PlayerObject>> get_network_player_object(const std::string& uuid);
 };

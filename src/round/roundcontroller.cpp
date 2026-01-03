@@ -3,10 +3,14 @@
 
 #include <game/round/roundcontroller.h>
 #include <game/prefabs/cloud_platform_object.h>
+#include <game/prefabs/character/dying_capybara_object.h>
+#include <game/network/message_types.h>
 
+#include <engine/core/engine.h>
+#include <engine/network/multiplayer_service.h>
+#include <engine/public/components/network_identity.h>
 #include <engine/public/scene.h>
 #include <engine/public/components/rigidbody_2d.h>
-#include <game/prefabs/character/dying_capybara_object.h>
 
 constexpr float RESPAWN_PLATFORM_X_OFFSET = 0.0f;
 constexpr float RESPAWN_PLATFORM_Y_OFFSET = 80.0f;
@@ -52,35 +56,36 @@ void RoundController::add_player(PlayerObject &player) {
 }
 
 void RoundController::on_player_death(const PlayerObject &player) {
-  std::optional<std::reference_wrapper<PlayerController>> controller_opt;
+  if (auto controller_opt = player.get_script<BehaviorScript, PlayerController>(); controller_opt.has_value()) {
+    auto controller = &controller_opt->get();
 
-  for (auto behavior : player.get_components<BehaviorScript>()) {
-    if (auto pc = dynamic_cast<PlayerController *>(&behavior.get().behavior())) {
-      controller_opt = *pc;
-    }
-  }
+    controller->lives(controller->lives() - 1);
+    if (controller->lives() < 1) return;
 
-  if (!controller_opt.has_value()) return;
-  auto controller = &controller_opt->get();
+    spawn_dead_player(player);
 
-  controller->lives(controller->lives() - 1);
-  if (controller->lives() < 1) return;
+    auto& multiplayer_service = Engine::instance().services->get_service<MultiplayerService>().get();
+    if (multiplayer_service.get_peer_type() == PeerType::CLIENT) return;
 
-  if (const auto& rigid_body_opt = player.get_component<Rigidbody2D>(); rigid_body_opt.has_value()) {
     generate_new_spawn_position();
-    
-    spawn_dead_player(player, spawn_position_);
-    spawn_respawn_platform(player.transform().position(), spawn_position_);
-   
-    auto& rigid_body = rigid_body_opt->get();
-    rigid_body.velocity({0, 0, 0});
-    rigid_body.teleport(spawn_position_);
-    
-    controller->health(controller->max_health());
+    if (multiplayer_service.get_peer_type() == PeerType::HOST) {
+      if (const auto& network_id = player.get_component<NetworkIdentity>(); network_id.has_value()) {
+        MsgUserRespawn body{};
+        std::strncpy(body.uuid, network_id.value().get().uuid().c_str(), sizeof(body.uuid) - 1);
+        body.x = spawn_position_.x;
+        body.y = spawn_position_.y;
+        body.z = spawn_position_.z;
+
+        Message msg = serialize_message(body, CustomMessageTypes::USER_RESPAWN);
+        multiplayer_service.send(msg);
+      }
+    }
+
+    respawn_player(player, spawn_position_);
   }
 }
 
-void RoundController::spawn_dead_player(const PlayerObject &player, Vector3 spawn_position) {
+void RoundController::spawn_dead_player(const PlayerObject &player) {
   game_object().scene().add_game_object<DyingCapybaraObject>(game_object().scene(), player.transform().position(), 2.0f);  
 }
 
@@ -115,6 +120,23 @@ std::vector<Vector3> RoundController::spawn_positions() const {
 
 void RoundController::spawn_positions(std::vector<Vector3> positions) {
   spawn_positions_ = std::move(positions);
+}
+
+void RoundController::respawn_player(const PlayerObject& player, Vector3 pos) {
+  auto controller_opt = player.get_script<BehaviorScript, PlayerController>();
+
+  if (!controller_opt.has_value()) return;
+  auto controller = &controller_opt->get();
+
+  if (const auto& rigid_body_opt = player.get_component<Rigidbody2D>(); rigid_body_opt.has_value()) {
+    spawn_respawn_platform(player.transform().position(), pos);
+   
+    auto& rigid_body = rigid_body_opt->get();
+    rigid_body.velocity({0, 0, 0});
+    rigid_body.teleport(pos);
+    
+    controller->health(controller->max_health());
+  }
 }
 
 bool RoundController::is_player_registered(const PlayerObject& player) const {
