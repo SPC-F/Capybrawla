@@ -30,6 +30,7 @@ void Game::initialize() {
         {"ui/buttons_large.png", "buttons_large", 2, 2},
         {"ui/buttons_big.png", "buttons_big", 5, 2},
         {"ui/buttons_small.png", "buttons_small", 4, 5},
+        {"ui/elements_small.png", "elements_small", 2, 5},
 
         // Levels
         // Swamp resources
@@ -44,6 +45,7 @@ void Game::initialize() {
 
         // Characters
         {"character/capybara_default_idle.png", "capybara_default_idle", 1, 1},
+        {"character/capybara_default_head.png", "capybara_default_head", 1, 1},
         {"character/capybara_default_duck.png", "capybara_default_duck", 1, 1},
         {"character/capybara_default_jump.png", "capybara_default_jump", 1, 1},
         {"character/capybara_default_death.png", "capybara_default_death", 1, 1},
@@ -100,6 +102,7 @@ void Game::initialize() {
         {"buttons_big", "button_big_transparent", 4},
         {"buttons_big", "button_big_hollow", 5},
         {"buttons_big", "button_big_black", 6},
+        {"buttons_big", "health_frame", 9},
 
         {"buttons_small", "button_small_blue", 0},
         {"buttons_small", "button_small_red", 1},
@@ -123,6 +126,7 @@ void Game::initialize() {
         {"buttons_small", "button_small_black_accept", 19},
 
         {"heart_icon", "heart", 0},
+        {"elements_small", "player_heart", 9},
 
         // Swamp textures
         {"swamp_tiles", "grass_single_top", 0},

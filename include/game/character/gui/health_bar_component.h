@@ -16,8 +16,6 @@ namespace PlayerInfoComponent {
                   float health_bar_width,
                   float health_bar_height,
                   float health_bar_offset_left,
-                  float health_bar_offset_top,
-                  float death_banner_width,
-                  float death_banner_height);
+                  float health_bar_offset_top);
     };
 }

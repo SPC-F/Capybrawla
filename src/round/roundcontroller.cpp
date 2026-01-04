@@ -55,14 +55,18 @@ void RoundController::add_player(PlayerObject &player) {
   realign_player_info_positions();
 }
 
-void RoundController::on_player_death(const PlayerObject &player) {
+void RoundController::on_player_death(PlayerObject &player) {
   if (auto controller_opt = player.get_script<BehaviorScript, PlayerController>(); controller_opt.has_value()) {
     auto controller = &controller_opt->get();
 
     controller->lives(controller->lives() - 1);
-    if (controller->lives() < 1) return;
 
     spawn_dead_player(player);
+
+    if (controller->lives() < 1) {
+      player.mark_for_deletion();
+      return;
+    }
 
     auto& multiplayer_service = Engine::instance().services->get_service<MultiplayerService>().get();
     if (multiplayer_service.get_peer_type() == PeerType::CLIENT) return;
@@ -156,7 +160,7 @@ void RoundController::realign_player_info_positions() {
 
   const float screen_width = 1920.0f;
   const float component_width = 350.0f;
-  const float y_position = 950.0f;
+  const float y_position = 915.0f;
   const float z_position = 0.0f;
 
   // Calculate leftover space after placing all components

@@ -19,8 +19,8 @@ namespace PlayerInfoComponent {
 
         for (int i = 0; i < max_lives; i++) {
             UIImage &life_image = scene.add_game_object<UIImage>(
-                scene, "heart", life_width, life_height, Point{}, Point{});
-            life_image.transform().local_position({i * (life_width + lives_bar_internal_offset), 0, 0});
+                scene, "player_heart", life_width, life_height, Point{}, Point{});
+            life_image.transform().local_position({i * (life_width), 0, 0});
             this->add_child(life_image);
 
             if (i < controller.lives()) {
