@@ -25,6 +25,7 @@ public:
     default_weapon_.get().set_inactive();
   }
 
+  void destroy_found_weapon();
   void drop_found_weapon();
   void send_drop_weapon_message();
 

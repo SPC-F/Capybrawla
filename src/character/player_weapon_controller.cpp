@@ -40,6 +40,10 @@ void PlayerWeaponController::on_update(float dt) {
 }
 
 void PlayerWeaponController::drop_found_weapon() {
+    destroy_found_weapon();
+}
+
+void PlayerWeaponController::destroy_found_weapon() {
     if (!found_weapon_.has_value()) return;
     default_weapon_.get().set_active();
 
