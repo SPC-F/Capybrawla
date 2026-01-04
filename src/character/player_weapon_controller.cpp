@@ -40,25 +40,27 @@ void PlayerWeaponController::on_update(float dt) {
 }
 
 void PlayerWeaponController::drop_found_weapon() {
+    if (!found_weapon_.has_value()) return;
+    
+    auto player_sprite = game_object().get_component<Sprite>();
+    if (!player_sprite.has_value()) throw std::runtime_error("PlayerWeaponController requires a Sprite component on the parent GameObject.");
+    
+    bool facing_right = player_sprite->get().flip_x() == false;
+    
+    float spawn_offset_x = facing_right ? drop_weapon_offset_x : -drop_weapon_offset_x;
+    Vector3 spawn_pos = game_object().transform().position() + Vector3{spawn_offset_x, drop_weapon_offset_y, 0.0f};
+    
+    auto& scene = game_object().scene();
+    if (dynamic_cast<WeaponAxePlayerObject*>(&found_weapon_->get()))          scene.add_game_object<WeaponAxePrefab>(scene, true, spawn_pos);
+    else if (dynamic_cast<WeaponBatPlayerObject*>(&found_weapon_->get()))     scene.add_game_object<WeaponBatPrefab>(scene, true, spawn_pos);
+    else if (dynamic_cast<WeaponSwordPlayerObject*>(&found_weapon_->get()))   scene.add_game_object<WeaponSwordPrefab>(scene, true, spawn_pos);
+    
     destroy_found_weapon();
 }
 
 void PlayerWeaponController::destroy_found_weapon() {
     if (!found_weapon_.has_value()) return;
     default_weapon_.get().set_active();
-
-    auto player_sprite = game_object().get_component<Sprite>();
-    if (!player_sprite.has_value()) throw std::runtime_error("PlayerWeaponController requires a Sprite component on the parent GameObject.");
-
-    bool facing_right = player_sprite->get().flip_x() == false;
-
-    float spawn_offset_x = facing_right ? drop_weapon_offset_x : -drop_weapon_offset_x;
-    Vector3 spawn_pos = game_object().transform().position() + Vector3{spawn_offset_x, drop_weapon_offset_y, 0.0f};
-
-    auto& scene = game_object().scene();
-    if (dynamic_cast<WeaponAxePlayerObject*>(&found_weapon_->get()))          scene.add_game_object<WeaponAxePrefab>(scene, true, spawn_pos);
-    else if (dynamic_cast<WeaponBatPlayerObject*>(&found_weapon_->get()))     scene.add_game_object<WeaponBatPrefab>(scene, true, spawn_pos);
-    else if (dynamic_cast<WeaponSwordPlayerObject*>(&found_weapon_->get()))   scene.add_game_object<WeaponSwordPrefab>(scene, true, spawn_pos);
 
     auto& weapon = found_weapon_->get();
     found_weapon_ = std::nullopt;
