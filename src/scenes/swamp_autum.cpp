@@ -4,10 +4,12 @@
 #include <game/behaviors/multiplayer/multiplayer_controller.h>
 #include <game/behaviors/weapon_melee_behavior.h>
 #include <game/character/player_outofbounds_behavior.h>
+#include <game/character/player_weapon_controller.h>
 #include <game/prefabs/config/weapon_bat_config.h>
 #include <game/prefabs/config/weapon_sword_config.h>
 #include <game/prefabs/config/weapon_axe_config.h>
 #include <game/prefabs/config/health_pack_config.h>
+#include <game/prefabs/ui/end_round_result_object.h>
 #include <game/round/roundcontroller.h>
 #include <game/scenes/swamp_autum.h>
 #include <game/scenes/level_loader.h>
@@ -17,14 +19,14 @@
 #include <engine/core/rendering/renderingService.h>
 #include <engine/public/prefab_service.h>
 #include <engine/network/multiplayer_service.h>
+#include <engine/public/components/network_identity.h>
+#include <engine/public/components/sprite.h>
 #include <engine/public/scene_service.h>
 #include <engine/public/gameObject.h>
-#include <engine/public/components/sprite.h>
-#include <engine/public/components/network_identity.h>
+#include <engine/public/ui/ui_text.h>
 #include <engine/util/uuid.h>
 
 #include <iostream>
-#include <game/character/player_weapon_controller.h>
 
 SwampAutumScene::SwampAutumScene() : Level("Level_SwampAutumScene") {}
 
@@ -93,10 +95,6 @@ RoundController& SwampAutumScene::add_multiplayer_round_controller() {
     
     auto& comp = wrapper.add_component<BehaviorScript>(std::make_unique<RoundController>(respawn_positions));
     auto& controller = *dynamic_cast<RoundController*>(&comp.behavior());
-    controller.on_round_end([this]() {
-        auto& scene_service = Engine::instance().services->get_service<SceneService>().get();
-        scene_service.load_scene("MainMenuScene");
-    });
 
     return controller;
 }
@@ -373,16 +371,13 @@ void SwampAutumScene::register_client_handlers(MultiplayerService& multiplayer_s
         MsgRoundEnd data{};
         std::memcpy(&data, message.payload.data(), sizeof(data));
 
-        if (auto player_opt = get_network_player_object(data.winner_uuid); player_opt.has_value()) {
-            /// TODO: Show winner UI
-        }
-
         for (auto& object_ref : scene.game_objects()) {
             auto& object = object_ref.get();
             
             auto round_controller_opt = object.get_script<BehaviorScript, RoundController>();
             if (round_controller_opt.has_value()) {
-                round_controller_opt->get().round_end();
+                round_controller_opt->get().round_end(!data.draw, data.winner_uuid);
+                return;
             }
         }
     });

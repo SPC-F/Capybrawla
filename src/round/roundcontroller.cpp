@@ -4,6 +4,7 @@
 #include <game/character/player_weapon_controller.h>
 #include <game/prefabs/cloud_platform_object.h>
 #include <game/prefabs/character/dying_capybara_object.h>
+#include <game/prefabs/ui/end_round_result_object.h>
 #include <game/network/message_types.h>
 #include <game/round/roundcontroller.h>
 
@@ -12,6 +13,7 @@
 #include <engine/public/components/network_identity.h>
 #include <engine/public/components/rigidbody_2d.h>
 #include <engine/public/scene.h>
+
 
 constexpr float RESPAWN_PLATFORM_X_OFFSET = 0.0f;
 constexpr float RESPAWN_PLATFORM_Y_OFFSET = 80.0f;
@@ -111,8 +113,8 @@ void RoundController::remove_player(PlayerObject &player) {
 }
 
 void RoundController::check_round_end_conditions() {
-  int alive_count = 0;
-  PlayerObject* last_alive_player = nullptr;
+  int dead_count = 0;
+  std::string winner_uuid;
 
   for (const auto &player_ref : players) {
     auto &player = player_ref.get();
@@ -121,42 +123,52 @@ void RoundController::check_round_end_conditions() {
     if (!controller_opt.has_value()) continue;
 
     auto controller = &controller_opt->get();
-    if (controller->lives() > 0) {
-      alive_count++;
-      last_alive_player = &player;
+    if (controller->lives() < 1) {
+      dead_count++;
+      
+      if (const auto& network_id = player.get_component<NetworkIdentity>(); network_id.has_value()) {
+        winner_uuid = network_id.value().get().uuid();
+      }
     }
   }
 
-  if (alive_count == 1 && last_alive_player != nullptr) {
-    winner_player_ = *last_alive_player;
-    round_end();
-  } 
-  else if (alive_count == 0) {
-    winner_player_ = std::nullopt;
-    round_end();
-  }
+  if (dead_count == players.size() - 1 && !winner_uuid.empty()) round_end(true, winner_uuid);
+  else if (dead_count == players.size())                        round_end(false);
 }
 
-void RoundController::round_end() {
+void RoundController::round_end(bool has_winner, const std::string& winner_uuid) {
+  if (round_active_ == false) return;
   round_active_ = false;
   
   for (auto &callback : round_end_callbacks) {
     callback();
   }
+
+  std::optional<std::reference_wrapper<PlayerObject>> player_opt = std::nullopt;
+  for (auto &player_ref : players) {
+    auto &player = player_ref.get();
+    auto controller_opt = player.get_script<BehaviorScript, PlayerController>();
+
+    if (!controller_opt.has_value()) continue;
+
+    auto controller = &controller_opt->get();
+    if (const auto& network_id = player.get_component<NetworkIdentity>(); network_id.has_value()) {
+      if (network_id.value().get().uuid() == winner_uuid) {
+        player_opt = player;
+        break;
+      }
+    }
+  }
+
+  auto& scene = game_object().scene();
+  scene.add_game_object<EndRoundResultObject>(scene, player_opt, !has_winner);
   
   auto& multiplayer_service = Engine::instance().services->get_service<MultiplayerService>().get();
   if (multiplayer_service.get_peer_type() != PeerType::HOST) return;
-  
-  if (!winner_player_) return;
-  std::string winner_uuid;
-
-  if (const auto& network_id = winner_player_->get().get_component<NetworkIdentity>(); network_id.has_value()) {
-    winner_uuid = network_id.value().get().uuid();
-  }
 
   MsgRoundEnd body{};
   std::strncpy(body.winner_uuid, winner_uuid.c_str(), sizeof(body.winner_uuid) - 1);
-  body.draw = winner_uuid.empty();
+  body.draw = !has_winner;
 
   Message msg = serialize_message(body, CustomMessageTypes::ROUND_END);
   multiplayer_service.send(msg);
