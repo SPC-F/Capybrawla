@@ -19,8 +19,7 @@ private:
   Vector3 spawn_position_;
 
   bool round_active_{true};
-  std::optional<std::reference_wrapper<PlayerObject>> winner_player_;
-
+  
   std::vector<round_end_callback_t> round_end_callbacks;
   std::vector<std::reference_wrapper<PlayerObject>> players;
   std::map<std::string, lib::Subscription> on_player_health_changed_subscriptions;
@@ -48,7 +47,7 @@ public:
   
   bool is_player_registered(const PlayerObject& player) const;
   
-  void round_end();
+  void round_end(bool has_winner, const std::string& winner_uuid = "");
   void on_round_end(const round_end_callback_t &callback);
 
   [[nodiscard]] std::vector<Vector3> spawn_positions() const;
