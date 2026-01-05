@@ -71,7 +71,7 @@ void RoundController::on_player_death(PlayerObject &player) {
     }
 
     auto& multiplayer_service = Engine::instance().services->get_service<MultiplayerService>().get();
-    if (multiplayer_service.get_peer_type() != PeerType::CLIENT) return;
+    if (multiplayer_service.get_peer_type() == PeerType::CLIENT) return;
 
     generate_new_spawn_position();
     if (multiplayer_service.get_peer_type() == PeerType::HOST) {
@@ -152,7 +152,7 @@ void RoundController::round_end() {
 
   if (const auto& network_id = winner_player_->get().get_component<NetworkIdentity>(); network_id.has_value()) {
     winner_uuid = network_id.value().get().uuid();
-  } 
+  }
 
   MsgRoundEnd body{};
   std::strncpy(body.winner_uuid, winner_uuid.c_str(), sizeof(body.winner_uuid) - 1);
