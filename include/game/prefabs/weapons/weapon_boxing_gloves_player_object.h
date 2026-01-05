@@ -9,4 +9,5 @@ public:
   explicit WeaponBoxingGlovesPlayerObject(Scene& scene, GameObject& parent);
   ~WeaponBoxingGlovesPlayerObject() override = default;
 
+  constexpr static int DAMAGE = 5;
 };

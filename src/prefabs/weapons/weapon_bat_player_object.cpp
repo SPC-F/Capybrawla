@@ -33,7 +33,7 @@ WeaponBatPlayerObject::WeaponBatPlayerObject(Scene& scene, GameObject& parent)
     melee_weapon_sprite.add_component<Animator>(attack_animation_name, 50);
     melee_weapon_sprite.layer(Layers::Foreground + 1);
 
-    const int damage = 10;
+    const int damage = WeaponBatPlayerObject::DAMAGE;
     const int range = 20;
     const Point knockback_force = Point{24.0f, -1.0f};
 

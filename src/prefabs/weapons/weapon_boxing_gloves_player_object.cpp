@@ -33,7 +33,7 @@ WeaponBoxingGlovesPlayerObject::WeaponBoxingGlovesPlayerObject(Scene& scene, Gam
     melee_weapon_sprite.add_component<Animator>(attack_animation_name, 50);
     melee_weapon_sprite.layer(Layers::Foreground + 1);
 
-    const int damage = 5;
+    const int damage = WeaponBoxingGlovesPlayerObject::DAMAGE;
     const int range = 20;
     const Point knockback_force = Point{30.0f, -1.5f};
     // const Point knockback_force = Point{16.0f, -1.0f};
