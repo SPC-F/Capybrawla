@@ -17,7 +17,10 @@ void PlayerOutOfBoundsBehavior::on_update(float delta_time) {
   const auto& components = game_object().get_components<BehaviorScript>();
   for (auto behavior : components) {
     if (PlayerController* player_controller = dynamic_cast<PlayerController*>(&behavior.get().behavior())) {
-      player_controller->damage(player_controller->health());
+      if (player_controller->is_alive()) {
+        player_controller->damage(player_controller->health());
+      }
+
       break;
     }
   }

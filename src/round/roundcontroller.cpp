@@ -63,14 +63,15 @@ void RoundController::on_player_death(PlayerObject &player) {
     controller->lives(controller->lives() - 1);
 
     spawn_dead_player(player);
+    check_round_end_conditions();
 
     if (controller->lives() < 1) {
-      player.mark_for_deletion();
+      player.set_inactive();
       return;
     }
 
     auto& multiplayer_service = Engine::instance().services->get_service<MultiplayerService>().get();
-    if (multiplayer_service.get_peer_type() == PeerType::CLIENT) return;
+    if (multiplayer_service.get_peer_type() != PeerType::CLIENT) return;
 
     generate_new_spawn_position();
     if (multiplayer_service.get_peer_type() == PeerType::HOST) {
@@ -109,10 +110,56 @@ void RoundController::remove_player(PlayerObject &player) {
   realign_player_info_positions();
 }
 
-void RoundController::round_end() const {
+void RoundController::check_round_end_conditions() {
+  int alive_count = 0;
+  PlayerObject* last_alive_player = nullptr;
+
+  for (const auto &player_ref : players) {
+    auto &player = player_ref.get();
+    auto controller_opt = player.get_script<BehaviorScript, PlayerController>();
+
+    if (!controller_opt.has_value()) continue;
+
+    auto controller = &controller_opt->get();
+    if (controller->lives() > 0) {
+      alive_count++;
+      last_alive_player = &player;
+    }
+  }
+
+  if (alive_count == 1 && last_alive_player != nullptr) {
+    winner_player_ = *last_alive_player;
+    round_end();
+  } 
+  else if (alive_count == 0) {
+    winner_player_ = std::nullopt;
+    round_end();
+  }
+}
+
+void RoundController::round_end() {
+  round_active_ = false;
+  
   for (auto &callback : round_end_callbacks) {
     callback();
   }
+  
+  auto& multiplayer_service = Engine::instance().services->get_service<MultiplayerService>().get();
+  if (multiplayer_service.get_peer_type() != PeerType::HOST) return;
+  
+  if (!winner_player_) return;
+  std::string winner_uuid;
+
+  if (const auto& network_id = winner_player_->get().get_component<NetworkIdentity>(); network_id.has_value()) {
+    winner_uuid = network_id.value().get().uuid();
+  } 
+
+  MsgRoundEnd body{};
+  std::strncpy(body.winner_uuid, winner_uuid.c_str(), sizeof(body.winner_uuid) - 1);
+  body.draw = winner_uuid.empty();
+
+  Message msg = serialize_message(body, CustomMessageTypes::ROUND_END);
+  multiplayer_service.send(msg);
 }
 
 void RoundController::on_round_end(const round_end_callback_t &callback) {

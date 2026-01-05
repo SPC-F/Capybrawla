@@ -18,6 +18,9 @@ private:
   size_t last_spawn_index_ = 0;
   Vector3 spawn_position_;
 
+  bool round_active_{true};
+  std::optional<std::reference_wrapper<PlayerObject>> winner_player_;
+
   std::vector<round_end_callback_t> round_end_callbacks;
   std::vector<std::reference_wrapper<PlayerObject>> players;
   std::map<std::string, lib::Subscription> on_player_health_changed_subscriptions;
@@ -30,21 +33,22 @@ private:
   void spawn_dead_player(const PlayerObject &player);
   void spawn_respawn_platform(const Vector3 &position, Vector3 spawn_position);
 
-  void round_end() const;
+  void check_round_end_conditions();
   void realign_player_info_positions();
 
 public:
   explicit RoundController(std::vector<Vector3> spawn_positions);
   void on_awake() override;
   void on_update(float dt) override;
-
+  
   void add_player(PlayerObject& player);
   void remove_player(PlayerObject &player);
-
+  
   void respawn_player(const PlayerObject &player, Vector3 pos);
-
+  
   bool is_player_registered(const PlayerObject& player) const;
-
+  
+  void round_end();
   void on_round_end(const round_end_callback_t &callback);
 
   [[nodiscard]] std::vector<Vector3> spawn_positions() const;
