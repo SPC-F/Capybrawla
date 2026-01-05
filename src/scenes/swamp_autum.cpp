@@ -90,8 +90,15 @@ RoundController& SwampAutumScene::add_multiplayer_round_controller() {
     };
 
     GameObject& wrapper = scene().add_game_object("RoundControllerWrapper");
+    
     auto& comp = wrapper.add_component<BehaviorScript>(std::make_unique<RoundController>(respawn_positions));
-    return *dynamic_cast<RoundController*>(&comp.behavior());
+    auto& controller = *dynamic_cast<RoundController*>(&comp.behavior());
+    controller.on_round_end([this]() {
+        auto& scene_service = Engine::instance().services->get_service<SceneService>().get();
+        scene_service.load_scene("MainMenuScene");
+    });
+
+    return controller;
 }
 
 MultiplayerController& SwampAutumScene::add_multiplayer_controller() {
@@ -332,6 +339,15 @@ void SwampAutumScene::register_client_handlers(MultiplayerService& multiplayer_s
         handle_player_drop_weapon(data);
     });
 
+    multiplayer_service.register_handler(CustomMessageTypes::USER_RESPAWN, [this, &controller](const Message& message) {
+        MsgUserRespawn data{};
+        std::memcpy(&data, message.payload.data(), sizeof(data));
+
+        if (auto player_opt = get_network_player_object(data.uuid); player_opt.has_value()) {
+            controller.respawn_player(player_opt.value().get(), {data.x, data.y, data.z});
+        }
+    });
+
     multiplayer_service.register_handler(CustomMessageTypes::DROP_SPAWN, [this, &prefab_service, &scene](const Message& message) {
         MsgDropSpawn data{};
         std::memcpy(&data, message.payload.data(), sizeof(data));
@@ -353,12 +369,21 @@ void SwampAutumScene::register_client_handlers(MultiplayerService& multiplayer_s
         }
     });
 
-    multiplayer_service.register_handler(CustomMessageTypes::USER_RESPAWN, [this, &controller](const Message& message) {
-        MsgUserRespawn data{};
+    multiplayer_service.register_handler(CustomMessageTypes::ROUND_END, [this, &controller, &scene](const Message& message) {
+        MsgRoundEnd data{};
         std::memcpy(&data, message.payload.data(), sizeof(data));
 
-        if (auto player_opt = get_network_player_object(data.uuid); player_opt.has_value()) {
-            controller.respawn_player(player_opt.value().get(), {data.x, data.y, data.z});
+        if (auto player_opt = get_network_player_object(data.winner_uuid); player_opt.has_value()) {
+            /// TODO: Show winner UI
+        }
+
+        for (auto& object_ref : scene.game_objects()) {
+            auto& object = object_ref.get();
+            
+            auto round_controller_opt = object.get_script<BehaviorScript, RoundController>();
+            if (round_controller_opt.has_value()) {
+                round_controller_opt->get().round_end();
+            }
         }
     });
 }

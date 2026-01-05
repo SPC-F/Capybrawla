@@ -11,6 +11,8 @@ enum class CustomMessageTypes : uint16_t {
     USER_RESPAWN,
     USER_DROP_WEAPON,
     DROP_SPAWN,
+
+    ROUND_END
 };
 
 struct MsgUserJoin {
@@ -46,4 +48,9 @@ struct MsgUserRespawn {
 
 struct MsgUserDropWeapon {
     char uuid[37];
+};
+
+struct MsgRoundEnd {
+    char winner_uuid[37];
+    bool draw;
 };
