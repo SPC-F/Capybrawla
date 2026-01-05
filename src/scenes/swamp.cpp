@@ -1,17 +1,15 @@
 #include <game/scenes/swamp.h>
 
-#include <game/character/gui/player_info_component.h>
 #include <game/behaviors/interactable/ItemDropper.h>
 #include <game/character/player_outofbounds_behavior.h>
 #include <game/character/player_object.h>
+#include <game/character/player_controller.h>
 #include <game/prefabs/ai_drone_agent_object.h>
-#include <game/prefabs/cloud_platform_object.h>
 #include <game/prefabs/config/health_pack_config.h>
 #include <game/prefabs/config/weapon_bat_config.h>
 #include <game/prefabs/config/weapon_sword_config.h>
 #include <game/prefabs/config/weapon_axe_config.h>
 #include <game/round/roundcontroller.h>
-#include <game/scenes/swamp.h>
 #include <game/scripts/timer/RoundTimer.h>
 
 #include <engine/audio/audio_service.h>
@@ -19,6 +17,7 @@
 #include <engine/public/components/sprite.h>
 #include <engine/public/gameObject.h>
 #include <engine/public/util/layers.h>
+#include <engine/public/behavior.h>
 #include <engine/public/components/behaviorscript.h>
 #include <engine/public/components/animator.h>
 
@@ -37,8 +36,29 @@ void SwampScene::load_players(Scene& scene, RoundController& controller, float s
     player.set_controllable();
     player.user_name("Real player");
 
+    auto& player_controller = player.get_script<BehaviorScript, PlayerController>()->get();
+    this->on_player_lives_changed_subscription_ = player_controller.on_lives_changed([&player_controller](const int, const int new_lives) {
+        if (new_lives == player_controller.max_lives()) {
+            return;
+        }
+        player_controller.lives(player_controller.max_lives());
+    });
+
     auto& ai_player = scene.add_game_object<PlayerObject>(scene, Vector3{start_x + 40.0f, 100.0f, 0}, false);
     ai_player.user_name("AI Player");
+    ai_player.add_component<BehaviorScript>(std::make_unique<PlayerOutOfBoundsBehavior>(
+      -out_of_bounds_margin_x_,
+      map_width_ + out_of_bounds_margin_x_,
+      -out_of_bounds_margin_y_,
+      map_height_ + out_of_bounds_margin_y_));
+
+    auto& ai_player_controller = ai_player.get_script<BehaviorScript, PlayerController>()->get();
+    this->on_ai_lives_changed_subscription_ = ai_player_controller.on_lives_changed([&ai_player_controller](const int, const int new_lives) {
+        if (new_lives == ai_player_controller.max_lives()) {
+            return;
+        }
+        ai_player_controller.lives(ai_player_controller.max_lives());
+    });
 
     controller.add_player(player);
     controller.add_player(ai_player);
