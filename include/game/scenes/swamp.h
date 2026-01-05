@@ -11,8 +11,8 @@ public:
     SwampScene();
     virtual ~SwampScene() = default;
 
-    virtual void setup(Scene& scene) override;
-    virtual void load(Scene& scene) override;
+    void setup(Scene& scene) override;
+    void load(Scene& scene) override;
     
 private:
     void load_players(Scene& scene, RoundController& controller, float start_x, float start_y);
@@ -25,4 +25,7 @@ private:
     float out_of_bounds_margin_y_ = 270.0f;
     float map_width_ = 1920.0f;
     float map_height_ = 1080.0f;
+
+    lib::Subscription on_player_lives_changed_subscription_;
+    lib::Subscription on_ai_lives_changed_subscription_;
 };

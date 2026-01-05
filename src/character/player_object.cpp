@@ -40,7 +40,7 @@ PlayerObject::PlayerObject(Scene &scene, const Vector3 initial_pos, bool is_loca
   this->add_component<BoxCollider2D>(0.6f, .0f, 20 * scale_factor,
                                      default_height, default_offset);
 
-  this->add_component<BehaviorScript>(std::make_unique<PlayerController>(100, 100));
+  this->add_component<BehaviorScript>(std::make_unique<PlayerController>(100, 100, 3));
   this->add_component<BehaviorScript>(std::make_unique<PlayerMovementBehavior>(
       default_height, default_height / 2.0f, default_offset,
       Point{default_x_offset, default_height / 3.2f * scale_factor}));
