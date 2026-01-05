@@ -1,17 +1,14 @@
 #include <game/scenes/swamp.h>
 
-#include <game/character/gui/player_info_component.h>
 #include <game/behaviors/interactable/ItemDropper.h>
 #include <game/character/player_outofbounds_behavior.h>
 #include <game/character/player_object.h>
 #include <game/prefabs/ai_drone_agent_object.h>
-#include <game/prefabs/cloud_platform_object.h>
 #include <game/prefabs/config/health_pack_config.h>
 #include <game/prefabs/config/weapon_bat_config.h>
 #include <game/prefabs/config/weapon_sword_config.h>
 #include <game/prefabs/config/weapon_axe_config.h>
 #include <game/round/roundcontroller.h>
-#include <game/scenes/swamp.h>
 #include <game/scripts/timer/RoundTimer.h>
 
 #include <engine/audio/audio_service.h>
@@ -39,6 +36,11 @@ void SwampScene::load_players(Scene& scene, RoundController& controller, float s
 
     auto& ai_player = scene.add_game_object<PlayerObject>(scene, Vector3{start_x + 40.0f, 100.0f, 0}, false);
     ai_player.user_name("AI Player");
+    ai_player.add_component<BehaviorScript>(std::make_unique<PlayerOutOfBoundsBehavior>(
+      -out_of_bounds_margin_x_,
+      map_width_ + out_of_bounds_margin_x_,
+      -out_of_bounds_margin_y_,
+      map_height_ + out_of_bounds_margin_y_));
 
     controller.add_player(player);
     controller.add_player(ai_player);
