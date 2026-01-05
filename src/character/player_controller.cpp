@@ -13,8 +13,8 @@
 #include <engine/audio/audio_service.h>
 #include <engine/core/engine.h>
 
-PlayerController::PlayerController(): PlayerController(100, 100) {}
-PlayerController::PlayerController(const int max_health, const int start_health): max_health_(max_health), health_ { start_health }, lives_(3) {}
+PlayerController::PlayerController(): PlayerController(100, 100, 3) {}
+PlayerController::PlayerController(const int max_health, const int start_health, const int max_lives): max_health_(max_health), health_ { start_health }, lives_(max_lives), max_lives_(max_lives) {}
 
 void PlayerController::on_update(float dt) {}
 
@@ -97,6 +97,7 @@ lib::Subscription PlayerController::on_lives_changed(
           });
   });
 }
+int PlayerController::max_lives() const { return max_lives_; }
 void PlayerController::notify_lives_changed(const int old_lives) const {
   for (const auto &signal : lives_changed_signals_) {
     signal.invoke(old_lives, lives_);

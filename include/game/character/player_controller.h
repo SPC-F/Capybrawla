@@ -14,13 +14,14 @@ private:
   std::vector<lib::Signal<int, int>> health_changed_signals_;
   void notify_health_changed(int old_health) const;
 
+  int max_lives_{3};
   int lives_;
   std::vector<lib::Signal<int, int>> lives_changed_signals_;
   void notify_lives_changed(int old_lives) const;
 
 public:
   explicit PlayerController();
-  explicit PlayerController(int max_health, int start_health);
+  explicit PlayerController(int max_health, int start_health, int max_lives);
   ~PlayerController() override = default;
 
   void on_update(float dt) override;
@@ -38,6 +39,7 @@ public:
   [[nodiscard]] int lives() const;
   void lives(int lives);
   lib::Subscription on_lives_changed(const lives_changed_callback_t &callback);
+  [[nodiscard]] int max_lives() const;
 
   [[nodiscard]] bool is_soft_dead() const;
   [[nodiscard]] bool is_hard_dead() const;
