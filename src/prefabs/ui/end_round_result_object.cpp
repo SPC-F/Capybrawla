@@ -27,27 +27,41 @@ EndRoundResultObject::EndRoundResultObject(Scene& scene, std::optional<std::refe
     std::string draw_text = "Draw!";
     std::string winner_text = "Winner: " + (player_opt.has_value() ? player_opt->get().user_name() : "Capybara");
     std::string display_text = is_draw ? draw_text : winner_text;
+
+    float text_width = 400.0f;
+    float text_height = 200.0f;
     auto& text = scene.add_game_object<UIText>(
         scene,
         display_text,
         "ByteBounce",
         "resources/fonts/bytebounce/ByteBounce.ttf",
-        400,
-        400,
+        text_width,
+        text_height,
         Point{0.5f, 0.5f},
         Point{0.5f, 0.5f}
     );
 
     text.parent(*this);
-    text.transform().position({screen_width / 2.0f - 140, screen_height / 2.0f, 0.0f});
     text.font_size(116);
     text.layer(Layers::UI + 2);
+    text.transform().position({
+        (screen_width - text_width) / 2.0f,
+        (screen_height - text_height) / 2.0f - 80.0f,
+        0.0f
+    });
 
     auto& capybara = scene.add_game_object("WinningCapybara");
     capybara.parent(*this);
     capybara.add_component<Sprite>("capybara_default_duck_anim", Color(), 0, 0, 0, 0);
-    capybara.transform().position({screen_width / 2.0f, screen_height / 2.0f, 0.0f});
     capybara.transform().scale({4.0f, 4.0f, 1.0f});
+
+    float capybara_width = 32.0f * 4.0f;
+    float capybara_height = 32.0f * 4.0f;
+    capybara.transform().position({
+        (screen_width - capybara_width) / 2.0f,
+        (screen_height + text_height) / 2.0f + 20.0f,
+        0.0f
+    });
     capybara.layer(Layers::UI + 3);
 
     this->add_component<BehaviorScript>(std::make_unique<EndRoundContinueBehavior>());
