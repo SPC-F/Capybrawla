@@ -99,12 +99,6 @@ RoundController& SwampAutumScene::add_multiplayer_round_controller() {
     return controller;
 }
 
-// MultiplayerController& SwampAutumScene::add_multiplayer_controller() {
-//     GameObject& wrapper = scene().add_game_object("MultiplayerControllerWrapper");
-//     auto& comp = wrapper.add_component<BehaviorScript>(std::make_unique<MultiplayerController>());
-//     return *dynamic_cast<MultiplayerController*>(&comp.behavior());
-// }
-
 std::optional<std::reference_wrapper<PlayerObject>> SwampAutumScene::get_network_player_object(const std::string& uuid) {
     for (auto& game_object_ref : scene().game_objects()) {
         auto& game_object = game_object_ref.get();
