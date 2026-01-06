@@ -12,6 +12,9 @@
 #include <engine/public/components/network_identity.h>
 #include <engine/public/gameObject.h>
 
+WeaponAxeInteractableBehavior::WeaponAxeInteractableBehavior(bool is_dropped)
+    : is_dropped_{is_dropped} {}
+
 void WeaponAxeInteractableBehavior::on_start() {
     auto collider_opt = get_component<BoxCollider2D>();
     if (!collider_opt.has_value()) {
@@ -71,7 +74,7 @@ void WeaponAxeInteractableBehavior::on_update(float dt) {
         rb.velocity({0.0f, rb.velocity().y, 0.0f});
     }
 
-    if (time_since_spawn_ > destroy_delay_) {
+    if (time_since_spawn_ > destroy_delay_ && is_dropped_) {
         this->game_object().mark_for_deletion();
         return;
     }

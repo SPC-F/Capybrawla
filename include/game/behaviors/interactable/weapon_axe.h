@@ -5,12 +5,13 @@
 
 class WeaponAxeInteractableBehavior : public Behavior {
 public:
-    WeaponAxeInteractableBehavior() = default;
+    WeaponAxeInteractableBehavior(bool is_dropped = false);
     ~WeaponAxeInteractableBehavior() override = default;
 
     void on_start() override;
     void on_update(float dt) override;
 private:
+    bool is_dropped_{false};
     float pickup_delay_{0.2f};
     float destroy_delay_{15.0f};
     float time_since_spawn_{0.0f};
