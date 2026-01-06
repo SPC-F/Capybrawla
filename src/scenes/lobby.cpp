@@ -8,6 +8,7 @@
 #include <engine/public/ui/ui_text.h>
 #include <engine/public/ui/interactable/ui_button.h>
 #include <engine/public/util/layers.h>
+#include <engine/public/scene_service.h>
 
 #include <game/scenes/lobby.h>
 #include <game/character/player_object.h>
@@ -36,7 +37,7 @@ std::vector<std::string> colors_2 = {"default", "red", "blue", "green"};
 LobbyScene::LobbyScene() : Level("Level_LobbyScene"), multiplayer_controller_{create_multiplayer_controller()} {}
 
 void LobbyScene::setup(Scene& scene) {
-
+    multiplayer_controller_.mark_dont_destroy_on_load(true);
 }
 
 void LobbyScene::load(Scene& scene) {
@@ -170,6 +171,12 @@ void LobbyScene::register_client_handlers(MultiplayerService& multiplayer_servic
         }
     });
 
+    multiplayer_service.register_handler(CustomMessageTypes::ROUND_START, [&multiplayer_service, this](const Message& message) {
+        // TODO: Unregister handlers
+        auto& scene_service = Engine::instance().services->get_service<SceneService>().get();
+        scene_service.load_scene("Level_SwampAutumScene");
+    });
+
     if (auto controller_opt = multiplayer_controller_.get_script<BehaviorScript, MultiplayerController>(); controller_opt.has_value()) {
         auto& controller = controller_opt.value().get();
 
@@ -249,7 +256,20 @@ void LobbyScene::create_start_button() {
     // start_button.parent(parent);
     if (multiplayer_service.get_peer_type() == PeerType::HOST) {
         start_button.add_on_press([this](UIButton& /*btn*/) {
-            
+            if (auto controller_opt = multiplayer_controller_.get_script<BehaviorScript, MultiplayerController>(); controller_opt.has_value()) {
+                auto& controller = controller_opt.value().get();
+
+                if (controller.users().size() < 2) return;
+
+                MsgRoundStart data{};
+                Message msg = serialize_message(data, CustomMessageTypes::ROUND_START);
+                Engine::instance().services->get_service<MultiplayerService>().get().send(msg);
+
+                // TODO: Also unregister listeners
+                // TODO: Switch scene and load data to start the game
+                auto& scene_service = Engine::instance().services->get_service<SceneService>().get();
+                scene_service.load_scene("Level_SwampAutumScene");
+            }
         });
     } else {
         start_button.disable();

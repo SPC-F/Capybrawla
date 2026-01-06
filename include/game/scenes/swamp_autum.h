@@ -30,7 +30,7 @@ private:
     PlayerObject& create_player_object(const std::string& name);
     GameObject& create_interactable_dropper(const std::string& name);
     RoundController& add_multiplayer_round_controller();
-    MultiplayerController& add_multiplayer_controller();
+    // MultiplayerController& add_multiplayer_controller();
 
     void handle_player_movement_update(const MsgUserMove& data);
     void handle_player_attack(const MsgUserAttack& data);

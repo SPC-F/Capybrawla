@@ -294,8 +294,8 @@ void Game::initialize() {
     settings::apply_current_settings();
 
     levels_.emplace_back(std::make_unique<SwampScene>());
-    // levels_.emplace_back(std::make_unique<SwampAutumScene>());
     levels_.emplace_back(std::make_unique<LobbyScene>());
+    levels_.emplace_back(std::make_unique<SwampAutumScene>());
 
     for (auto& level : levels_) {
         level->init();

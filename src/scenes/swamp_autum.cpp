@@ -79,7 +79,7 @@ GameObject& SwampAutumScene::create_interactable_dropper(const std::string& name
 
     Engine& engine = Engine::instance();
     auto& multiplayer_service = engine.services->get_service<MultiplayerService>().get();
-    obj.add_component<NetworkIdentity>(name.c_str());
+    obj.add_component<NetworkIdentity>(name.c_str()).mark_dirty();
 
     return obj;
 }
@@ -99,11 +99,11 @@ RoundController& SwampAutumScene::add_multiplayer_round_controller() {
     return controller;
 }
 
-MultiplayerController& SwampAutumScene::add_multiplayer_controller() {
-    GameObject& wrapper = scene().add_game_object("MultiplayerControllerWrapper");
-    auto& comp = wrapper.add_component<BehaviorScript>(std::make_unique<MultiplayerController>());
-    return *dynamic_cast<MultiplayerController*>(&comp.behavior());
-}
+// MultiplayerController& SwampAutumScene::add_multiplayer_controller() {
+//     GameObject& wrapper = scene().add_game_object("MultiplayerControllerWrapper");
+//     auto& comp = wrapper.add_component<BehaviorScript>(std::make_unique<MultiplayerController>());
+//     return *dynamic_cast<MultiplayerController*>(&comp.behavior());
+// }
 
 std::optional<std::reference_wrapper<PlayerObject>> SwampAutumScene::get_network_player_object(const std::string& uuid) {
     for (auto& game_object_ref : scene().game_objects()) {
@@ -206,72 +206,41 @@ void SwampAutumScene::load(Scene& scene) {
     Engine& engine = Engine::instance();
     auto& multiplayer_service = engine.services->get_service<MultiplayerService>().get();
     auto& prefab_service = engine.services->get_service<PrefabService>().get();
-    RoundController& controller = add_multiplayer_round_controller();
+    RoundController& round_controller = add_multiplayer_round_controller();
+    
+    std::optional<std::reference_wrapper<GameObject>> multiplayer_controller_opt;
 
-    MultiplayerController& multiplayer_controller = add_multiplayer_controller();
+    for (auto& obj : scene.game_objects()) {
+        if (obj.get().name() == "MultiplayerController") {
+            multiplayer_controller_opt = obj;
+            break;
+        }
+    }
+
+    if (multiplayer_controller_opt.has_value()) {
+        auto& multiplayer_controller = multiplayer_controller_opt.value().get();
+        if (auto multiplayer_controller_behavior_opt = multiplayer_controller.get_script<BehaviorScript, MultiplayerController>(); multiplayer_controller_behavior_opt.has_value()) {
+            auto& multiplayer_controller_behavior = multiplayer_controller_behavior_opt.value().get();
+
+            for (auto& [key, value] : multiplayer_controller_behavior.users()) {
+                auto& player = *dynamic_cast<PlayerObject*>(&prefab_service.instantiate("PlayerObject", scene, value.uuid).get());
+
+                if (value.uuid == multiplayer_service.get_uuid()) {
+                    player.set_local_player();
+                    player.set_controllable();
+                }
+
+                round_controller.add_player(player);
+            }
+        }
+    }
+
     if (multiplayer_service.get_peer_type() == PeerType::HOST) {
-        multiplayer_service.set_max_clients(4);
-        multiplayer_service.set_connection_port(1024);
-        multiplayer_service.start_server();
-
-        multiplayer_service.register_handler(CustomMessageTypes::USER_JOIN, [&multiplayer_service, &controller, &prefab_service, &scene](const Message& message) {
-            MsgUserJoin data{};
-            std::memcpy(&data, message.payload.data(), sizeof(data));
-
-            std::cout << "New user joined with UUID " << data.uuid << std::endl;
-            Message msg = serialize_message(data, CustomMessageTypes::USER_JOIN);
-            multiplayer_service.send(msg);
-
-            auto& player = *dynamic_cast<PlayerObject*>(&prefab_service.instantiate("PlayerObject", scene, data.uuid).get());
-            controller.add_player(player);
-        });
-
         register_host_handlers(multiplayer_service, scene, prefab_service);
-
-        auto& player = *dynamic_cast<PlayerObject*>(&prefab_service.instantiate("PlayerObject", scene, multiplayer_service.get_uuid().c_str()).get());
-        player.set_local_player();
-        player.set_controllable();
-        controller.add_player(player);
 
         SwampAutumScene::load_interactables(scene);
     } else {
-        multiplayer_controller.on_connection_state_change([&scene, &multiplayer_service, &controller](ConnectionState old_state, ConnectionState new_state) {
-            if (new_state == ConnectionState::CONNECTED) {
-                std::cout << "Connected with UUID " << multiplayer_service.get_uuid() << std::endl;
-
-                MsgUserJoin data{};
-                std::strncpy(data.uuid, multiplayer_service.get_uuid().c_str(), sizeof(data.uuid) - 1);
-
-                Message msg = serialize_message(data, CustomMessageTypes::USER_JOIN);
-                multiplayer_service.send(msg);
-
-                // Sync unregistered player objects
-                for (auto& game_object_ref : scene.game_objects()) {
-                    auto& game_object = game_object_ref.get();
-                    if (auto player = dynamic_cast<PlayerObject*>(&game_object)) {
-                        if (!controller.is_player_registered(*player)) {
-                            controller.add_player(*player);
-                        }
-                    }
-                }
-            }
-        });
-
-        multiplayer_service.register_handler(CustomMessageTypes::USER_JOIN, [&multiplayer_service, &controller, &prefab_service, &scene](const Message& message) {
-            MsgUserJoin data{};
-            std::memcpy(&data, message.payload.data(), sizeof(data));
-
-            std::cout << "New user joined with UUID " << data.uuid << std::endl;
-
-            auto& player = *dynamic_cast<PlayerObject*>(&prefab_service.instantiate("PlayerObject", scene, data.uuid).get());
-            controller.add_player(player);
-            if (data.uuid == multiplayer_service.get_uuid()) {
-                player.set_local_player();
-                player.set_controllable();
-            }
-        });
-
-        register_client_handlers(multiplayer_service, scene, prefab_service, controller);
+        register_client_handlers(multiplayer_service, scene, prefab_service, round_controller);
     }
 }
 

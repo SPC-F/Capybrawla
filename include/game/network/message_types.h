@@ -13,6 +13,7 @@ enum class CustomMessageTypes : uint16_t {
     DROP_SPAWN,
 
     LOBBY_DATA,
+    ROUND_START,
     ROUND_END
 };
 
@@ -60,6 +61,10 @@ struct MsgUserRespawn {
 
 struct MsgUserDropWeapon {
     char uuid[37];
+};
+
+struct MsgRoundStart {
+    // Don't need any data to send
 };
 
 struct MsgRoundEnd {
