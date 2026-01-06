@@ -31,3 +31,42 @@ void MultiplayerController::on_update(float dt) {
 void MultiplayerController::on_connection_state_change(connection_state_change_callback_t callback) {
     connection_state_change_callbacks.push_back(callback);
 }
+
+void MultiplayerController::register_user(std::string uuid) {
+    for (uint16_t i = 0; i <= static_cast<uint16_t>(UserColor::GREEN); ++i) {
+        auto color = static_cast<UserColor>(i);
+
+        if (users_.find(color) == users_.end()) {
+            users_.emplace(color, uuid);
+            return;
+        }
+    }
+}
+
+void MultiplayerController::unregister_user(std::string uuid) {
+    auto it = std::find_if(users_.begin(), users_.end(), [&](const auto& pair) {
+            return pair.second == uuid;
+        });
+
+    if (it == users_.end()) return;
+
+    auto shift_it = std::next(it);
+    users_.erase(it);
+
+    while (shift_it != users_.end()) {
+        auto current = shift_it++;
+        UserColor old_color = current->first;
+        const std::string value = current->second;
+
+        users_.erase(current);
+
+        UserColor new_color = static_cast<UserColor>(static_cast<uint16_t>(old_color) - 1);
+
+        users_.emplace(new_color, value);
+    }
+}
+
+
+std::map<UserColor, std::string> MultiplayerController::users() {
+    return users_;
+}
