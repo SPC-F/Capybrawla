@@ -172,7 +172,6 @@ void LobbyScene::register_client_handlers(MultiplayerService& multiplayer_servic
     });
 
     multiplayer_service.register_handler(CustomMessageTypes::ROUND_START, [&multiplayer_service, this](const Message& message) {
-        // TODO: Unregister handlers
         auto& scene_service = Engine::instance().services->get_service<SceneService>().get();
         scene_service.load_scene("Level_SwampAutumScene");
     });
@@ -253,7 +252,7 @@ void LobbyScene::create_start_button() {
         window_height / 4 * 3,
         "button_large_red"
     );
-    // start_button.parent(parent);
+
     if (multiplayer_service.get_peer_type() == PeerType::HOST) {
         start_button.add_on_press([this](UIButton& /*btn*/) {
             if (auto controller_opt = multiplayer_controller_.get_script<BehaviorScript, MultiplayerController>(); controller_opt.has_value()) {
@@ -265,8 +264,6 @@ void LobbyScene::create_start_button() {
                 Message msg = serialize_message(data, CustomMessageTypes::ROUND_START);
                 Engine::instance().services->get_service<MultiplayerService>().get().send(msg);
 
-                // TODO: Also unregister listeners
-                // TODO: Switch scene and load data to start the game
                 auto& scene_service = Engine::instance().services->get_service<SceneService>().get();
                 scene_service.load_scene("Level_SwampAutumScene");
             }
