@@ -92,19 +92,35 @@ private:
             "button_large_red"
         );
         btn.parent(*this);
-        btn.add_on_press([this](UIButton&)
+        btn.add_on_press([this, &scene](UIButton&)
         {
             auto& multiplayer_service = Engine::instance().services->get_service<MultiplayerService>().get();
             if (multiplayer_service.get_connection_state() == ConnectionState::CONNECTED) {
-                // TODO: CLEAN LEAVE, First send leave message and clean stuff. Then disconnect.
-                
-                if (multiplayer_service.get_peer_type() == PeerType::CLIENT) {
-                    MsgUserLeave data{};
-                    std::memcpy(&data, multiplayer_service.get_uuid().c_str(), sizeof(data));
+                MsgUserLeave data{};
+                std::memcpy(&data, multiplayer_service.get_uuid().c_str(), sizeof(data));
 
-                    Message msg = serialize_message(data, CustomMessageTypes::USER_LEAVE);
-                    multiplayer_service.send(msg);
+                Message msg = serialize_message(data, CustomMessageTypes::USER_LEAVE);
+                multiplayer_service.send(msg);
+
+                std::optional<std::reference_wrapper<GameObject>> multiplayer_controller_opt;
+                for (auto& obj : scene.game_objects()) {
+                    if (obj.get().name() == "MultiplayerController") {
+                        multiplayer_controller_opt = obj;
+                        break;
+                    }
                 }
+
+                if (multiplayer_controller_opt.has_value()) {
+                    multiplayer_controller_opt.value().get().mark_dont_destroy_on_load(false);
+                }
+
+                multiplayer_service.unregister_handler(CustomMessageTypes::USER_JOIN);
+                multiplayer_service.unregister_handler(CustomMessageTypes::USER_LEAVE);
+                if (multiplayer_service.get_peer_type() == PeerType::CLIENT) {
+                    multiplayer_service.unregister_handler(CustomMessageTypes::ROUND_START);
+                    multiplayer_service.unregister_handler(CustomMessageTypes::LOBBY_DATA);
+                }
+
                 multiplayer_service.disconnect();
             } 
             else if (multiplayer_service.get_connection_state() != ConnectionState::NONE
