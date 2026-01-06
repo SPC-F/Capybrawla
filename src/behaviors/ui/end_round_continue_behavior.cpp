@@ -14,6 +14,6 @@ void EndRoundContinueBehavior::on_update(float dt) {
         game_object().mark_for_deletion();
 
         auto& scene_service = Engine::instance().services->get_service<SceneService>().get();
-        scene_service.load_scene("MainMenuScene");
+        scene_service.load_scene("Level_LobbyScene");
     }
 }
