@@ -169,8 +169,18 @@ void SwampAutumScene::handle_player_drop_weapon(const MsgUserDropWeapon& data) {
 
 void SwampAutumScene::setup(Scene& scene) {
     add_on_stop_callback([](Scene& scene) {
+        auto& audio_service = Engine::instance().services->get_service<AudioService>().get();
+        audio_service.stop_all_sounds();
+
         auto& multiplayer_service = Engine::instance().services->get_service<MultiplayerService>().get();
-        multiplayer_service.disconnect();
+        multiplayer_service.unregister_handler(CustomMessageTypes::USER_DROP_WEAPON);
+        multiplayer_service.unregister_handler(CustomMessageTypes::USER_MOVE);
+        multiplayer_service.unregister_handler(CustomMessageTypes::USER_ATTACK);
+
+        if (multiplayer_service.get_peer_type() == PeerType::CLIENT) {
+            multiplayer_service.unregister_handler(CustomMessageTypes::USER_RESPAWN);
+            multiplayer_service.unregister_handler(CustomMessageTypes::DROP_SPAWN);
+        }
     });
 
     PrefabService& prefab_service = Engine::instance().services->get_service<PrefabService>().get();
