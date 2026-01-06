@@ -50,9 +50,10 @@ EndRoundResultObject::EndRoundResultObject(Scene& scene, std::optional<std::refe
         0.0f
     });
 
+    std::string capybara_sprite = player_opt.has_value() ? player_opt.value().get().constants().death_animation.data() : "capybara_default_duck_anim";
     auto& capybara = scene.add_game_object("WinningCapybara");
     capybara.parent(*this);
-    capybara.add_component<Sprite>("capybara_default_duck_anim", Color(), 0, 0, 0, 0);
+    capybara.add_component<Sprite>(capybara_sprite, Color(), 0, 0, 0, 0);
     capybara.transform().scale({4.0f, 4.0f, 1.0f});
 
     float capybara_width = 32.0f * 4.0f;

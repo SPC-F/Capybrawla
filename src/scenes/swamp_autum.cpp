@@ -224,6 +224,8 @@ void SwampAutumScene::load(Scene& scene) {
 
             for (auto& [key, value] : multiplayer_controller_behavior.users()) {
                 auto& player = *dynamic_cast<PlayerObject*>(&prefab_service.instantiate("PlayerObject", scene, value.uuid).get());
+                player.user_name(value.username);
+                player.user_color(static_cast<PlayerColor>(value.color));
 
                 if (value.uuid == multiplayer_service.get_uuid()) {
                     player.set_local_player();

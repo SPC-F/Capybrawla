@@ -47,9 +47,8 @@ namespace PlayerInfoComponent {
 
     GameObject &left_col(Scene &scene, const PlayerObject &player) {
         GameObject &left_col = scene.add_game_object("");
-
         auto &player_background = scene.add_game_object<UIImage>(scene, "button_small_black_empty", left_col_width, left_col_height, Point{}, Point{});
-        auto &player_skin_image = scene.add_game_object<UIImage>(scene, "capybara_default_head", left_col_width, left_col_height, Point{}, Point{});
+        auto &player_skin_image = scene.add_game_object<UIImage>(scene, player.constants().head_texture.data(), left_col_width, left_col_height, Point{}, Point{});
         auto &player_border = scene.add_game_object<UIImage>(scene, "button_small_hollow", left_col_width, left_col_height, Point{}, Point{});
 
         left_col.add_child(player_background);

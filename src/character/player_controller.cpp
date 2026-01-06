@@ -1,3 +1,4 @@
+#include <game/character/player_object.h>
 #include <game/character/player_controller.h>
 #include <game/character/playerConstants.h>
 #include <game/prefabs/character/dying_capybara_object.h>
@@ -117,7 +118,7 @@ void PlayerController::hit(int damage) {
   
   if (animator) {
     animator->get().is_non_interruptible(true);
-    animator->get().play(PlayerConstants::HIT_ANIMATION, false);
+    animator->get().play(dynamic_cast<PlayerObject*>(&game_object())->constants().hit_animation.data(), false);
   }
 
   this->damage(damage);

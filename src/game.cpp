@@ -59,8 +59,43 @@ void Game::initialize() {
         {"character/capybara_default_duck_anim.png", "capybara_default_duck_anim_sheet", 1, 7},
 
         {"character/capybara_red_idle.png", "capybara_red_idle", 1, 1},
+        {"character/capybara_red_head.png", "capybara_red_head", 1, 1},
+        {"character/capybara_red_duck.png", "capybara_red_duck", 1, 1},
+        {"character/capybara_red_jump.png", "capybara_red_jump", 1, 1},
+        {"character/capybara_red_death.png", "capybara_red_death", 1, 1},
+        {"character/capybara_red_hit.png", "capybara_red_hit", 1, 1},
+        {"character/capybara_red_hit_anim.png", "capybara_red_hit_anim_sheet", 1, 8},
+        {"character/capybara_red_death_anim.png", "capybara_red_death_anim_sheet", 1, 8},
+        {"character/capybara_red_walk_anim.png", "capybara_red_walk_anim_sheet", 1, 8},
+        {"character/capybara_red_idle_anim.png", "capybara_red_idle_anim_sheet", 1, 7},
+        {"character/capybara_red_jump_anim.png", "capybara_red_jump_anim_sheet", 1, 7},
+        {"character/capybara_red_duck_anim.png", "capybara_red_duck_anim_sheet", 1, 7},
+
         {"character/capybara_blue_idle.png", "capybara_blue_idle", 1, 1},
+        {"character/capybara_blue_head.png", "capybara_blue_head", 1, 1},
+        {"character/capybara_blue_duck.png", "capybara_blue_duck", 1, 1},
+        {"character/capybara_blue_jump.png", "capybara_blue_jump", 1, 1},
+        {"character/capybara_blue_death.png", "capybara_blue_death", 1, 1},
+        {"character/capybara_blue_hit.png", "capybara_blue_hit", 1, 1},
+        {"character/capybara_blue_hit_anim.png", "capybara_blue_hit_anim_sheet", 1, 8},
+        {"character/capybara_blue_death_anim.png", "capybara_blue_death_anim_sheet", 1, 8},
+        {"character/capybara_blue_walk_anim.png", "capybara_blue_walk_anim_sheet", 1, 8},
+        {"character/capybara_blue_idle_anim.png", "capybara_blue_idle_anim_sheet", 1, 7},
+        {"character/capybara_blue_jump_anim.png", "capybara_blue_jump_anim_sheet", 1, 7},
+        {"character/capybara_blue_duck_anim.png", "capybara_blue_duck_anim_sheet", 1, 7},
+
         {"character/capybara_green_idle.png", "capybara_green_idle", 1, 1},
+        {"character/capybara_green_head.png", "capybara_green_head", 1, 1},
+        {"character/capybara_green_duck.png", "capybara_green_duck", 1, 1},
+        {"character/capybara_green_jump.png", "capybara_green_jump", 1, 1},
+        {"character/capybara_green_death.png", "capybara_green_death", 1, 1},
+        {"character/capybara_green_hit.png", "capybara_green_hit", 1, 1},
+        {"character/capybara_green_hit_anim.png", "capybara_green_hit_anim_sheet", 1, 8},
+        {"character/capybara_green_death_anim.png", "capybara_green_death_anim_sheet", 1, 8},
+        {"character/capybara_green_walk_anim.png", "capybara_green_walk_anim_sheet", 1, 8},
+        {"character/capybara_green_idle_anim.png", "capybara_green_idle_anim_sheet", 1, 7},
+        {"character/capybara_green_jump_anim.png", "capybara_green_jump_anim_sheet", 1, 7},
+        {"character/capybara_green_duck_anim.png", "capybara_green_duck_anim_sheet", 1, 7},
 
         // Player status bar
         {"character/heart.png", "heart_icon", 1, 1},
@@ -256,13 +291,37 @@ void Game::initialize() {
     Assets::register_textures(textures);
 
     const std::vector<LoadAnimation> sprite_sheets {
-        // Players
+        // Players - Default
         {"capybara_default_walk_anim_sheet", "capybara_default_walk_anim", 0, 8},
         {"capybara_default_idle_anim_sheet", "capybara_default_idle_anim", 0, 7},
         {"capybara_default_jump_anim_sheet", "capybara_default_jump_anim", 0, 7},
         {"capybara_default_duck_anim_sheet", "capybara_default_duck_anim", 0, 7},
         {"capybara_default_death_anim_sheet", "capybara_default_death_anim", 0, 7},
         {"capybara_default_hit_anim_sheet", "capybara_default_hit_anim", 0, 7},
+
+        // Players - Red
+        {"capybara_red_walk_anim_sheet", "capybara_red_walk_anim", 0, 8},
+        {"capybara_red_idle_anim_sheet", "capybara_red_idle_anim", 0, 7},
+        {"capybara_red_jump_anim_sheet", "capybara_red_jump_anim", 0, 7},
+        {"capybara_red_duck_anim_sheet", "capybara_red_duck_anim", 0, 7},
+        {"capybara_red_death_anim_sheet", "capybara_red_death_anim", 0, 7},
+        {"capybara_red_hit_anim_sheet", "capybara_red_hit_anim", 0, 7},
+
+        // Players - Blue
+        {"capybara_blue_walk_anim_sheet", "capybara_blue_walk_anim", 0, 8},
+        {"capybara_blue_idle_anim_sheet", "capybara_blue_idle_anim", 0, 7},
+        {"capybara_blue_jump_anim_sheet", "capybara_blue_jump_anim", 0, 7},
+        {"capybara_blue_duck_anim_sheet", "capybara_blue_duck_anim", 0, 7},
+        {"capybara_blue_death_anim_sheet", "capybara_blue_death_anim", 0, 7},
+        {"capybara_blue_hit_anim_sheet", "capybara_blue_hit_anim", 0, 7},
+
+        // Players - Green
+        {"capybara_green_walk_anim_sheet", "capybara_green_walk_anim", 0, 8},
+        {"capybara_green_idle_anim_sheet", "capybara_green_idle_anim", 0, 7},
+        {"capybara_green_jump_anim_sheet", "capybara_green_jump_anim", 0, 7},
+        {"capybara_green_duck_anim_sheet", "capybara_green_duck_anim", 0, 7},
+        {"capybara_green_death_anim_sheet", "capybara_green_death_anim", 0, 7},
+        {"capybara_green_hit_anim_sheet", "capybara_green_hit_anim", 0, 7},
 
         // Opponents
         {"drone_idle_anim_sheet", "drone_idle_anim", 0, 7},

@@ -94,7 +94,7 @@ void RoundController::on_player_death(PlayerObject &player) {
 }
 
 void RoundController::spawn_dead_player(const PlayerObject &player) {
-  game_object().scene().add_game_object<DyingCapybaraObject>(game_object().scene(), player.transform().position(), 2.0f);  
+  game_object().scene().add_game_object<DyingCapybaraObject>(game_object().scene(), player.transform().position(), 2.0f, player.user_color());  
 }
 
 void RoundController::spawn_respawn_platform(const Vector3 &position, Vector3 spawn_position) {

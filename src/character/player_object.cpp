@@ -19,7 +19,7 @@
 #include <engine/network/multiplayer_service.h>
 
 PlayerObject::PlayerObject(Scene &scene, const Vector3 initial_pos, bool is_local_player)
-    : GameObject(scene), user_name_{"PLACEHOLDER"} {
+    : GameObject(scene), user_name_{"PLACEHOLDER"}, color_{PlayerColor::DEFAULT}, constants_{PlayerConstants::get_constants(PlayerColor::DEFAULT)} {
   this->name("PlayerObject");
   this->tag("Player");
   this->transform().position(initial_pos);
@@ -93,10 +93,13 @@ bool PlayerObject::is_local(GameObject& obj) {
   return true;
 }
 
-void PlayerObject::user_name(std::string user_name) {
-  user_name_ = user_name;
-}
+void PlayerObject::user_name(std::string user_name) { user_name_ = user_name; }
+const std::string& PlayerObject::user_name() const { return user_name_; }
 
-const std::string& PlayerObject::user_name() const {
-  return user_name_;
+void PlayerObject::user_color(PlayerColor user_color) {
+  color_ = user_color;
+  constants_ = PlayerConstants::get_constants(user_color);
 }
+const PlayerColor PlayerObject::user_color() const { return color_; }
+
+const PlayerAnimationConstants& PlayerObject::constants() const { return constants_; }
