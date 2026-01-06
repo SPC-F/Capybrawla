@@ -14,7 +14,7 @@ public:
 
 private:
     GameObject& multiplayer_controller_;
-    std::vector<GameObject*> player_frames_;
+    std::vector<std::reference_wrapper<GameObject>> player_frames_;
 
     GameObject& create_multiplayer_controller();
 

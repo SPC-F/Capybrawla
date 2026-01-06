@@ -12,6 +12,7 @@ enum class CustomMessageTypes : uint16_t {
     USER_DROP_WEAPON,
     DROP_SPAWN,
 
+    LOBBY_DATA,
     ROUND_END
 };
 
@@ -21,6 +22,17 @@ struct MsgUserJoin {
 
 struct MsgUserLeave {
     char uuid[37];
+};
+
+struct LobbyUserData {
+    char uuid[37];
+    uint16_t color;
+    char name[255];
+};
+
+struct MsgLobbyData {
+    uint32_t user_count;
+    LobbyUserData users[4];  // Max 4 players
 };
 
 struct MsgUserMove {

@@ -17,6 +17,7 @@ enum class UserColor : uint16_t {
 
 struct User {
   std::string uuid;
+  std::string username;
   UserColor color;
 };
 
@@ -26,7 +27,7 @@ private:
 
   std::vector<connection_state_change_callback_t> connection_state_change_callbacks;
 
-  std::map<UserColor, std::string> users_;
+  std::map<UserColor, User> users_;
 
 public:
     void on_update(float dt) override;
@@ -34,7 +35,8 @@ public:
     void on_connection_state_change(connection_state_change_callback_t callback);
 
     void register_user(std::string uuid);
+    void register_user(std::string uuid, std::string username, UserColor color);
     void unregister_user(std::string uuid);
 
-    std::map<UserColor, std::string> users();
+    std::map<UserColor, User> users();
 };

@@ -37,15 +37,21 @@ void MultiplayerController::register_user(std::string uuid) {
         auto color = static_cast<UserColor>(i);
 
         if (users_.find(color) == users_.end()) {
-            users_.emplace(color, uuid);
+            User new_user = {uuid, "", color};
+            users_.emplace(color, new_user);
             return;
         }
     }
 }
 
+void MultiplayerController::register_user(std::string uuid, std::string username, UserColor color) {
+    User new_user = {uuid, "PLACEHOLDER", color};
+    users_.emplace(color, new_user);
+}
+
 void MultiplayerController::unregister_user(std::string uuid) {
     auto it = std::find_if(users_.begin(), users_.end(), [&](const auto& pair) {
-            return pair.second == uuid;
+            return pair.second.uuid == uuid;
         });
 
     if (it == users_.end()) return;
@@ -56,7 +62,7 @@ void MultiplayerController::unregister_user(std::string uuid) {
     while (shift_it != users_.end()) {
         auto current = shift_it++;
         UserColor old_color = current->first;
-        const std::string value = current->second;
+        const User value = current->second;
 
         users_.erase(current);
 
@@ -67,6 +73,6 @@ void MultiplayerController::unregister_user(std::string uuid) {
 }
 
 
-std::map<UserColor, std::string> MultiplayerController::users() {
+std::map<UserColor, User> MultiplayerController::users() {
     return users_;
 }

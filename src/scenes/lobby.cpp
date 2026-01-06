@@ -83,9 +83,72 @@ void LobbyScene::register_host_handlers(MultiplayerService& multiplayer_service)
         MsgUserJoin data{};
         std::memcpy(&data, message.payload.data(), sizeof(data));
 
-        std::cout << "New user joined with UUID " << data.uuid << std::endl;
+        if (auto controller_opt = multiplayer_controller_.get_script<BehaviorScript, MultiplayerController>(); controller_opt.has_value()) {
+            auto& controller = controller_opt.value().get();
+
+            controller.register_user(data.uuid);
+            update_player_displays(multiplayer_service);
+            
+            MsgLobbyData lobby_data{};
+            lobby_data.user_count = 0;
+            for (auto [key, value] : controller.users()) {
+                LobbyUserData user_data{};
+                std::strncpy(user_data.uuid, value.uuid.c_str(), sizeof(user_data.uuid) - 1);
+                user_data.color = static_cast<uint16_t>(value.color);
+                std::strncpy(user_data.name, value.username.c_str(), sizeof(user_data.name) - 1);
+
+                lobby_data.users[lobby_data.user_count] = user_data;
+                ++lobby_data.user_count;
+            }
+
+            Message lobby_msg = serialize_message(lobby_data, CustomMessageTypes::LOBBY_DATA);
+            multiplayer_service.send_to_peer_via_uuid(data.uuid, lobby_msg);
+        }
+
         Message msg = serialize_message(data, CustomMessageTypes::USER_JOIN);
         multiplayer_service.send(msg);
+    });
+    
+    multiplayer_service.register_handler(CustomMessageTypes::USER_LEAVE, [&multiplayer_service, this](const Message& message) {
+        MsgUserLeave data{};
+        std::memcpy(&data, message.payload.data(), sizeof(data));
+
+        Message msg = serialize_message(data, CustomMessageTypes::USER_LEAVE);
+        multiplayer_service.send(msg);
+
+        if (auto controller_opt = multiplayer_controller_.get_script<BehaviorScript, MultiplayerController>(); controller_opt.has_value()) {
+            auto& controller = controller_opt.value().get();
+
+            controller.unregister_user(data.uuid);
+            update_player_displays(multiplayer_service);
+        }
+    });
+}
+
+void LobbyScene::register_client_handlers(MultiplayerService& multiplayer_service) {
+    multiplayer_service.register_handler(CustomMessageTypes::LOBBY_DATA, [&multiplayer_service, this](const Message& message) {
+        MsgLobbyData data{};
+        std::memcpy(&data, message.payload.data(), sizeof(data));
+
+        if (auto controller_opt = multiplayer_controller_.get_script<BehaviorScript, MultiplayerController>(); controller_opt.has_value()) {
+            auto& controller = controller_opt.value().get();
+            
+            for (uint32_t i = 0; i < data.user_count; ++i) {
+                LobbyUserData user_data{};
+                std::memcpy(&user_data, &data.users[i], sizeof(user_data));
+                
+                controller.register_user(user_data.uuid, user_data.name, static_cast<UserColor>(user_data.color));
+            }
+            
+            update_player_displays(multiplayer_service);
+        }
+    });
+
+    multiplayer_service.register_handler(CustomMessageTypes::USER_JOIN, [&multiplayer_service, this](const Message& message) {
+        MsgUserJoin data{};
+        std::memcpy(&data, message.payload.data(), sizeof(data));
+
+        if (data.uuid == multiplayer_service.get_uuid()) return;
 
         if (auto controller_opt = multiplayer_controller_.get_script<BehaviorScript, MultiplayerController>(); controller_opt.has_value()) {
             auto& controller = controller_opt.value().get();
@@ -99,10 +162,6 @@ void LobbyScene::register_host_handlers(MultiplayerService& multiplayer_service)
         MsgUserLeave data{};
         std::memcpy(&data, message.payload.data(), sizeof(data));
 
-        std::cout << "User with UUID " << data.uuid << " left" << std::endl;
-        Message msg = serialize_message(data, CustomMessageTypes::USER_JOIN);
-        multiplayer_service.send(msg);
-
         if (auto controller_opt = multiplayer_controller_.get_script<BehaviorScript, MultiplayerController>(); controller_opt.has_value()) {
             auto& controller = controller_opt.value().get();
 
@@ -110,16 +169,12 @@ void LobbyScene::register_host_handlers(MultiplayerService& multiplayer_service)
             update_player_displays(multiplayer_service);
         }
     });
-}
 
-void LobbyScene::register_client_handlers(MultiplayerService& multiplayer_service) {
     if (auto controller_opt = multiplayer_controller_.get_script<BehaviorScript, MultiplayerController>(); controller_opt.has_value()) {
         auto& controller = controller_opt.value().get();
 
         controller.on_connection_state_change([&multiplayer_service, this](ConnectionState old_state, ConnectionState new_state) {
             if (new_state == ConnectionState::CONNECTED) {
-                std::cout << "Connected with UUID " << multiplayer_service.get_uuid() << std::endl;
-
                 MsgUserJoin data{};
                 std::strncpy(data.uuid, multiplayer_service.get_uuid().c_str(), sizeof(data.uuid) - 1);
 
@@ -139,7 +194,7 @@ void LobbyScene::create_ip_text() {
 
 void LobbyScene::update_player_displays(MultiplayerService& multiplayer_service) {
     for (auto frame : player_frames_) {
-        scene().remove_game_object(*frame);
+        scene().remove_game_object(frame.get());
     }
     player_frames_.clear();
     
@@ -147,7 +202,7 @@ void LobbyScene::update_player_displays(MultiplayerService& multiplayer_service)
 }
 
 void LobbyScene::create_player_displays(MultiplayerService& multiplayer_service) {
-    std::map<UserColor, std::string> users;
+    std::map<UserColor, User> users;
 
     if (auto controller_opt = multiplayer_controller_.get_script<BehaviorScript, MultiplayerController>(); controller_opt.has_value()) {
         auto& controller = controller_opt.value().get();
@@ -163,19 +218,19 @@ void LobbyScene::create_player_displays(MultiplayerService& multiplayer_service)
         if (has_user) {
             auto& player_text = player_name(scene(), "PLACEHOLDER", frame_width, 48);
             player_text.transform().local_position({offset, offset_y - 100, 0});
-            player_frames_.push_back(&player_text);
+            player_frames_.push_back(std::ref(player_text));
 
             auto &player_background = scene().add_game_object<UIImage>(scene(), "button_small_" + colors[i], frame_width, frame_width, Point{}, Point{});
             player_background.transform().local_position({offset, offset_y, 0});
-            player_frames_.push_back(&player_background);
+            player_frames_.push_back(std::ref(player_background));
 
             auto &player_skin_image = scene().add_game_object<UIImage>(scene(), "capybara_" + colors_2[i] + "_idle", frame_width, frame_width, Point{}, Point{});
             player_skin_image.transform().local_position({offset, offset_y - 10, 0});
-            player_frames_.push_back(&player_skin_image);
+            player_frames_.push_back(std::ref(player_skin_image));
         } else {
             auto &player_background = scene().add_game_object<UIImage>(scene(), "button_small_black", frame_width, frame_width, Point{}, Point{});
             player_background.transform().local_position({offset, offset_y, 0});
-            player_frames_.push_back(&player_background);
+            player_frames_.push_back(std::ref(player_background));
         }
     }
 }
