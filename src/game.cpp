@@ -4,6 +4,7 @@
 #include <game/scenes/swamp.h>
 #include <game/scenes/level.h>
 #include <game/scenes/swamp_autum.h>
+#include <game/scenes/lobby.h>
 
 #include <engine/audio/audio_service.h>
 #include <engine/core/engine.h>
@@ -293,7 +294,8 @@ void Game::initialize() {
     settings::apply_current_settings();
 
     levels_.emplace_back(std::make_unique<SwampScene>());
-    levels_.emplace_back(std::make_unique<SwampAutumScene>());
+    // levels_.emplace_back(std::make_unique<SwampAutumScene>());
+    levels_.emplace_back(std::make_unique<LobbyScene>());
 
     for (auto& level : levels_) {
         level->init();
