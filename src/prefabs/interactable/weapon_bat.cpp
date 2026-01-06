@@ -29,7 +29,7 @@ WeaponBatPrefab::WeaponBatPrefab(Scene& scene, bool is_dropped, Vector3 position
     }
 
     this->add_component<BoxCollider2D>(0, 0, 24, 48, Point{0, 0}, !is_dropped, !is_dropped);
-    this->add_component<BehaviorScript>(std::make_unique<WeaponBatInteractableBehavior>());
+    this->add_component<BehaviorScript>(std::make_unique<WeaponBatInteractableBehavior>(is_dropped));
 
     this->layer(Layers::Foreground + 2);
 }
