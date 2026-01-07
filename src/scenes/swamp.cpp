@@ -124,6 +124,11 @@ void SwampScene::setup(Scene& scene) {
     scene.on_stop([&audio_service](Scene& scene) {
         audio_service.stop_all_sounds();
     });
+
+    this->add_on_stop_callback([this](Scene& scene) {
+        this->on_player_lives_changed_subscription_.reset();
+        this->on_ai_lives_changed_subscription_.reset();
+    });
 }
 
 void SwampScene::load(Scene& scene) {
