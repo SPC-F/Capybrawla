@@ -62,11 +62,12 @@ void MultiplayerController::unregister_user(std::string uuid) {
     while (shift_it != users_.end()) {
         auto current = shift_it++;
         UserColor old_color = current->first;
-        const User value = current->second;
+        User value = current->second;
 
         users_.erase(current);
 
         UserColor new_color = static_cast<UserColor>(static_cast<uint16_t>(old_color) - 1);
+        value.color = new_color;
 
         users_.emplace(new_color, value);
     }
