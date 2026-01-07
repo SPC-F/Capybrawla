@@ -65,7 +65,7 @@ void LobbyScene::load(Scene& scene) {
     else if (multiplayer_service.get_peer_type() == PeerType::CLIENT)
         register_client_handlers(multiplayer_service);
 
-    create_ip_text();
+    create_ip_text(multiplayer_service);
     create_player_displays(multiplayer_service);
     create_start_button();
 }
@@ -191,8 +191,8 @@ void LobbyScene::register_client_handlers(MultiplayerService& multiplayer_servic
     }
 }
 
-void LobbyScene::create_ip_text() {
-    std::string host_ip = "PLACEHOLDER IP";
+void LobbyScene::create_ip_text(MultiplayerService& multiplayer_service) {
+    std::string host_ip = multiplayer_service.get_host_ip();
 
     auto& player_text = player_name(scene(), host_ip, FRAME_WIDTH, 128);
     player_text.transform().local_position({(WINDOW_WIDTH - FRAME_WIDTH) / 2, WINDOW_HEIGHT / 7, 0});

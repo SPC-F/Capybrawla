@@ -17,6 +17,7 @@
 #include <game/pause_menu_ui.h>
 #include <game/behaviors/pause_play_behavior.h>
 #include <game/behaviors/toggle/gizmo/physics_gizmo_toggle_behavior.h>
+#include <game/behaviors/toggle/gizmo/navigation_grid_gizmo_toggle_behavior.h>
 #include <game/behaviors/toggle/object_toggle_behavior.h>
 #include <game/settings/settings.h>
 
@@ -416,9 +417,13 @@ void Game::shutdown() {
 }
 
 void Game::bootstrap(Scene& first_scene) {
-    auto& gizmo_toggle = first_scene.add_game_object("Gizmo Toggle");
-    gizmo_toggle.add_component<BehaviorScript>(std::make_unique<PhysicsGizmoToggleBehavior>());
-    gizmo_toggle.mark_dont_destroy_on_load(true);
+    auto& collider_gizmo_toggle = first_scene.add_game_object("Collider Gizmo Toggle");
+    collider_gizmo_toggle.add_component<BehaviorScript>(std::make_unique<PhysicsGizmoToggleBehavior>());
+    collider_gizmo_toggle.mark_dont_destroy_on_load(true);
+
+    auto& nav_graph_gizmo_toggle = first_scene.add_game_object("Navigation Grid Gizmo Toggle");
+    nav_graph_gizmo_toggle.add_component<BehaviorScript>(std::make_unique<NavigationGridGizmoToggleBehavior>());
+    nav_graph_gizmo_toggle.mark_dont_destroy_on_load(true);
 
     auto& fps_counter = first_scene.add_game_object<UIFPS>(first_scene);
     fps_counter.mark_dont_destroy_on_load(true);

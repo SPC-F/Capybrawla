@@ -1,7 +1,7 @@
 #include <game/prefabs/ai_drone_agent_object.h>
 
 #include <game/behaviors/ai_drone_movement_behavior.h>
-#include <game/behaviors/toggle/gizmo/ai_gizmo_toggle_behavior.h>
+#include <game/behaviors/toggle/gizmo/ai_controller_gizmo_toggle_behavior.h>
 
 #include <engine/public/scene.h>
 #include <engine/public/components/animator.h>
@@ -45,8 +45,8 @@ AIDroneAgentObject::AIDroneAgentObject(Scene &scene, const Vector3 initial_pos, 
                                           Point{2.0f, 8.0f});
   this->add_component<Animator>("drone_idle_anim", 64).play(true);
   this->add_component<BehaviorScript>(std::make_unique<AIDroneMovementBehavior>());
-  this->add_component<BehaviorScript>(std::make_unique<AIGizmoToggleBehavior>(std::ref(tile_parent)));
-  
+  this->add_component<BehaviorScript>(std::make_unique<AIControllerGizmoToggleBehavior>(std::ref(*this)));
+
   if (patrol_points_.empty()) patrol_points_ = std::move(target_positions);
 
   auto& ai_controller = this->add_component<AIController>(tile_parent)
