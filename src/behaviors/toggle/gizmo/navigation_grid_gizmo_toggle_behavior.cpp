@@ -1,24 +1,13 @@
-#include <game/behaviors/toggle/gizmo/ai_gizmo_toggle_behavior.h>
+#include <game/behaviors/toggle/gizmo/navigation_grid_gizmo_toggle_behavior.h>
 
 #include <engine/core/engine.h>
 #include <engine/input/input_system.h>
 #include <engine/input/input_manager.h>
-#include <engine/public/gameObject.h>
 #include <engine/public/components/ai/navigation/navigation_graph.h>
 #include <engine/public/components/ai/navigation/navigation_node.h>
 #include <engine/public/components/ai/navigation/pathfinding.h>
-
-AIGizmoToggleBehavior::AIGizmoToggleBehavior(std::reference_wrapper<GameObject> tilemap_parent)
-    : tilemap_parent_(tilemap_parent) {}
-
-void toggle_pathfinding(Pathfinding& pathfinding) {
-    bool path_should_draw = !pathfinding.should_draw();
-
-    if (path_should_draw != pathfinding.should_draw()) {
-        if (path_should_draw) pathfinding.enable_draw();
-        else pathfinding.disable_draw();
-    }
-}
+#include <engine/public/gameObject.h>
+#include <engine/public/scene.h>
 
 void toggle_navigation_graph(GameObject& tilemap_obj) {
     for (auto& child : tilemap_obj.children()) {
@@ -43,29 +32,32 @@ void toggle_navigation_graph(GameObject& tilemap_obj) {
     }
 }
 
-void AIGizmoToggleBehavior::on_update(float dt) {
+void NavigationGridGizmoToggleBehavior::on_update(float dt) {
     
     const IInputProvider &provider =
     Engine::instance().services->get_service<InputManager>().get().provider();
     
-    if (!provider.is_key_pressed(KeyCode::f3) && !provider.is_key_pressed(KeyCode::f4)) return; 
-    auto& tilemap_obj = tilemap_parent_.get();
+    if (!provider.is_key_pressed(KeyCode::f3)) return; 
 
+    std::optional<std::reference_wrapper<GameObject>> tilemap_obj_opt = std::nullopt;
+    
+    for (auto& obj : game_object().scene().game_objects()) {
+        if (obj.get().name() == "TileMapDynamic_Parent") {
+            tilemap_obj_opt = obj;
+            break;
+        }
+    }
+
+    if (!tilemap_obj_opt.has_value()) 
+        throw std::runtime_error("AIRenderingBehavior could not find TileMapDynamic_Parent in the scene.");
+
+    auto& tilemap_obj = tilemap_obj_opt->get();
     auto maybe_nav_graph = tilemap_obj.get_component<NavigationGraph>();
 
     if (!maybe_nav_graph) {
         throw std::runtime_error("AIRenderingBehavior requires a NavigationGraph component on the tilemap parent.");
     }
 
-    auto maybe_pathfinding = tilemap_obj.get_component<Pathfinding>();
-    
-    if (!maybe_pathfinding) {
-        throw std::runtime_error("AIRenderingBehavior requires a Pathfinding component on the owner GameObject.");
-    }
-
     auto& nav_graph = maybe_nav_graph->get();
-    auto& pathfinding = maybe_pathfinding->get();
-
-    if (provider.is_key_pressed(KeyCode::f3)) toggle_navigation_graph(tilemap_obj);
-    if (provider.is_key_pressed(KeyCode::f4)) toggle_pathfinding(pathfinding);
+    toggle_navigation_graph(tilemap_obj);
 }
