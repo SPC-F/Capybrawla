@@ -3,6 +3,7 @@
 #include <engine/audio/audio_service.h>
 
 #include <game/character/playerConstants.h>
+#include <game/character/player_object.h>
 #include <game/network/message_types.h>
 
 #include <engine/core/engine.h>
@@ -218,6 +219,7 @@ void PlayerMovementBehavior::apply_physics() {
 void PlayerMovementBehavior::apply_animation() {
   auto& animator = animator_opt_->get();
   auto& sprite   = sprite_opt_->get();
+  auto& constants = dynamic_cast<PlayerObject*>(&game_object())->constants();
 
   if (move_left_)  sprite.flip_x(true);
   if (move_right_) sprite.flip_x(false);
@@ -225,22 +227,22 @@ void PlayerMovementBehavior::apply_animation() {
   if (animator.is_non_interruptible()) return;
 
   if (crouch_) {
-    sprite.texture(PlayerConstants::CROUCHING_TEXTURE);
+    sprite.texture(constants.crouching_texture.data());
     return;
   }
 
   if ((jump_ || is_double_jumping_) && !is_grounded_) {
-    sprite.texture(PlayerConstants::JUMPING_TEXTURE);
+    sprite.texture(constants.jumping_texture.data());
     return;
   }
 
   if (is_walking_ && is_grounded_ && !animator.is_playing()) {
-    animator.play(PlayerConstants::WALKING_ANIMATION, true);
+    animator.play(constants.walking_animation.data(), true);
   }
 
   if (!crouch_ && !is_walking_ && is_grounded_) {
     animator.pause();
-    sprite.texture(PlayerConstants::IDLE_TEXTURE);
+    sprite.texture(constants.idle_texture.data());
   }
 }
 
