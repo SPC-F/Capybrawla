@@ -68,9 +68,15 @@ void PlayerMovementBehavior::on_start() {
       if (other.parent()->get().tag() != "Ground")
         return;
 
-      is_grounded_ = true;
-      is_jumping_ = false;
-      is_double_jumping_ = false;
+      auto self_transform = self.parent()->get().transform();
+      auto other_transform = other.parent()->get().transform();
+
+      /// Y is inverted in the engine
+      if (self_transform.position().y < other_transform.position().y) {
+        is_grounded_ = true;
+        is_jumping_ = false;
+        is_double_jumping_ = false;
+      }
     });
 
   move_sound_opt_ = audio_service_->get().play_sound("player_move", 0.1f, true);
