@@ -23,7 +23,7 @@ private:
 
     void update_player_displays(MultiplayerService& multiplayer_service);
 
-    void create_ip_text();
+    void create_ip_text(MultiplayerService& multiplayer_service);
     void create_player_displays(MultiplayerService& multiplayer_service);
     void create_start_button();
 
