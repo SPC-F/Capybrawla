@@ -289,6 +289,8 @@ void MainMenuScene::setup_settings(Scene& scene, GameObject& parent) {
         auto& storage = SimpleStorage::instance();
         storage.set_value("username", username_input.text());
         storage.save();
+       
+        toggle_parent_visibility("MainMenuParent");
     });
 
     UIButton& back_button = create_button(
