@@ -288,7 +288,6 @@ void MainMenuScene::setup_settings(Scene& scene, GameObject& parent) {
     save_button.add_on_press([this, &username_input](UIButton& /*btn*/) {
         auto& storage = SimpleStorage::instance();
         storage.set_value("username", username_input.text());
-        std::cout << username_input.text() << std::endl;
         storage.save();
     });
 
