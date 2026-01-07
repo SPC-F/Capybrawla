@@ -9,6 +9,9 @@
 #include <engine/public/components/behaviorscript.h>
 #include <engine/public/gameObject.h>
 
+WeaponSwordInteractableBehavior::WeaponSwordInteractableBehavior(bool is_dropped)
+    : is_dropped_{is_dropped} {}
+
 void WeaponSwordInteractableBehavior::on_start() {
     auto collider_opt = get_component<BoxCollider2D>();
     if (!collider_opt.has_value()) {
@@ -17,7 +20,7 @@ void WeaponSwordInteractableBehavior::on_start() {
 
     collider_opt->get().add_on_trigger_enter([this](Collider2D& self, Collider2D& other) {
         if (time_since_spawn_ < pickup_delay_) return;
-
+        
         auto behavior_opt = self.parent()->get().get_component<BehaviorScript>();
         if (!behavior_opt.has_value()) return;
 
@@ -66,7 +69,7 @@ void WeaponSwordInteractableBehavior::on_update(float dt) {
         rb.velocity({0.0f, rb.velocity().y, 0.0f});
     }
 
-    if (time_since_spawn_ > destroy_delay_) {
+    if (time_since_spawn_ > destroy_delay_ && is_dropped_) {
         this->game_object().mark_for_deletion();
         return;
     }

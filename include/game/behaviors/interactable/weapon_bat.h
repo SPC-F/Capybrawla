@@ -4,12 +4,13 @@
 
 class WeaponBatInteractableBehavior : public Behavior {
 public:
-    WeaponBatInteractableBehavior() = default;
+    WeaponBatInteractableBehavior(bool is_dropped = false);
     ~WeaponBatInteractableBehavior() override = default;
 
     void on_start() override;
     void on_update(float dt) override;
 private:
+    bool is_dropped_{false};
     float pickup_delay_{0.5f};
     float destroy_delay_{15.0f};
     float time_since_spawn_{0.0f};
