@@ -20,19 +20,15 @@ constexpr float BUTTON_WIDTH = 400.0f;
 constexpr float BUTTON_HEIGHT = 80.0f;
 constexpr float BUTTON_FONT_SIZE = 46.0f;
 
-// float window_width = Engine::instance().services->get_service<RenderingService>().get().window().get_window_width();
-// float window_height = Engine::instance().services->get_service<RenderingService>().get().window().get_window_height();
-float window_width = 1920;
-float window_height = 1080;
+constexpr float WINDOW_WIDTH = 1920;
+constexpr float WINDOW_HEIGHT = 1080;
 
-int max_players = 4;
-float frame_width = window_width / 10;
-float inner_frame_offset_x = frame_width / 2;
-float content_width = frame_width * max_players + inner_frame_offset_x * (max_players - 1);
-float outer_frame_offset_x = (window_width - content_width) / 2;
-float offset_y = window_height / 5 * 2;
-std::vector<std::string> colors = {"yellow", "red", "blue", "green"};
-std::vector<std::string> colors_2 = {"default", "red", "blue", "green"};
+constexpr int MAX_PLAYERS = 4;
+constexpr float FRAME_WIDTH = WINDOW_WIDTH / 10;
+constexpr float INNER_FRAME_OFFSET_X = FRAME_WIDTH / 2;
+constexpr float CONTENT_WIDTH = FRAME_WIDTH * MAX_PLAYERS + INNER_FRAME_OFFSET_X * (MAX_PLAYERS - 1);
+constexpr float OUTER_FRAME_OFFSET_X = (WINDOW_WIDTH - CONTENT_WIDTH) / 2;
+constexpr float OFFSET_Y = WINDOW_HEIGHT / 5 * 2;
 
 LobbyScene::LobbyScene() : Level("Level_LobbyScene"), multiplayer_controller_{create_multiplayer_controller()} {}
 
@@ -194,8 +190,8 @@ void LobbyScene::register_client_handlers(MultiplayerService& multiplayer_servic
 void LobbyScene::create_ip_text() {
     std::string host_ip = "PLACEHOLDER IP";
 
-    auto& player_text = player_name(scene(), host_ip, frame_width, 128);
-    player_text.transform().local_position({(window_width - frame_width) / 2, window_height / 7, 0});
+    auto& player_text = player_name(scene(), host_ip, FRAME_WIDTH, 128);
+    player_text.transform().local_position({(WINDOW_WIDTH - FRAME_WIDTH) / 2, WINDOW_HEIGHT / 7, 0});
 }
 
 void LobbyScene::update_player_displays(MultiplayerService& multiplayer_service) {
@@ -216,26 +212,29 @@ void LobbyScene::create_player_displays(MultiplayerService& multiplayer_service)
         users = controller.users();
     }
 
-    for (int i = 0; i < max_players; ++i) {
-        float offset = outer_frame_offset_x + (frame_width + inner_frame_offset_x) * i;
+    for (int i = 0; i < MAX_PLAYERS; ++i) {
+        float offset = OUTER_FRAME_OFFSET_X + (FRAME_WIDTH + INNER_FRAME_OFFSET_X) * i;
 
         bool has_user = users.find(static_cast<UserColor>(i)) != users.end();
 
         if (has_user) {
-            auto& player_text = player_name(scene(), "PLACEHOLDER", frame_width, 48);
-            player_text.transform().local_position({offset, offset_y - 100, 0});
+            std::vector<std::string> btn_colors = {"yellow", "red", "blue", "green"};
+            std::vector<std::string> skin_colors = {"default", "red", "blue", "green"};
+
+            auto& player_text = player_name(scene(), "PLACEHOLDER", FRAME_WIDTH, 48);
+            player_text.transform().local_position({offset, OFFSET_Y - 100, 0});
             player_frames_.push_back(std::ref(player_text));
 
-            auto &player_background = scene().add_game_object<UIImage>(scene(), "button_small_" + colors[i], frame_width, frame_width, Point{}, Point{});
-            player_background.transform().local_position({offset, offset_y, 0});
+            auto &player_background = scene().add_game_object<UIImage>(scene(), "button_small_" + btn_colors[i], FRAME_WIDTH, FRAME_WIDTH, Point{}, Point{});
+            player_background.transform().local_position({offset, OFFSET_Y, 0});
             player_frames_.push_back(std::ref(player_background));
 
-            auto &player_skin_image = scene().add_game_object<UIImage>(scene(), "capybara_" + colors_2[i] + "_idle", frame_width, frame_width, Point{}, Point{});
-            player_skin_image.transform().local_position({offset, offset_y - 10, 0});
+            auto &player_skin_image = scene().add_game_object<UIImage>(scene(), "capybara_" + skin_colors[i] + "_idle", FRAME_WIDTH, FRAME_WIDTH, Point{}, Point{});
+            player_skin_image.transform().local_position({offset, OFFSET_Y - 10, 0});
             player_frames_.push_back(std::ref(player_skin_image));
         } else {
-            auto &player_background = scene().add_game_object<UIImage>(scene(), "button_small_black", frame_width, frame_width, Point{}, Point{});
-            player_background.transform().local_position({offset, offset_y, 0});
+            auto &player_background = scene().add_game_object<UIImage>(scene(), "button_small_black", FRAME_WIDTH, FRAME_WIDTH, Point{}, Point{});
+            player_background.transform().local_position({offset, OFFSET_Y, 0});
             player_frames_.push_back(std::ref(player_background));
         }
     }
@@ -248,8 +247,8 @@ void LobbyScene::create_start_button() {
     UIButton& start_button = create_button(
         scene(),
         start_btn_txt,
-        (window_width - BUTTON_WIDTH) / 2,
-        window_height / 4 * 3,
+        (WINDOW_WIDTH - BUTTON_WIDTH) / 2,
+        WINDOW_HEIGHT / 4 * 3,
         "button_large_red"
     );
 
