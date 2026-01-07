@@ -19,6 +19,7 @@ enum class CustomMessageTypes : uint16_t {
 
 struct MsgUserJoin {
     char uuid[37];
+    char name[255];
 };
 
 struct MsgUserLeave {

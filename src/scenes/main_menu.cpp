@@ -7,6 +7,7 @@
 #include <engine/core/rendering/renderingService.h>
 #include <engine/core/system/system_service.h>
 #include <engine/audio/audio_service.h>
+#include <engine/storage/simple_storage.h>
 #include <engine/public/camera.h>
 #include <engine/public/gameObject.h>
 #include <engine/public/components/sprite.h>
@@ -247,13 +248,25 @@ void MainMenuScene::setup_join_game(Scene& scene, GameObject& parent) {
 
 void MainMenuScene::setup_settings(Scene& scene, GameObject& parent) {
     auto& rendering_service = Engine::instance().services->get_service<RenderingService>().get();
+    auto& storage = SimpleStorage::instance();
+    std::string username = storage.get_value_or_default<std::string>("username", "username");
+    UIInput& username_input = create_input(
+        scene,
+        CENTER_X - (BUTTON_WIDTH / 2),
+        BUTTON_START_Y,
+        BUTTON_WIDTH,
+        BUTTON_HEIGHT,
+        username
+    );
+    username_input.parent(parent);
+
     const bool initial_vsync = rendering_service.vsync();
 
     UIButton& vsync_button = create_button(
         scene,
         initial_vsync ? "VSync: ON" : "VSync: OFF",
         BUTTON_START_X,
-        BUTTON_START_Y,
+        BUTTON_START_Y + (BUTTON_HEIGHT + BUTTON_SPACING),
         "button_large_blue"
     );
     vsync_button.parent(parent);
@@ -262,6 +275,22 @@ void MainMenuScene::setup_settings(Scene& scene, GameObject& parent) {
         settings::toggle_vsync(!current_vsync);
 
         btn.label(!current_vsync ? "VSync: ON" : "VSync: OFF");
+    });
+
+    UIButton& save_button = create_button(
+        scene,
+        "Save",
+        BUTTON_START_X,
+        BUTTON_START_Y + (BUTTON_HEIGHT + BUTTON_SPACING) * 3,
+        "button_large_green"
+    );
+    save_button.parent(parent);
+    save_button.add_on_press([this, &username_input](UIButton& /*btn*/) {
+        auto& storage = SimpleStorage::instance();
+        storage.set_value("username", username_input.text());
+        storage.save();
+       
+        toggle_parent_visibility("MainMenuParent");
     });
 
     UIButton& back_button = create_button(

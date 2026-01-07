@@ -34,7 +34,7 @@ public:
 
     void on_connection_state_change(connection_state_change_callback_t callback);
 
-    void register_user(std::string uuid);
+    void register_user(std::string uuid, std::string username);
     void register_user(std::string uuid, std::string username, UserColor color);
     void unregister_user(std::string uuid);
 

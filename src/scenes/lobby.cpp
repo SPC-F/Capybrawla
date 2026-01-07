@@ -2,6 +2,7 @@
 #include <engine/core/rendering/renderingService.h>
 #include <engine/network/multiplayer_service.h>
 #include <engine/audio/audio_service.h>
+#include <engine/storage/simple_storage.h>
 #include <engine/public/components/sprite.h>
 #include <engine/public/components/ui/text.h>
 #include <engine/public/ui/ui_image.h>
@@ -53,8 +54,9 @@ void LobbyScene::load(Scene& scene) {
 
         if (auto controller_opt = multiplayer_controller_.get_script<BehaviorScript, MultiplayerController>(); controller_opt.has_value()) {
             auto& controller = controller_opt.value().get();
+            std::string username = SimpleStorage::instance().get_value_or_default<std::string>("username", "PLACEHOLDER");
 
-            controller.register_user(multiplayer_service.get_uuid());
+            controller.register_user(multiplayer_service.get_uuid(), username);
         }
     }
 
@@ -83,7 +85,7 @@ void LobbyScene::register_host_handlers(MultiplayerService& multiplayer_service)
         if (auto controller_opt = multiplayer_controller_.get_script<BehaviorScript, MultiplayerController>(); controller_opt.has_value()) {
             auto& controller = controller_opt.value().get();
 
-            controller.register_user(data.uuid);
+            controller.register_user(data.uuid, data.name);
             update_player_displays(multiplayer_service);
             
             MsgLobbyData lobby_data{};
@@ -150,7 +152,7 @@ void LobbyScene::register_client_handlers(MultiplayerService& multiplayer_servic
         if (auto controller_opt = multiplayer_controller_.get_script<BehaviorScript, MultiplayerController>(); controller_opt.has_value()) {
             auto& controller = controller_opt.value().get();
 
-            controller.register_user(data.uuid);
+            controller.register_user(data.uuid, data.name);
             update_player_displays(multiplayer_service);
         }
     });
@@ -179,6 +181,8 @@ void LobbyScene::register_client_handlers(MultiplayerService& multiplayer_servic
             if (new_state == ConnectionState::CONNECTED) {
                 MsgUserJoin data{};
                 std::strncpy(data.uuid, multiplayer_service.get_uuid().c_str(), sizeof(data.uuid) - 1);
+                std::string username = SimpleStorage::instance().get_value_or_default<std::string>("username", "PLACEHOLDER");
+                std::strncpy(data.name, username.c_str(), sizeof(data.name) - 1);
 
                 Message msg = serialize_message(data, CustomMessageTypes::USER_JOIN);
                 multiplayer_service.send(msg);
@@ -221,7 +225,7 @@ void LobbyScene::create_player_displays(MultiplayerService& multiplayer_service)
             std::vector<std::string> btn_colors = {"yellow", "red", "blue", "green"};
             std::vector<std::string> skin_colors = {"default", "red", "blue", "green"};
 
-            auto& player_text = player_name(scene(), "PLACEHOLDER", FRAME_WIDTH, 48);
+            auto& player_text = player_name(scene(), users[static_cast<UserColor>(i)].username, FRAME_WIDTH, 48);
             player_text.transform().local_position({offset, OFFSET_Y - 100, 0});
             player_frames_.push_back(std::ref(player_text));
 
