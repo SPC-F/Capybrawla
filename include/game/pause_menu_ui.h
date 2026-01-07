@@ -95,7 +95,9 @@ private:
         btn.add_on_press([this, &scene](UIButton&)
         {
             auto& multiplayer_service = Engine::instance().services->get_service<MultiplayerService>().get();
-            if (multiplayer_service.get_connection_state() == ConnectionState::CONNECTED) {
+            if (multiplayer_service.get_connection_state() == ConnectionState::CONNECTED
+                || multiplayer_service.get_connection_state() == ConnectionState::CONNECTING
+                || multiplayer_service.get_connection_state() == ConnectionState::DISCONNECTING) {
                 MsgUserLeave data{};
                 std::memcpy(&data, multiplayer_service.get_uuid().c_str(), sizeof(data));
 
