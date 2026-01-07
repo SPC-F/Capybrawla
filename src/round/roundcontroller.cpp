@@ -121,11 +121,10 @@ void RoundController::check_round_end_conditions() {
     auto controller_opt = player.get_script<BehaviorScript, PlayerController>();
 
     if (!controller_opt.has_value()) continue;
-
     auto controller = &controller_opt->get();
-    if (controller->lives() < 1) {
-      dead_count++;
-      
+
+    if (controller->lives() < 1) dead_count++; 
+    else {
       if (const auto& network_id = player.get_component<NetworkIdentity>(); network_id.has_value()) {
         winner_uuid = network_id.value().get().uuid();
       }
