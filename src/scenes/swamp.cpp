@@ -14,6 +14,7 @@
 
 #include <engine/audio/audio_service.h>
 #include <engine/core/engine.h>
+#include <engine/storage/simple_storage.h>
 #include <engine/public/components/sprite.h>
 #include <engine/public/gameObject.h>
 #include <engine/public/util/layers.h>
@@ -34,7 +35,7 @@ void SwampScene::load_players(Scene& scene, RoundController& controller, float s
 
     player.layer(Layers::Foreground);
     player.set_controllable();
-    player.user_name("Real player");
+    player.user_name(SimpleStorage::instance().get_value_or_default<std::string>("username", "Real player"));
 
     auto& player_controller = player.get_script<BehaviorScript, PlayerController>()->get();
     this->on_player_lives_changed_subscription_ = player_controller.on_lives_changed([&player_controller](const int, const int new_lives) {

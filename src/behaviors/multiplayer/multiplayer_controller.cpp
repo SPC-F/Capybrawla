@@ -32,12 +32,12 @@ void MultiplayerController::on_connection_state_change(connection_state_change_c
     connection_state_change_callbacks.push_back(callback);
 }
 
-void MultiplayerController::register_user(std::string uuid) {
+void MultiplayerController::register_user(std::string uuid, std::string username) {
     for (uint16_t i = 0; i <= static_cast<uint16_t>(UserColor::GREEN); ++i) {
         auto color = static_cast<UserColor>(i);
 
         if (users_.find(color) == users_.end()) {
-            User new_user = {uuid, "", color};
+            User new_user = {uuid, username, color};
             users_.emplace(color, new_user);
             return;
         }
@@ -45,7 +45,7 @@ void MultiplayerController::register_user(std::string uuid) {
 }
 
 void MultiplayerController::register_user(std::string uuid, std::string username, UserColor color) {
-    User new_user = {uuid, "PLACEHOLDER", color};
+    User new_user = {uuid, username, color};
     users_.emplace(color, new_user);
 }
 
