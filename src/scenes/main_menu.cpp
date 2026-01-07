@@ -245,7 +245,7 @@ void MainMenuScene::setup_join_game(Scene& scene, GameObject& parent) {
         toggle_parent_visibility("MainMenuParent");
     });
 }
-#include <iostream>
+
 void MainMenuScene::setup_settings(Scene& scene, GameObject& parent) {
     auto& rendering_service = Engine::instance().services->get_service<RenderingService>().get();
     auto& storage = SimpleStorage::instance();
