@@ -34,6 +34,15 @@ constexpr float OFFSET_Y = WINDOW_HEIGHT / 5 * 2;
 LobbyScene::LobbyScene() : Level("Level_LobbyScene"), multiplayer_controller_{create_multiplayer_controller()} {}
 
 void LobbyScene::setup(Scene& scene) {
+    AudioService &audio_service = Engine::instance().services->get_service<AudioService>().get();
+    scene.on_run([&audio_service](Scene& scene) {
+        audio_service.play_sound("sans", 0.05f, true);
+    });
+
+    scene.on_stop([&audio_service](Scene& scene) {
+        audio_service.stop_all_sounds();
+    });
+
     multiplayer_controller_.mark_dont_destroy_on_load(true);
 }
 

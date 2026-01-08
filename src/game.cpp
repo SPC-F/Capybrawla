@@ -342,6 +342,7 @@ void Game::initialize() {
     const std::vector<LoadAudio> audios {
         {"./resources/sounds/start_menu.wav", "start_menu", SoundType::SDL_MIXER},
         {"./resources/sounds/spear_of_justice.wav", "spear_of_justice", SoundType::SDL_MIXER},
+        {"./resources/sounds/sans.wav", "sans", SoundType::SDL_MIXER},
         {"./resources/sounds/enemy_approaching.wav", "enemy_approaching", SoundType::SDL_MIXER},
         {"./resources/sounds/btn_hover.wav", "btn_hover", SoundType::SDL_MIXER},
         {"./resources/sounds/player_move.wav", "player_move", SoundType::SDL_MIXER},
