@@ -47,6 +47,7 @@ void SwampScene::load_players(Scene& scene, RoundController& controller, float s
 
     auto& ai_player = scene.add_game_object<PlayerObject>(scene, Vector3{start_x + 40.0f, 100.0f, 0}, false);
     ai_player.user_name("AI Player");
+    ai_player.layer(Layers::Foreground);
     ai_player.add_component<BehaviorScript>(std::make_unique<PlayerOutOfBoundsBehavior>(
       -out_of_bounds_margin_x_,
       map_width_ + out_of_bounds_margin_x_,
