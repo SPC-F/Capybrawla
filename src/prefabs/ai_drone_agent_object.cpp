@@ -53,6 +53,7 @@ AIDroneAgentObject::AIDroneAgentObject(Scene &scene, const Vector3 initial_pos, 
                               .set_height(size * scale_factor)
                               .set_width(size * scale_factor);
   ai_controller.set_arrival_threshold(size * scale_factor);
+  ai_controller.set_attack_distance(140.0f);
 
   patrol_target_ = scene.add_game_object("AIAgent_PatrolTarget");
   patrol_target_->get().transform().position(patrol_points_[location_index_]);

@@ -348,6 +348,7 @@ void Game::initialize() {
         {"./resources/sounds/player_hit.wav", "player_hit", SoundType::SDL_MIXER},
         {"./resources/sounds/player_punch.wav", "player_punch", SoundType::SDL_MIXER},
         {"./resources/sounds/player_jump.wav", "player_jump", SoundType::SDL_MIXER},
+        {"./resources/sounds/drone_shoot.wav", "drone_shoot", SoundType::SDL_MIXER},
     };
     Assets::register_audio(audios);
 
