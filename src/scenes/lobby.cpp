@@ -297,7 +297,6 @@ UIButton& LobbyScene::create_button(
     button.transform().position({position_x, position_y, 0.0f});
     button.label_color(Color{255, 255, 255, 255});
     button.font_size(BUTTON_FONT_SIZE);
-    button.layer(Layers::UI);
 
     button.add_on_hover([] (UIInteractable&) {
       auto& audio_service = Engine::instance().services->get_service<AudioService>().get();
