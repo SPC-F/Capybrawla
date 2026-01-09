@@ -96,21 +96,24 @@ private:
         btn.parent(*this);
         btn.add_on_press([this](UIButton&)
         {
+            std::cout << "Leaving..." << std::endl;
             auto& scene = Engine::instance().services->get_service<SceneService>().get().current_scene();
-            // std::cout << scene.name() << std::endl;
             auto& multiplayer_service = Engine::instance().services->get_service<MultiplayerService>().get();
             if (multiplayer_service.get_connection_state() == ConnectionState::CONNECTED
                 || multiplayer_service.get_connection_state() == ConnectionState::CONNECTING
                 || multiplayer_service.get_connection_state() == ConnectionState::DISCONNECTING) {
+                    
+            std::cout << "In the leave if" << std::endl;
                 MsgUserLeave data{};
+                std::cout << multiplayer_service.get_uuid() << std::endl;
                 std::memcpy(&data, multiplayer_service.get_uuid().c_str(), sizeof(data));
 
                 Message msg = serialize_message(data, CustomMessageTypes::USER_LEAVE);
                 multiplayer_service.send(msg);
+                std::cout << "SENT MESSAGE" << std::endl;
 
                 std::optional<std::reference_wrapper<GameObject>> multiplayer_controller_opt;
                 for (auto& obj : scene.game_objects()) {
-                    std::cout << obj.get().name() << std::endl;
                     if (obj.get().name() == "MultiplayerController") {
                         multiplayer_controller_opt = obj;
                         break;
@@ -119,6 +122,7 @@ private:
 
                 if (multiplayer_controller_opt.has_value()) {
                     if (auto controller_opt = multiplayer_controller_opt.value().get().get_script<BehaviorScript, MultiplayerController>(); controller_opt.has_value()) {
+                        std::cout << "Clearing users" << std::endl;
                         controller_opt.value().get().clear_users();
                     }
                 }
