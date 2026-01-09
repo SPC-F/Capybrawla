@@ -181,6 +181,9 @@ void SwampAutumScene::setup(Scene& scene) {
         auto& audio_service = Engine::instance().services->get_service<AudioService>().get();
         audio_service.stop_all_sounds();
 
+        auto& prefab_service = Engine::instance().services->get_service<PrefabService>().get();
+        prefab_service.clear_all();
+
         auto& multiplayer_service = Engine::instance().services->get_service<MultiplayerService>().get();
         multiplayer_service.unregister_handler(CustomMessageTypes::USER_DROP_WEAPON);
         multiplayer_service.unregister_handler(CustomMessageTypes::USER_MOVE);
@@ -191,8 +194,16 @@ void SwampAutumScene::setup(Scene& scene) {
             multiplayer_service.unregister_handler(CustomMessageTypes::DROP_SPAWN);
         }
     });
+}
 
-    PrefabService& prefab_service = Engine::instance().services->get_service<PrefabService>().get();
+void SwampAutumScene::load(Scene& scene) {
+    SwampAutumScene::load_camera();
+    SwampAutumScene::load_map(std::string(Assets::MAP_SWAMP_AUTUM));
+
+    Engine& engine = Engine::instance();
+    auto& multiplayer_service = engine.services->get_service<MultiplayerService>().get();
+    auto& prefab_service = engine.services->get_service<PrefabService>().get();
+
     prefab_service.register_prefab("PlayerObject", [this](Scene& scene, const std::string& name) -> GameObject& {
         return create_player_object(name);
     });
@@ -210,15 +221,7 @@ void SwampAutumScene::setup(Scene& scene) {
     for (auto& registrable : registrables) {
         registrable->register_prefab(scene);
     }
-}
 
-void SwampAutumScene::load(Scene& scene) {
-    SwampAutumScene::load_camera();
-    SwampAutumScene::load_map(std::string(Assets::MAP_SWAMP_AUTUM));
-
-    Engine& engine = Engine::instance();
-    auto& multiplayer_service = engine.services->get_service<MultiplayerService>().get();
-    auto& prefab_service = engine.services->get_service<PrefabService>().get();
     RoundController& round_controller = add_multiplayer_round_controller();
     
     std::optional<std::reference_wrapper<GameObject>> multiplayer_controller_opt;
