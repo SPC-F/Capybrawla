@@ -13,10 +13,8 @@ public:
     virtual void load(Scene& scene) override;
 
 private:
-    GameObject& multiplayer_controller_;
+    std::optional<std::reference_wrapper<GameObject>> multiplayer_controller_;
     std::vector<std::reference_wrapper<GameObject>> player_frames_;
-
-    GameObject& create_multiplayer_controller();
 
     void register_host_handlers(MultiplayerService& multiplayer_service);
     void register_client_handlers(MultiplayerService& multiplayer_service);

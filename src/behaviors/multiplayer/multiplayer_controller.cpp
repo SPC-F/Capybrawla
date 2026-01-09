@@ -4,6 +4,10 @@
 #include <iostream>
 
 void MultiplayerController::on_update(float dt) {
+    check_connection_state();
+}
+
+void MultiplayerController::check_connection_state() {
     Engine& engine = Engine::instance();
     auto& multiplayer_service = engine.services->get_service<MultiplayerService>().get();
 
@@ -30,6 +34,10 @@ void MultiplayerController::on_update(float dt) {
 
 void MultiplayerController::on_connection_state_change(connection_state_change_callback_t callback) {
     connection_state_change_callbacks.push_back(callback);
+}
+
+void MultiplayerController::clear_on_connection_state_change_callbacks() {
+    connection_state_change_callbacks.clear();
 }
 
 void MultiplayerController::register_user(std::string uuid, std::string username) {
@@ -73,6 +81,15 @@ void MultiplayerController::unregister_user(std::string uuid) {
     }
 }
 
+void MultiplayerController::clear_users() {
+    users_.clear();
+}
+
+void MultiplayerController::reset() {
+    current_connection_state_ = ConnectionState::NONE;
+    clear_on_connection_state_change_callbacks();
+    clear_users();
+}
 
 std::map<UserColor, User> MultiplayerController::users() {
     return users_;

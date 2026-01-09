@@ -439,4 +439,8 @@ void Game::bootstrap(Scene& first_scene) {
     auto& ppc = first_scene.add_game_object("Pause/Play controller");
     ppc.add_component<BehaviorScript>(std::make_unique<PausePlayBehavior>(ppmenu));
     ppc.mark_dont_destroy_on_load(true);
+
+    auto& mc = first_scene.add_game_object("MultiplayerController");
+    mc.add_component<BehaviorScript>(std::make_unique<MultiplayerController>());
+    mc.mark_dont_destroy_on_load(true);
 }

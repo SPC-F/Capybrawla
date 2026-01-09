@@ -31,7 +31,7 @@ constexpr float CONTENT_WIDTH = FRAME_WIDTH * MAX_PLAYERS + INNER_FRAME_OFFSET_X
 constexpr float OUTER_FRAME_OFFSET_X = (WINDOW_WIDTH - CONTENT_WIDTH) / 2;
 constexpr float OFFSET_Y = WINDOW_HEIGHT / 5 * 2;
 
-LobbyScene::LobbyScene() : Level("Level_LobbyScene"), multiplayer_controller_{create_multiplayer_controller()} {}
+LobbyScene::LobbyScene() : Level("Level_LobbyScene") {}
 
 void LobbyScene::setup(Scene& scene) {
     AudioService &audio_service = Engine::instance().services->get_service<AudioService>().get();
@@ -42,8 +42,6 @@ void LobbyScene::setup(Scene& scene) {
     scene.on_stop([&audio_service](Scene& scene) {
         audio_service.stop_all_sounds();
     });
-
-    multiplayer_controller_.mark_dont_destroy_on_load(true);
 }
 
 void LobbyScene::load(Scene& scene) {
@@ -54,14 +52,21 @@ void LobbyScene::load(Scene& scene) {
     bg.transform().position({0, 0, 0});
 
     auto& multiplayer_service = Engine::instance().services->get_service<MultiplayerService>().get();
-
+    for (auto& obj : scene.game_objects()) {
+        if (obj.get().name() == "MultiplayerController") {
+            multiplayer_controller_ = obj;
+            break;
+        }
+    }
+    
     if (multiplayer_service.get_connection_state() == ConnectionState::NONE
         && multiplayer_service.get_peer_type() == PeerType::HOST) {
         multiplayer_service.set_max_clients(4);
         multiplayer_service.set_connection_port(1024);
         multiplayer_service.start_server();
 
-        if (auto controller_opt = multiplayer_controller_.get_script<BehaviorScript, MultiplayerController>(); controller_opt.has_value()) {
+        auto controller_opt = multiplayer_controller_.value().get().get_script<BehaviorScript, MultiplayerController>();
+        if (controller_opt.has_value()) {
             auto& controller = controller_opt.value().get();
             std::string username = SimpleStorage::instance().get_value_or_default<std::string>("username", "PLACEHOLDER");
 
@@ -79,19 +84,12 @@ void LobbyScene::load(Scene& scene) {
     create_start_button();
 }
 
-GameObject& LobbyScene::create_multiplayer_controller() {
-    auto& obj = scene().add_game_object("MultiplayerController");
-    obj.add_component<BehaviorScript>(std::make_unique<MultiplayerController>());
-    
-    return obj;
-}
-
 void LobbyScene::register_host_handlers(MultiplayerService& multiplayer_service) {
     multiplayer_service.register_handler(CustomMessageTypes::USER_JOIN, [&multiplayer_service, this](const Message& message) {
         MsgUserJoin data{};
         std::memcpy(&data, message.payload.data(), sizeof(data));
 
-        if (auto controller_opt = multiplayer_controller_.get_script<BehaviorScript, MultiplayerController>(); controller_opt.has_value()) {
+        if (auto controller_opt = multiplayer_controller_.value().get().get_script<BehaviorScript, MultiplayerController>(); controller_opt.has_value()) {
             auto& controller = controller_opt.value().get();
 
             controller.register_user(data.uuid, data.name);
@@ -124,7 +122,7 @@ void LobbyScene::register_host_handlers(MultiplayerService& multiplayer_service)
         Message msg = serialize_message(data, CustomMessageTypes::USER_LEAVE);
         multiplayer_service.send(msg);
 
-        if (auto controller_opt = multiplayer_controller_.get_script<BehaviorScript, MultiplayerController>(); controller_opt.has_value()) {
+        if (auto controller_opt = multiplayer_controller_.value().get().get_script<BehaviorScript, MultiplayerController>(); controller_opt.has_value()) {
             auto& controller = controller_opt.value().get();
 
             controller.unregister_user(data.uuid);
@@ -138,7 +136,7 @@ void LobbyScene::register_client_handlers(MultiplayerService& multiplayer_servic
         MsgLobbyData data{};
         std::memcpy(&data, message.payload.data(), sizeof(data));
 
-        if (auto controller_opt = multiplayer_controller_.get_script<BehaviorScript, MultiplayerController>(); controller_opt.has_value()) {
+        if (auto controller_opt = multiplayer_controller_.value().get().get_script<BehaviorScript, MultiplayerController>(); controller_opt.has_value()) {
             auto& controller = controller_opt.value().get();
             
             for (uint32_t i = 0; i < data.user_count; ++i) {
@@ -158,7 +156,7 @@ void LobbyScene::register_client_handlers(MultiplayerService& multiplayer_servic
 
         if (data.uuid == multiplayer_service.get_uuid()) return;
 
-        if (auto controller_opt = multiplayer_controller_.get_script<BehaviorScript, MultiplayerController>(); controller_opt.has_value()) {
+        if (auto controller_opt = multiplayer_controller_.value().get().get_script<BehaviorScript, MultiplayerController>(); controller_opt.has_value()) {
             auto& controller = controller_opt.value().get();
 
             controller.register_user(data.uuid, data.name);
@@ -170,7 +168,7 @@ void LobbyScene::register_client_handlers(MultiplayerService& multiplayer_servic
         MsgUserLeave data{};
         std::memcpy(&data, message.payload.data(), sizeof(data));
 
-        if (auto controller_opt = multiplayer_controller_.get_script<BehaviorScript, MultiplayerController>(); controller_opt.has_value()) {
+        if (auto controller_opt = multiplayer_controller_.value().get().get_script<BehaviorScript, MultiplayerController>(); controller_opt.has_value()) {
             auto& controller = controller_opt.value().get();
 
             controller.unregister_user(data.uuid);
@@ -183,7 +181,7 @@ void LobbyScene::register_client_handlers(MultiplayerService& multiplayer_servic
         scene_service.load_scene("Level_SwampAutumScene");
     });
 
-    if (auto controller_opt = multiplayer_controller_.get_script<BehaviorScript, MultiplayerController>(); controller_opt.has_value()) {
+    if (auto controller_opt = multiplayer_controller_.value().get().get_script<BehaviorScript, MultiplayerController>(); controller_opt.has_value()) {
         auto& controller = controller_opt.value().get();
 
         controller.on_connection_state_change([&multiplayer_service, this](ConnectionState old_state, ConnectionState new_state) {
@@ -219,7 +217,7 @@ void LobbyScene::update_player_displays(MultiplayerService& multiplayer_service)
 void LobbyScene::create_player_displays(MultiplayerService& multiplayer_service) {
     std::map<UserColor, User> users;
 
-    if (auto controller_opt = multiplayer_controller_.get_script<BehaviorScript, MultiplayerController>(); controller_opt.has_value()) {
+    if (auto controller_opt = multiplayer_controller_.value().get().get_script<BehaviorScript, MultiplayerController>(); controller_opt.has_value()) {
         auto& controller = controller_opt.value().get();
 
         users = controller.users();
@@ -267,7 +265,7 @@ void LobbyScene::create_start_button() {
 
     if (multiplayer_service.get_peer_type() == PeerType::HOST) {
         start_button.add_on_press([this](UIButton& /*btn*/) {
-            if (auto controller_opt = multiplayer_controller_.get_script<BehaviorScript, MultiplayerController>(); controller_opt.has_value()) {
+            if (auto controller_opt = multiplayer_controller_.value().get().get_script<BehaviorScript, MultiplayerController>(); controller_opt.has_value()) {
                 auto& controller = controller_opt.value().get();
 
                 if (controller.users().size() < 2) return;
