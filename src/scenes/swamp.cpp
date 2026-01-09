@@ -21,6 +21,7 @@
 #include <engine/public/behavior.h>
 #include <engine/public/components/behaviorscript.h>
 #include <engine/public/components/animator.h>
+#include <engine/public/prefab_service.h>
 
 SwampScene::SwampScene() : Level("Level_SwampScene") {}
 
@@ -130,6 +131,9 @@ void SwampScene::setup(Scene& scene) {
     this->add_on_stop_callback([this](Scene& scene) {
         this->on_player_lives_changed_subscription_.reset();
         this->on_ai_lives_changed_subscription_.reset();
+
+        auto& prefab_service = Engine::instance().services->get_service<PrefabService>().get();
+        prefab_service.clear_all();
     });
 }
 
