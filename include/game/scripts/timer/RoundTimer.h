@@ -70,6 +70,5 @@ private:
         text_.value().get().transform().position({1920 / 2.0f - 500 / 2.0f, 0.0f, 0.0f}); // Horizontal center
         text_.value().get().color({255, 255, 255, 255});
         text_.value().get().font_size(96);
-        text_.value().get().layer(Layers::UI);
     }
 };

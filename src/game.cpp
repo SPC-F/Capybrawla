@@ -428,7 +428,6 @@ void Game::bootstrap(Scene& first_scene) {
 
     auto& fps_counter = first_scene.add_game_object<UIFPS>(first_scene);
     fps_counter.mark_dont_destroy_on_load(true);
-    fps_counter.layer(Layers::UI);
 
     auto& fps_controller = first_scene.add_game_object("FPS Toggle");
     fps_controller.add_component<BehaviorScript>(std::make_unique<ObjectToggleBehavior>(fps_counter));
