@@ -37,6 +37,7 @@ public:
     void register_user(std::string uuid, std::string username);
     void register_user(std::string uuid, std::string username, UserColor color);
     void unregister_user(std::string uuid);
+    void clear_users();
 
     std::map<UserColor, User> users();
 };

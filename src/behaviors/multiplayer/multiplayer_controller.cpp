@@ -73,6 +73,9 @@ void MultiplayerController::unregister_user(std::string uuid) {
     }
 }
 
+void MultiplayerController::clear_users() {
+    users_.clear();
+}
 
 std::map<UserColor, User> MultiplayerController::users() {
     return users_;

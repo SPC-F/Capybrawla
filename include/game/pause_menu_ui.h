@@ -25,6 +25,8 @@ constexpr float TITLE_FONT_SIZE = 180.0f;
 constexpr int DEFAULT_LAYER = Layers::UI + 10;
 constexpr int BUTTON_LAYER = Layers::UI + 15;
 
+#include <iostream>
+
 class PauseMenuUI final : public UIObject
 {
 public:
@@ -92,8 +94,10 @@ private:
             "button_large_red"
         );
         btn.parent(*this);
-        btn.add_on_press([this, &scene](UIButton&)
+        btn.add_on_press([this](UIButton&)
         {
+            auto& scene = Engine::instance().services->get_service<SceneService>().get().current_scene();
+            // std::cout << scene.name() << std::endl;
             auto& multiplayer_service = Engine::instance().services->get_service<MultiplayerService>().get();
             if (multiplayer_service.get_connection_state() == ConnectionState::CONNECTED
                 || multiplayer_service.get_connection_state() == ConnectionState::CONNECTING
@@ -106,6 +110,7 @@ private:
 
                 std::optional<std::reference_wrapper<GameObject>> multiplayer_controller_opt;
                 for (auto& obj : scene.game_objects()) {
+                    std::cout << obj.get().name() << std::endl;
                     if (obj.get().name() == "MultiplayerController") {
                         multiplayer_controller_opt = obj;
                         break;
@@ -113,7 +118,9 @@ private:
                 }
 
                 if (multiplayer_controller_opt.has_value()) {
-                    multiplayer_controller_opt.value().get().mark_dont_destroy_on_load(false);
+                    if (auto controller_opt = multiplayer_controller_opt.value().get().get_script<BehaviorScript, MultiplayerController>(); controller_opt.has_value()) {
+                        controller_opt.value().get().clear_users();
+                    }
                 }
 
                 multiplayer_service.unregister_handler(CustomMessageTypes::USER_JOIN);
