@@ -110,6 +110,7 @@ private:
 
                 Message msg = serialize_message(data, CustomMessageTypes::USER_LEAVE);
                 multiplayer_service.send(msg);
+                multiplayer_service.poll();
                 std::cout << "SENT MESSAGE" << std::endl;
 
                 std::optional<std::reference_wrapper<GameObject>> multiplayer_controller_opt;
