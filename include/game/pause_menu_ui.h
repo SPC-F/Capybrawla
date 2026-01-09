@@ -1,10 +1,10 @@
 #pragma once
 
-#include "engine/public/components/ui/image.h"
-#include "engine/public/components/ui/text.h"
-#include "engine/public/ui/ui_object.h"
-#include "engine/public/ui/interactable/ui_button.h"
-#include "engine/public/util/layers.h"
+#include <engine/public/components/ui/image.h>
+#include <engine/public/components/ui/text.h>
+#include <engine/public/ui/ui_object.h>
+#include <engine/public/ui/interactable/ui_button.h>
+#include <engine/public/util/layers.h>
 
 constexpr float BUTTON_WIDTH = 400.0f;
 constexpr float BUTTON_HEIGHT = 80.0f;
@@ -24,8 +24,6 @@ constexpr float TITLE_FONT_SIZE = 180.0f;
 
 constexpr int DEFAULT_LAYER = Layers::UI + 10;
 constexpr int BUTTON_LAYER = Layers::UI + 15;
-
-#include <iostream>
 
 class PauseMenuUI final : public UIObject
 {
@@ -96,16 +94,14 @@ private:
         btn.parent(*this);
         btn.add_on_press([this](UIButton&)
         {
-            std::cout << "Leaving..." << std::endl;
             auto& scene = Engine::instance().services->get_service<SceneService>().get().current_scene();
             auto& multiplayer_service = Engine::instance().services->get_service<MultiplayerService>().get();
+
             if (multiplayer_service.get_connection_state() == ConnectionState::CONNECTED
                 || multiplayer_service.get_connection_state() == ConnectionState::CONNECTING
                 || multiplayer_service.get_connection_state() == ConnectionState::DISCONNECTING) {
                     
-            std::cout << "In the leave if" << std::endl;
                 MsgUserLeave data{};
-                std::cout << multiplayer_service.get_uuid() << std::endl;
                 std::memcpy(&data, multiplayer_service.get_uuid().c_str(), sizeof(data));
 
                 Message msg = serialize_message(data, CustomMessageTypes::USER_LEAVE);
@@ -122,17 +118,20 @@ private:
 
                 multiplayer_service.unregister_handler(CustomMessageTypes::USER_JOIN);
                 multiplayer_service.unregister_handler(CustomMessageTypes::USER_LEAVE);
+                
                 if (multiplayer_service.get_peer_type() == PeerType::CLIENT) {
                     multiplayer_service.unregister_handler(CustomMessageTypes::ROUND_START);
                     multiplayer_service.unregister_handler(CustomMessageTypes::LOBBY_DATA);
                 }
                 
                 auto on_disconnect = [multiplayer_controller_opt]() {
-                    if (multiplayer_controller_opt.has_value()) {
-                        if (auto controller_opt = multiplayer_controller_opt.value().get().get_script<BehaviorScript, MultiplayerController>(); controller_opt.has_value()) {
-                            controller_opt.value().get().reset();
-                        }
-                    } 
+                    if (!multiplayer_controller_opt.has_value()) return;
+                        
+                    auto controller_opt = multiplayer_controller_opt.value().get().get_script<BehaviorScript, MultiplayerController>();
+                    if (!controller_opt.has_value()) return;
+
+                    auto& controller = controller_opt.value().get();
+                    controller.reset();
                 };
 
                 multiplayer_service.disconnect(on_disconnect);                

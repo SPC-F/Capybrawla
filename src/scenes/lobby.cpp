@@ -65,7 +65,8 @@ void LobbyScene::load(Scene& scene) {
         multiplayer_service.set_connection_port(1024);
         multiplayer_service.start_server();
 
-        if (auto controller_opt = multiplayer_controller_.value().get().get_script<BehaviorScript, MultiplayerController>(); controller_opt.has_value()) {
+        auto controller_opt = multiplayer_controller_.value().get().get_script<BehaviorScript, MultiplayerController>();
+        if (controller_opt.has_value()) {
             auto& controller = controller_opt.value().get();
             std::string username = SimpleStorage::instance().get_value_or_default<std::string>("username", "PLACEHOLDER");
 
@@ -84,14 +85,12 @@ void LobbyScene::load(Scene& scene) {
 }
 
 void LobbyScene::register_host_handlers(MultiplayerService& multiplayer_service) {
-    std::cout << "Registering the host handlers" << std::endl;
     multiplayer_service.register_handler(CustomMessageTypes::USER_JOIN, [&multiplayer_service, this](const Message& message) {
         MsgUserJoin data{};
         std::memcpy(&data, message.payload.data(), sizeof(data));
 
         if (auto controller_opt = multiplayer_controller_.value().get().get_script<BehaviorScript, MultiplayerController>(); controller_opt.has_value()) {
             auto& controller = controller_opt.value().get();
-            std::cout << "USER JOINED" << std::endl;
 
             controller.register_user(data.uuid, data.name);
             update_player_displays(multiplayer_service);
@@ -116,19 +115,15 @@ void LobbyScene::register_host_handlers(MultiplayerService& multiplayer_service)
         multiplayer_service.send(msg);
     });
     
-    std::cout << "Abotu to register user leave" << std::endl;
     multiplayer_service.register_handler(CustomMessageTypes::USER_LEAVE, [&multiplayer_service, this](const Message& message) {
-    std::cout << "Received user leave" << std::endl;
         MsgUserLeave data{};
         std::memcpy(&data, message.payload.data(), sizeof(data));
 
         Message msg = serialize_message(data, CustomMessageTypes::USER_LEAVE);
         multiplayer_service.send(msg);
-        std::cout << "USER LEFT YOUR CHANNEL" << std::endl;
 
         if (auto controller_opt = multiplayer_controller_.value().get().get_script<BehaviorScript, MultiplayerController>(); controller_opt.has_value()) {
             auto& controller = controller_opt.value().get();
-            std::cout << "In multiplayer controller" << std::endl;
 
             controller.unregister_user(data.uuid);
             update_player_displays(multiplayer_service);
