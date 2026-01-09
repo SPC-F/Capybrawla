@@ -11,6 +11,8 @@
 #include <engine/public/components/rigidbody_2d.h>
 #include <engine/public/components/sprite.h>
 
+#include "game/behaviors/ai_drone_sudden_death_behavior.h"
+
 GameObject& get_tilemap_parent(Scene& scene) {
   std::string id;
   auto objects = scene.game_objects();
@@ -53,7 +55,9 @@ AIDroneAgentObject::AIDroneAgentObject(Scene &scene, const Vector3 initial_pos, 
                               .set_height(size * scale_factor)
                               .set_width(size * scale_factor);
   ai_controller.set_arrival_threshold(size * scale_factor);
-  ai_controller.set_attack_distance(140.0f);
+  ai_controller.set_arrival_threshold(140.0f);
+
+  this->add_component<BehaviorScript>(std::make_unique<AIDroneSuddenDeathBehavior>());
 
   patrol_target_ = scene.add_game_object("AIAgent_PatrolTarget");
   patrol_target_->get().transform().position(patrol_points_[location_index_]);

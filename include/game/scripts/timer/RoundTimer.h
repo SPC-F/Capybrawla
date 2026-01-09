@@ -53,6 +53,11 @@ public:
         timer_.start();
     }
 
+    [[nodiscard]] int remaining_time() const
+    {
+        return timer_.remaining_time();
+    }
+
 private:
     const int round_duration_seconds_ = 5;
     lib::Timer timer_{round_duration_seconds_};

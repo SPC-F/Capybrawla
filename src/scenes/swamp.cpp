@@ -94,21 +94,7 @@ void SwampScene::load_timer(Scene& scene) {
 
     auto round_timer = std::make_unique<RoundTimer>();
     round_timer->start_timer([&scene] {
-        for (const auto game_objects = scene.active_game_objects(); auto& obj_ref : game_objects) {
-            auto& obj = obj_ref.get();
-            auto ai_controller = obj.get_component<AIController>();
-            if (ai_controller) {
-                ai_controller->get().chase_closest_player(true);
-                ai_controller->get().add_on_chase_threshold_reached_action([ai_controller](AIController&) {
-                    const auto& target_game_object = ai_controller->get().get_chase_target().value().get();
-                    const auto player_controller = target_game_object.get_script<BehaviorScript, PlayerController>();
-                    if (player_controller) {
-                        Engine::instance().services->get_service<AudioService>().get().play_sound("drone_shoot", 0.05f, false);
-                        player_controller->get().hit(45);
-                    }
-                });
-            }
-        }
+        // Sudden death behavior handles this now.
     });
     round_timer_obj.add_component<BehaviorScript>(std::move(round_timer));
 }
