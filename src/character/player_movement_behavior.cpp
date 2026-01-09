@@ -223,6 +223,9 @@ void PlayerMovementBehavior::apply_physics() {
 }
 
 void PlayerMovementBehavior::apply_animation() {
+  if (!player_has_required_components())
+    return;
+
   auto& animator = animator_opt_->get();
   auto& sprite   = sprite_opt_->get();
   auto& constants = dynamic_cast<PlayerObject*>(&game_object())->constants();
@@ -253,6 +256,9 @@ void PlayerMovementBehavior::apply_animation() {
 }
 
 void PlayerMovementBehavior::apply_sounds() {
+  if (!player_has_required_components())
+    return;
+
   if (jump_ || is_double_jumping_) {
     if (is_double_jumping_ || !jump_sound_opt_->get().is_playing()) {
       jump_sound_opt_->get().play();
