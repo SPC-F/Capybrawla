@@ -49,8 +49,8 @@ int main() {
         argc = __argc;
         argv = __argv;
     #else
-        // extern int argc;
-        // extern char** argv;
+        extern int argc;
+        extern char** argv;
     #endif
 
     load_arguments(argc, argv, fullscreen, width, height);
