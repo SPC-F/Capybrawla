@@ -96,12 +96,16 @@ private:
         btn.parent(*this);
         btn.add_on_press([this](UIButton&)
         {
+            std::cout << "Leaving..." << std::endl;
             auto& scene = Engine::instance().services->get_service<SceneService>().get().current_scene();
             auto& multiplayer_service = Engine::instance().services->get_service<MultiplayerService>().get();
             if (multiplayer_service.get_connection_state() == ConnectionState::CONNECTED
                 || multiplayer_service.get_connection_state() == ConnectionState::CONNECTING
                 || multiplayer_service.get_connection_state() == ConnectionState::DISCONNECTING) {
+                    
+            std::cout << "In the leave if" << std::endl;
                 MsgUserLeave data{};
+                std::cout << multiplayer_service.get_uuid() << std::endl;
                 std::memcpy(&data, multiplayer_service.get_uuid().c_str(), sizeof(data));
 
                 Message msg = serialize_message(data, CustomMessageTypes::USER_LEAVE);
