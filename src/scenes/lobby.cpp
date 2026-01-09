@@ -52,26 +52,21 @@ void LobbyScene::load(Scene& scene) {
     bg.transform().position({0, 0, 0});
 
     auto& multiplayer_service = Engine::instance().services->get_service<MultiplayerService>().get();
-
+    for (auto& obj : scene.game_objects()) {
+        if (obj.get().name() == "MultiplayerController") {
+            multiplayer_controller_ = obj;
+            break;
+        }
+    }
+    
     if (multiplayer_service.get_connection_state() == ConnectionState::NONE
         && multiplayer_service.get_peer_type() == PeerType::HOST) {
         multiplayer_service.set_max_clients(4);
         multiplayer_service.set_connection_port(1024);
         multiplayer_service.start_server();
 
-        std::cout << "Reached before the first" << std::endl;
-        for (auto& obj : scene.game_objects()) {
-            if (obj.get().name() == "MultiplayerController") {
-                multiplayer_controller_ = obj;
-                break;
-            }
-        }
-
-        std::cout << "Reached the first" << std::endl;
         if (auto controller_opt = multiplayer_controller_.value().get().get_script<BehaviorScript, MultiplayerController>(); controller_opt.has_value()) {
-        std::cout << "Reached the second" << std::endl;
             auto& controller = controller_opt.value().get();
-        std::cout << "Reached the third" << std::endl;
             std::string username = SimpleStorage::instance().get_value_or_default<std::string>("username", "PLACEHOLDER");
 
             controller.register_user(multiplayer_service.get_uuid(), username);

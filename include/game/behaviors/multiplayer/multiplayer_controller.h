@@ -31,13 +31,17 @@ private:
 
 public:
     void on_update(float dt) override;
+    void check_connection_state();
 
     void on_connection_state_change(connection_state_change_callback_t callback);
+    void clear_on_connection_state_change_callbacks();
 
     void register_user(std::string uuid, std::string username);
     void register_user(std::string uuid, std::string username, UserColor color);
     void unregister_user(std::string uuid);
     void clear_users();
+
+    void reset();
 
     std::map<UserColor, User> users();
 };

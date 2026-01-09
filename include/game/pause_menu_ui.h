@@ -97,7 +97,6 @@ private:
         btn.add_on_press([this](UIButton&)
         {
             auto& scene = Engine::instance().services->get_service<SceneService>().get().current_scene();
-            // std::cout << scene.name() << std::endl;
             auto& multiplayer_service = Engine::instance().services->get_service<MultiplayerService>().get();
             if (multiplayer_service.get_connection_state() == ConnectionState::CONNECTED
                 || multiplayer_service.get_connection_state() == ConnectionState::CONNECTING
@@ -107,19 +106,13 @@ private:
 
                 Message msg = serialize_message(data, CustomMessageTypes::USER_LEAVE);
                 multiplayer_service.send(msg);
+                multiplayer_service.poll();
 
                 std::optional<std::reference_wrapper<GameObject>> multiplayer_controller_opt;
                 for (auto& obj : scene.game_objects()) {
-                    std::cout << obj.get().name() << std::endl;
                     if (obj.get().name() == "MultiplayerController") {
                         multiplayer_controller_opt = obj;
                         break;
-                    }
-                }
-
-                if (multiplayer_controller_opt.has_value()) {
-                    if (auto controller_opt = multiplayer_controller_opt.value().get().get_script<BehaviorScript, MultiplayerController>(); controller_opt.has_value()) {
-                        controller_opt.value().get().clear_users();
                     }
                 }
 
@@ -129,8 +122,16 @@ private:
                     multiplayer_service.unregister_handler(CustomMessageTypes::ROUND_START);
                     multiplayer_service.unregister_handler(CustomMessageTypes::LOBBY_DATA);
                 }
+                
+                auto on_disconnect = [multiplayer_controller_opt]() {
+                    if (multiplayer_controller_opt.has_value()) {
+                        if (auto controller_opt = multiplayer_controller_opt.value().get().get_script<BehaviorScript, MultiplayerController>(); controller_opt.has_value()) {
+                            controller_opt.value().get().reset();
+                        }
+                    } 
+                };
 
-                multiplayer_service.disconnect();
+                multiplayer_service.disconnect(on_disconnect);                
             } 
             else if (multiplayer_service.get_connection_state() != ConnectionState::NONE
                     && multiplayer_service.get_connection_state() != ConnectionState::DISCONNECTED) {
