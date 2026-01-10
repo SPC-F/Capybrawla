@@ -1,3 +1,4 @@
+#include <iostream>
 #include <game/scenes/swamp.h>
 
 #include <game/behaviors/interactable/ItemDropper.h>
@@ -11,6 +12,7 @@
 #include <game/prefabs/config/weapon_axe_config.h>
 #include <game/round/roundcontroller.h>
 #include <game/scripts/timer/RoundTimer.h>
+#include <engine/public/components/ai/ai_controller.h>
 
 #include <engine/audio/audio_service.h>
 #include <engine/core/engine.h>
@@ -93,7 +95,9 @@ void SwampScene::load_timer(Scene& scene) {
     GameObject& round_timer_obj = scene.add_game_object("Round Timer");
 
     auto round_timer = std::make_unique<RoundTimer>();
-    round_timer->start_timer([] {});
+    round_timer->start_timer([&scene] {
+        // Sudden death behavior handles this now.
+    });
     round_timer_obj.add_component<BehaviorScript>(std::move(round_timer));
 }
 

@@ -26,6 +26,12 @@ public:
     {
         text_.value().get().text(timer_.formatted_remaining_time());
 
+        if (timer_.remaining_time() <= 0 && !callback_called_)
+        {
+            if (timer_elapsed_cb_) timer_elapsed_cb_();
+            callback_called_ = true;
+        }
+
         if (timer_.remaining_time() <= 10)
         {
             pulse_time_ += dt;
@@ -47,10 +53,16 @@ public:
         timer_.start();
     }
 
+    [[nodiscard]] int remaining_time() const
+    {
+        return timer_.remaining_time();
+    }
+
 private:
-    const int round_duration_seconds_ = 70;
+    const int round_duration_seconds_ = 5;
     lib::Timer timer_{round_duration_seconds_};
     timer_elapsed_cb_t timer_elapsed_cb_;
+    bool callback_called_ = false;
     std::optional<std::reference_wrapper<UIText>> text_;
     float pulse_time_ = 0.0f;
 
